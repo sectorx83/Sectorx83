@@ -39,7 +39,6 @@ function setTheme(mode){
 }
 let savedTheme='night';
 try{savedTheme=localStorage.getItem('sectorx83-theme')||'night'}catch(_){}
-setTheme(savedTheme);
 themeButton?.addEventListener('click',()=>setTheme(root.dataset.theme==='day'?'night':'day'));
 
 /* Create a distributed reveal sequence across the page. */
@@ -219,6 +218,7 @@ if(canvas&&ctx){
   addEventListener('resize',resizeWorld,{passive:true});
   document.addEventListener('visibilitychange',()=>{if(document.hidden){cancelAnimationFrame(raf)}else startWorld()});
   startWorld();
+  setTheme(savedTheme);
 }
 
 /* Project scenes already use individual CSS animation systems; reveal them in sequence. */
