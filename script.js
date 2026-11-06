@@ -10,7 +10,27 @@ if(finePointer&&!reduce){document.querySelectorAll('.project').forEach(card=>{ca
 if('IntersectionObserver'in window&&!reduce){const observer=new IntersectionObserver(entries=>entries.forEach(entry=>{if(entry.isIntersecting){entry.target.classList.add('in-view');observer.unobserve(entry.target)}}),{threshold:.08,rootMargin:'0px 0px -24px 0px'});reveal.forEach(el=>observer.observe(el))}else reveal.forEach(el=>el.classList.add('in-view'));
 const nav=[...document.querySelectorAll('.glass-nav a')];const sections=['home','work','about','contact'].map(id=>document.getElementById(id)).filter(Boolean);
 if('IntersectionObserver'in window){const navObserver=new IntersectionObserver(entries=>entries.forEach(entry=>{if(entry.isIntersecting)nav.forEach(a=>a.classList.toggle('active',a.hash==='#'+entry.target.id))}),{rootMargin:'-35% 0px -55% 0px'});sections.forEach(section=>navObserver.observe(section))}
-const colors={white:'#f0efed',muted:'#929092',red:'#a14d46',rose:'#c47770',wine:'#48292d',line:'rgba(239,239,239,.17)'};
+
+const heroCopy=document.querySelector('.hero-copy');
+const heroVisual=document.querySelector('.hero-visual');
+if(!reduce&&heroCopy&&heroVisual){
+  [...heroCopy.children].forEach((el,i)=>{
+    el.animate([{opacity:0,transform:'translate3d(0,22px,0)'},{opacity:1,transform:'translate3d(0,0,0)'}],{duration:850,delay:90+i*105,easing:'cubic-bezier(.16,1,.3,1)',fill:'both'});
+  });
+  let heroFrame=false;
+  addEventListener('scroll',()=>{
+    if(heroFrame)return;
+    heroFrame=true;
+    requestAnimationFrame(()=>{
+      const rect=heroVisual.getBoundingClientRect();
+      const travel=Math.max(-18,Math.min(18,(innerHeight*.5-(rect.top+rect.height*.5))*.035));
+      heroVisual.style.setProperty('--hero-drift',travel+'px');
+      heroVisual.style.transform='translate3d(0,'+travel+'px,0)';
+      heroFrame=false;
+    });
+  },{passive:true});
+}
+\nconst colors={white:'#f0efed',muted:'#929092',red:'#a14d46',rose:'#c47770',wine:'#48292d',line:'rgba(239,239,239,.17)'};
 function drawScene(canvas,state){const ctx=canvas.getContext('2d',{alpha:true});if(!ctx)return;const rect=canvas.getBoundingClientRect();if(!rect.width||!rect.height)return;const dpr=Math.min(devicePixelRatio||1,1.5),w=rect.width,h=rect.height;canvas.width=Math.round(w*dpr);canvas.height=Math.round(h*dpr);ctx.setTransform(dpr,0,0,dpr,0,0);ctx.clearRect(0,0,w,h);const c=ctx;
 const line=(x,y,x2,y2,color=colors.line,width=1)=>{c.beginPath();c.moveTo(x,y);c.lineTo(x2,y2);c.strokeStyle=color;c.lineWidth=width;c.stroke()};
 const text=(v,x,y,size=8,color=colors.muted,align='left')=>{c.fillStyle=color;c.font='600 '+size+'px ui-monospace,monospace';c.textAlign=align;c.fillText(v,x,y)};
