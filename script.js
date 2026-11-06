@@ -1,49 +1,39 @@
-(() => {
-  'use strict';
-  const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-  const progress = document.querySelector('.scroll-progress i');
-  let ticking = false;
-  const updateProgress = () => {
-    if (!progress) return;
-    const max = document.documentElement.scrollHeight - window.innerHeight;
-    progress.style.width = (max > 0 ? window.scrollY / max * 100 : 0) + '%';
-    ticking = false;
-  };
-  window.addEventListener('scroll', () => {
-    if (!ticking) { requestAnimationFrame(updateProgress); ticking = true; }
-  }, { passive: true });
-  updateProgress();
-
-  document.querySelectorAll('a[href^="#"]').forEach(link => {
-    link.addEventListener('click', event => {
-      const target = document.querySelector(link.getAttribute('href'));
-      if (!target) return;
-      event.preventDefault();
-      target.scrollIntoView({ behavior: reduce ? 'auto' : 'smooth', block: 'start' });
-    });
-  });
-
-  const reveal = document.querySelectorAll('.reveal');
-  if ('IntersectionObserver' in window && !reduce) {
-    const observer = new IntersectionObserver(entries => {
-      entries.forEach(entry => {
-        if (entry.isIntersecting) {
-          entry.target.classList.add('in-view');
-          observer.unobserve(entry.target);
-        }
-      });
-    }, { threshold: 0.08, rootMargin: '0px 0px -24px 0px' });
-    reveal.forEach(element => observer.observe(element));
-  } else reveal.forEach(element => element.classList.add('in-view'));
-
-  const navLinks = [...document.querySelectorAll('.header nav a')];
-  const sections = ['work', 'about', 'contact'].map(id => document.getElementById(id)).filter(Boolean);
-  if ('IntersectionObserver' in window && sections.length) {
-    const navObserver = new IntersectionObserver(entries => {
-      entries.forEach(entry => {
-        if (entry.isIntersecting) navLinks.forEach(link => link.classList.toggle('active', link.hash === '#' + entry.target.id));
-      });
-    }, { rootMargin: '-35% 0px -55% 0px' });
-    sections.forEach(section => navObserver.observe(section));
-  }
+(()=>{'use strict';
+const reduced=matchMedia('(prefers-reduced-motion: reduce)').matches;
+const progress=document.querySelector('.scroll-progress i');let scrollQueued=false;
+function updateProgress(){if(progress){const max=document.documentElement.scrollHeight-innerHeight;progress.style.width=(max?scrollY/max*100:0)+'%'}scrollQueued=false}
+addEventListener('scroll',()=>{if(!scrollQueued){scrollQueued=true;requestAnimationFrame(updateProgress)}},{passive:true});updateProgress();
+document.querySelectorAll('a[href^="#"]').forEach(a=>a.addEventListener('click',e=>{const target=document.querySelector(a.getAttribute('href'));if(target){e.preventDefault();target.scrollIntoView({behavior:reduced?'auto':'smooth',block:'start'})}}));
+const reveal=[...document.querySelectorAll('.reveal')];if('IntersectionObserver'in window&&!reduced){const io=new IntersectionObserver(entries=>entries.forEach(e=>{if(e.isIntersecting){e.target.classList.add('in-view');io.unobserve(e.target)}}),{threshold:.06,rootMargin:'0px 0px -20px 0px'});reveal.forEach(el=>io.observe(el))}else reveal.forEach(el=>el.classList.add('in-view'));
+const nav=[...document.querySelectorAll('.header nav a')];if('IntersectionObserver'in window){const ni=new IntersectionObserver(entries=>entries.forEach(e=>{if(e.isIntersecting)nav.forEach(a=>a.classList.toggle('active',a.hash==='#'+e.target.id))}),{rootMargin:'-35% 0px -55% 0px'});['work','about','contact'].map(id=>document.getElementById(id)).filter(Boolean).forEach(el=>ni.observe(el))}
+const P={white:'#efefef',muted:'#929294',red:'#a14d46',rose:'#c47770',wine:'#48292d',line:'rgba(239,239,239,.17)'};
+function makeScene(canvas){const ctx=canvas.getContext('2d'),s={canvas,ctx,type:canvas.dataset.scene,w:0,h:0,visible:false,step:0,active:false,p:{x:.5,y:.5}};
+function resize(){const r=canvas.getBoundingClientRect();if(!r.width)return;s.w=r.width;s.h=r.height;s.dpr=Math.min(devicePixelRatio||1,1.5);canvas.width=Math.round(s.w*s.dpr);canvas.height=Math.round(s.h*s.dpr);ctx.setTransform(s.dpr,0,0,s.dpr,0,0);draw(s)}
+new ResizeObserver(resize).observe(canvas);
+canvas.addEventListener('pointermove',e=>{const r=canvas.getBoundingClientRect();s.p={x:(e.clientX-r.left)/r.width,y:(e.clientY-r.top)/r.height};if(reduced)draw(s)},{passive:true});
+const parent=canvas.parentElement,button=parent.querySelector('.scene-action'),badge=parent.querySelector('.scene-state'),feedback=parent.querySelector('.scene-feedback');
+button.addEventListener('click',()=>{s.step++;
+if(s.type==='gravity'){const n=s.step%2?11:8;badge.textContent=s.step%2?'EVOLVED':'STABLE';feedback.textContent='Topology updated · '+n+' nodes · accepted work retained.';button.innerHTML=(s.step%2?'RESTORE BASE GRAPH':'RECONFIGURE GRAPH')+' <span>↗</span>'}
+else if(s.type==='cathedral'){badge.textContent=s.step%2?'RUN COMPLETE':'IDLE';feedback.textContent=s.step%2?'Run isolated · metrics captured · snapshot ready.':'Workspace reset and ready for another run.';button.innerHTML=(s.step%2?'RESET EXPERIMENT':'RUN SAMPLE EXPERIMENT')+' <span>↗</span>'}
+else if(s.type==='flux'){const i=s.step%4;badge.textContent=['PLANNING','INSPECTING','EXECUTING','VERIFYING'][i];feedback.textContent=['Plan assembled · awaiting inspection.','Workspace inspected · changes scoped.','Approved actions executed in sequence.','Checks passed · workflow complete.'][i];button.innerHTML=(i===3?'RESTART WORKFLOW':'ADVANCE WORKFLOW')+' <span>↗</span>'}
+else if(s.type==='edith'){s.active=!s.active;badge.textContent=s.active?'LISTENING':'STANDBY';feedback.textContent=s.active?'Voice session preview active · awaiting input.':'Voice session preview paused.';button.innerHTML=(s.active?'END VOICE SESSION':'START VOICE SESSION')+' <span>↗</span>'}
+else{badge.textContent='WORKSPACE 0'+(s.step%2+1);feedback.textContent=s.step%2?'Workspace 2 selected · alternate desktop layout.':'Workspace 1 selected · primary desktop layout.'}
+draw(s)});
+resize();return s}
+function txt(c,v,x,y,size=8,color=P.muted,align='left'){c.fillStyle=color;c.font='600 '+size+'px ui-monospace,monospace';c.textAlign=align;c.fillText(v,x,y)}
+function ln(c,x,y,a,b,color=P.line,width=1){c.beginPath();c.moveTo(x,y);c.lineTo(a,b);c.strokeStyle=color;c.lineWidth=width;c.stroke()}
+function panel(c,x,y,w,h,fill,stroke=P.line,r=3){c.beginPath();c.roundRect(x,y,w,h,r);c.fillStyle=fill;c.fill();if(stroke){c.strokeStyle=stroke;c.stroke()}}
+function base(s){const c=s.ctx,w=s.w,h=s.h;c.clearRect(0,0,w,h);const g=c.createRadialGradient(w*.5,h*.5,2,w*.5,h*.5,Math.max(w,h)*.7);g.addColorStop(0,'rgba(164,77,70,.15)');g.addColorStop(1,'transparent');c.fillStyle=g;c.fillRect(0,0,w,h);c.strokeStyle='rgba(239,239,239,.04)';for(let x=0;x<w;x+=34)ln(c,x,0,x,h);for(let y=0;y<h;y+=34)ln(c,0,y,w,y)}
+function draw(s){if(!s.w)return;const c=s.ctx,w=s.w,h=s.h;base(s);
+if(s.type==='gravity'){const cx=w*.46,cy=h*.49,n=s.step%2?11:8,pts=[];for(let i=0;i<n;i++){const a=i*2*Math.PI/n+.2,r=Math.min(w,h)*(.23+(i%3)*.07);pts.push([cx+Math.cos(a)*r*1.4+(s.p.x-.5)*14,cy+Math.sin(a)*r*.85+(s.p.y-.5)*10])}pts.forEach((p,i)=>{ln(c,p[0],p[1],pts[(i+1)%n][0],pts[(i+1)%n][1],'rgba(196,119,112,.42)');if(i%2===0)ln(c,p[0],p[1],pts[(i+3)%n][0],pts[(i+3)%n][1],'rgba(239,239,239,.16)')});[.2,.31,.42].forEach((v,i)=>{c.beginPath();c.ellipse(cx,cy,Math.min(w,h)*v*1.5,Math.min(w,h)*v*(i===1?.65:.82),-.3+i*.2,0,Math.PI*2);c.strokeStyle='rgba(196,119,112,.24)';c.setLineDash(i===2?[3,7]:[]);c.stroke()});c.setLineDash([]);pts.forEach((p,i)=>{c.beginPath();c.arc(p[0],p[1],i===0?5:3.5,0,Math.PI*2);c.fillStyle=i%3===0?P.rose:P.white;c.shadowColor=P.red;c.shadowBlur=10;c.fill();c.shadowBlur=0});c.beginPath();c.arc(cx,cy,26,0,Math.PI*2);c.fillStyle='#171011';c.fill();c.strokeStyle=P.rose;c.stroke();txt(c,'G',cx,cy+7,20,P.white,'center');txt(c,'COMPUTATION GRAPH',24,h-43,7);txt(c,'NODES '+String(n).padStart(2,'0'),24,h-28,8,P.white);txt(c,'STATE RETAINED',w-22,h-28,7,P.rose,'right')}
+if(s.type==='cathedral'){const x=w*.13,y=h*.18,bw=w*.74,bh=h*.62;panel(c,x,y,bw,bh,'rgba(14,15,16,.96)','rgba(183,183,184,.38)');c.fillStyle='#1a1a1c';c.fillRect(x,y,bw,25);txt(c,'CATHEDRAL / EXPERIMENT 001',x+13,y+16,7,P.white);c.fillStyle='#141416';c.fillRect(x+1,y+26,50,bh-27);['RUNS','METRICS','SNAPSHOTS','LOGS'].forEach((v,i)=>txt(c,v,x+9,y+49+i*23,6,i===1?P.rose:P.muted));const cx=x+66,cy=y+52;txt(c,'EXECUTION TELEMETRY',cx,cy,7);const vals=s.step%2?[.35,.62,.49,.82,.72,.95,.58,.78]:[.24,.4,.34,.57,.45,.72,.52,.68];vals.forEach((v,i)=>{const bw2=(bw-91)/vals.length,bh2=(bh-128)*v;c.fillStyle=i===5?P.rose:'rgba(164,77,70,.7)';c.fillRect(cx+i*(bw2+2),cy+22+(bh-128)-bh2,bw2,bh2)});txt(c,s.step%2?'RUN COMPLETE / 00:02.41':'AWAITING RUN',cx,cy+bh-91,6,s.step%2?P.rose:P.muted);panel(c,x+bw-101,y+bh-37,82,21,'rgba(164,77,70,.13)','rgba(164,77,70,.45)');txt(c,s.step%2?'SNAPSHOT SAVED':'ISOLATED',x+bw-60,y+bh-23,6,P.white,'center');txt(c,'REPRODUCIBLE ENVIRONMENT',24,h-27,7)}
+if(s.type==='flux'){const names=['PLAN','INSPECT','EXECUTE','VERIFY'],active=s.step%4,x0=w*.13,x1=w*.87,y=h*.46,dx=(x1-x0)/3;ln(c,x0,y,x1,y,'rgba(196,119,112,.42)',2);names.forEach((v,i)=>{const x=x0+i*dx;c.beginPath();c.arc(x,y,26,0,Math.PI*2);c.fillStyle=i<=active?'rgba(72,41,45,.95)':'#151515';c.fill();c.strokeStyle=i===active?P.rose:'rgba(183,183,184,.3)';c.stroke();txt(c,'0'+(i+1),x,y+4,9,P.white,'center');txt(c,v,x,y+45,6,i===active?P.rose:P.muted,'center');if(i<active){c.beginPath();c.arc(x+dx*.5,y,3,0,Math.PI*2);c.fillStyle=P.rose;c.fill()}});panel(c,w*.2,h*.7,w*.6,38,'rgba(10,10,10,.85)','rgba(183,183,184,.2)');txt(c,'HUMAN APPROVAL GATE',w*.5,h*.7+15,7,P.white,'center');txt(c,'LOCAL WORKSPACE / CONTROLLED EXECUTION',w*.5,h*.7+27,6,P.muted,'center');txt(c,'AGENT PIPELINE',24,h-27,7)}
+if(s.type==='edith'){const cx=w*.48,cy=h*.4;for(let i=0;i<3;i++){c.beginPath();c.ellipse(cx,cy,63+i*18,39+i*15,-.25+i*.25,0,Math.PI*2);c.strokeStyle=i===1?'rgba(196,119,112,.4)':'rgba(239,239,239,.16)';c.setLineDash(i===2?[3,6]:[]);c.stroke()}c.setLineDash([]);const r=s.active?1.15:1,g=c.createRadialGradient(cx-18,cy-20,2,cx,cy,58*r);g.addColorStop(0,'#f2d8d5');g.addColorStop(.35,'#b86c65');g.addColorStop(1,P.wine);c.beginPath();c.ellipse(cx,cy,48*r,43/r,.2,0,Math.PI*2);c.fillStyle=g;c.shadowColor=P.red;c.shadowBlur=s.active?32:18;c.fill();c.shadowBlur=0;for(let i=0;i<34;i++){const x=w*.13+i*(w*.7/33),v=Math.sin(i*.65+s.step*.7)*(s.active?16:6)+Math.cos(i*.22)*4,b=Math.abs(v)+3;c.fillStyle=s.active?'rgba(196,119,112,.9)':'rgba(183,183,184,.42)';c.fillRect(x,h*.72-b/2,2,b)}txt(c,s.active?'VOICE SESSION / LISTENING':'VOICE SESSION / STANDBY',24,h-27,7,s.active?P.rose:P.muted)}
+if(s.type==='d3x8'){const alt=s.step%2===1,x=w*.13,y=h*.18,bw=w*.74,bh=h*.61;panel(c,x,y,bw,bh,'rgba(17,18,20,.97)','rgba(183,183,184,.4)');c.fillStyle='#1b1b1e';c.fillRect(x,y,bw,25);txt(c,'D3X8 / DESKTOP',x+14,y+16,7,P.white);c.fillStyle='#111214';c.fillRect(x+1,y+26,42,bh-27);for(let i=0;i<5;i++)panel(c,x+14,y+42+i*24,13,13,i===(alt?3:1)?P.red:'#343538',null);if(!alt){panel(c,x+64,y+51,bw*.39,bh*.49,'#202125','#55565a');txt(c,'TERMINAL',x+75,y+65,6,P.white);['$ system ready','$ task list','$ process monitor','$ _'].forEach((v,i)=>txt(c,v,x+76,y+88+i*14,6,i===3?P.rose:P.muted));panel(c,x+bw*.55,y+51,bw*.32,bh*.49,'#191a1d','#55565a');txt(c,'SYSTEM STATUS',x+bw*.55+10,y+69,6,P.white);['MEMORY','PROCESSES','UPTIME'].forEach((v,i)=>{ln(c,x+bw*.55+10,y+83+i*17,x+bw*.87-10,y+83+i*17);txt(c,v,x+bw*.55+10,y+80+i*17,5)})}else{panel(c,x+64,y+51,bw*.7,bh*.49,'#191a1d','#55565a');txt(c,'WORKSPACE 02',x+78,y+74,8,P.white);['FILES','EDITOR','MONITOR'].forEach((v,i)=>{panel(c,x+78+i*61,y+88,47,43,['#2b1a1b','#242528','#202c2b'][i],null);txt(c,v,x+101+i*61,y+146,5,P.muted,'center')})}panel(c,w*.38,h*.79,w*.24,22,'rgba(40,40,42,.95)','rgba(183,183,184,.35)',5);for(let i=0;i<5;i++)panel(c,w*.4+i*17,h*.795,12,12,i===1?P.red:'#77787b',null,3);txt(c,'WORKSPACE 0'+(alt?'2':'1'),w*.5,h-27,7,P.rose,'center')}
+}
+const scenes=[...document.querySelectorAll('.project-scene')].map(makeScene);let active=false,last=0;
+function frame(now){active=false;if(document.hidden)return;const visible=scenes.filter(s=>s.visible);if(!visible.length)return;if(now-last>40){visible.forEach(draw);last=now}active=true;requestAnimationFrame(frame)}
+function wake(){if(!reduced&&!active&&!document.hidden){active=true;requestAnimationFrame(frame)}}
+if('IntersectionObserver'in window){const si=new IntersectionObserver(entries=>entries.forEach(e=>{const s=scenes.find(v=>v.canvas===e.target);if(s){s.visible=e.isIntersecting;if(s.visible){draw(s);wake()}}}),{rootMargin:'100px'});scenes.forEach(s=>si.observe(s.canvas))}else scenes.forEach(s=>s.visible=true);
+if(reduced)scenes.forEach(draw);else wake();document.addEventListener('visibilitychange',wake);
 })();
