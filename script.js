@@ -218,8 +218,8 @@ if(canvas&&ctx){
   addEventListener('resize',resizeWorld,{passive:true});
   document.addEventListener('visibilitychange',()=>{if(document.hidden){cancelAnimationFrame(raf)}else startWorld()});
   startWorld();
-  setTheme(savedTheme);
 }
+setTheme(savedTheme);
 
 /* Project scenes already use individual CSS animation systems; reveal them in sequence. */
 document.querySelectorAll('.project').forEach((card,index)=>{
