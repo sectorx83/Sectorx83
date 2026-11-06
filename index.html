@@ -1,74 +1,78 @@
 <!doctype html>
-<html lang="en">
+<html lang="en" data-theme="night">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="theme-color" content="#080809">
+<meta name="theme-color" content="#080d13">
 <meta name="description" content="sectorx83 — Independent developer building systems, AI tools, operating systems and digital experiences.">
 <meta property="og:title" content="sectorx83® — Independent Developer">
-<meta property="og:description" content="Systems, software and creative engineering. Selected work by sectorx83.">
+<meta property="og:description" content="A small universe of systems, software and experiments.">
 <meta property="og:type" content="website">
 <title>sectorx83® — Independent Developer</title>
-<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Manrope:wght@400;500;600;700;800&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet"><link rel="preload" href="/styles.css" as="style">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=DM+Sans:wght@400;500;600;700&family=Syne:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="preload" href="/styles.css" as="style">
 <link rel="stylesheet" href="/styles.css">
 <script src="/script.js" defer></script>
 </head>
-<body>
-<div class="ambient-backdrop" aria-hidden="true"><span></span><span></span><span></span></div>
-<div class="progress" aria-hidden="true"><i></i></div>
-<header class="site-header">
-<a class="brand" href="#home" aria-label="sectorx83 home"><span class="brand-mark">s<span>×</span></span><span>sectorx83<sup>®</sup></span></a>
-<nav class="glass-nav" aria-label="Main navigation"><a class="active" href="#home">Home</a><a href="#work">Work <small>05</small></a><a href="#about">About</a><a href="#contact">Contact</a></nav>
-<a class="availability" href="mailto:sectorx83@gmail.com"><i></i> AVAILABLE FOR SELECT PROJECTS <span>↗</span></a>
+<body class="is-loading">
+<div class="loader" aria-hidden="true"><div class="loader-top"><span>SECTORX83®</span><span>INDEPENDENT PRACTICE / 2026</span></div><div class="loader-center"><div class="loader-mark">s<span>×</span></div><div class="loader-word">A universe<br>in progress<span>.</span></div></div><div class="loader-bottom"><span>INITIALIZING EXPERIENCE</span><span class="loader-count">00—83</span></div><div class="loader-track"><i></i></div></div>
+<canvas id="world" aria-hidden="true"></canvas>
+<div class="world-shade" aria-hidden="true"></div>
+<div class="scroll-progress" aria-hidden="true"><i></i></div>
+<header class="header">
+<a class="wordmark" href="#top" aria-label="sectorx83 home"><span class="wordmark-symbol">s<span>×</span></span><span>sectorx83<sup>®</sup></span></a>
+<nav class="main-nav" aria-label="Main navigation"><a class="active" href="#top">Index</a><a href="#work">Selected work <small>05</small></a><a href="#about">About</a><a href="#contact">Contact</a></nav>
+<div class="header-actions"><button class="theme-switch" type="button" aria-label="Switch to day mode"><span class="theme-icon">☼</span><span class="theme-label">DAY MODE</span></button><a class="availability" href="mailto:sectorx83@gmail.com"><i></i> OPEN TO IDEAS <b>↗</b></a></div>
 </header>
-<main id="home">
+<main id="top">
 <section class="hero">
-<div class="hero-copy">
-<p class="eyebrow"><span></span> INDEPENDENT DEVELOPER <i> / </i> INDIA</p>
-<h1>Building<br>what's <em>next.</em></h1>
-<p class="hero-lede">I turn difficult questions into software. Systems, developer tools, AI products and experiments built with curiosity and care.</p>
-<div class="hero-actions"><a class="button button-primary" href="#work">Explore selected work <span>↘</span></a><a class="button button-glass" href="https://github.com/sectorx83" target="_blank" rel="noreferrer">GitHub profile <span>↗</span></a></div>
-<div class="hero-facts"><span><b>05</b> SELECTED BUILDS</span><span><b>04</b> FIELDS OF WORK</span><span><b>∞</b> CURIOSITY</span></div>
+<div class="hero-meta"><span>INDEPENDENT DEVELOPER</span><span>BASED IN INDIA <i>·</i> 10°31'N / 76°13'E</span></div>
+<div class="hero-main">
+<p class="hero-index"><span>01</span> / PERSONAL UNIVERSE</p>
+<h1>Making<br>ideas <em>move.</em></h1>
+<div class="hero-bottom"><p class="hero-intro">I build software for curious minds. Systems, AI tools and digital experiences made to solve real problems and explore what comes next.</p><a class="round-link" href="#work" aria-label="Explore selected work"><span>EXPLORE<br>THE WORK</span><b>↘</b></a></div>
 </div>
-<div class="hero-visual" aria-label="Abstract animated liquid-metal sculpture">
-<div class="visual-label label-top"><span>FIG. 001</span><span>FORM / FUNCTION</span></div>
-<div class="visual-halo halo-a"></div><div class="visual-halo halo-b"></div><div class="visual-halo halo-c"></div>
-<div class="liquid-object"><div class="liquid-inner"></div><span>83</span></div>
-<div class="visual-cross cross-one">✳</div><div class="visual-cross cross-two">+</div><div class="hero-orbit-note">FIELD NOTES <b> / 083</b></div>
-<div class="visual-label label-bottom"><span>ENGINEERED TO EVOLVE</span><span>10°31' N / 76°13' E</span></div>
-</div>
-<div class="hero-scroll"><span>SCROLL TO EXPLORE</span><i>↓</i><span class="scroll-line"></span><span>© 2026</span></div>
+<div class="hero-coordinate"><span>FIELD NOTE Nº 083</span><span>SCROLL TO EXPLORE <b>↓</b></span><span>© 2026</span></div>
+<div class="hero-stamp" aria-hidden="true"><span>BUILT FROM<br>CURIOSITY</span><b>83</b></div>
 </section>
-<div class="marquee" aria-label="Areas of interest"><div class="marquee-track"><span>SYSTEMS ENGINEERING <b>✳</b> AI & AUTOMATION <b>✳</b> DEVELOPER TOOLS <b>✳</b> CREATIVE TECHNOLOGY <b>✳</b> OPEN SOURCE <b>✳</b> SYSTEMS ENGINEERING <b>✳</b> AI & AUTOMATION <b>✳</b> DEVELOPER TOOLS <b>✳</b> CREATIVE TECHNOLOGY <b>✳</b> OPEN SOURCE <b>✳</b></span></div></div>
-<section class="section work-section" id="work"><div class="section-index-line"><span>INDEPENDENT PRACTICE</span><span>2026 — ONGOING</span></div>
-<div class="section-heading reveal"><div><p class="eyebrow">01 / SELECTED WORK</p><h2>Ideas made<br><em>operational.</em></h2></div><p>A collection of systems and products in progress. Different problems, one shared obsession: making the underlying machinery work beautifully.</p></div>
-<div class="project-grid">
-<article class="project project-feature reveal">
-<div class="project-visual gravity-visual"><canvas class="scene" data-scene="gravity" aria-label="Gravity adaptive computation graph visualisation"></canvas><div class="visual-top"><span>01 / ADAPTIVE RUNTIME</span><span>RUST · SYSTEMS</span></div><div class="visual-bottom"><span>TOPOLOGY / LIVE GRAPH</span><span class="scene-status">STABLE</span></div><div class="scene-control"><span>INTERACTIVE MODEL</span><button data-action="gravity" type="button">RECONFIGURE <b>↗</b></button></div></div>
-<div class="project-copy"><div><p class="project-index">01 — COMPUTATION</p><h3>Gravity<span>↗</span></h3><p>An adaptive computational runtime exploring safe live topology changes while preserving state and accepted work.</p><a class="project-link" href="https://github.com/sectorx83/Gravity" target="_blank" rel="noreferrer">EXPLORE REPOSITORY <span>↗</span></a></div><div class="project-tags"><span>RUST</span><span>RUNTIME SYSTEMS</span></div></div>
+<section class="intro-strip"><p>NOT JUST ANOTHER PORTFOLIO<span>✳</span> A WORK IN PROGRESS<span>✳</span> ALWAYS IN ORBIT<span>✳</span> NOT JUST ANOTHER PORTFOLIO<span>✳</span> A WORK IN PROGRESS<span>✳</span></p></section>
+<section class="work-section section" id="work">
+<div class="section-top"><span>01 / SELECTED WORK</span><span>FIVE WORLDS, ONE CURIOSITY</span></div>
+<div class="work-heading"><h2>A few things<br>I've <em>put in motion.</em></h2><p>Each project starts with a question. The answer usually becomes a system, a tool, or an entirely new rabbit hole.</p></div>
+<div class="project-list">
+<article class="project project-gravity" data-project="01">
+<a class="project-art" href="https://github.com/sectorx83/Gravity" target="_blank" rel="noreferrer" aria-label="Explore Gravity on GitHub"><div class="art-grid"></div><div class="gravity-orbit orbit-one"></div><div class="gravity-orbit orbit-two"></div><div class="gravity-core"></div><span class="art-index">01 / RUNTIME SYSTEMS</span><span class="art-open">↗</span><span class="art-caption">ADAPTIVE COMPUTATION</span></a>
+<div class="project-info"><div class="project-number">01 <i>—</i> COMPUTATION</div><div class="project-title-line"><h3>Gravity</h3><span>RUST / SYSTEMS</span></div><p>An adaptive computational runtime exploring safe live topology changes while preserving state and accepted work.</p><div class="project-foot"><span>STATEFUL · DISTRIBUTED IDEAS</span><a href="https://github.com/sectorx83/Gravity" target="_blank" rel="noreferrer">EXPLORE PROJECT <b>↗</b></a></div></div>
 </article>
-<article class="project reveal">
-<div class="project-visual cathedral-visual"><canvas class="scene" data-scene="cathedral" aria-label="Cathedral experiment dashboard visualisation"></canvas><div class="visual-top"><span>02 / EXPERIMENT LAB</span><span>RUST · OBSERVABILITY</span></div><div class="visual-bottom"><span>ISOLATE / OBSERVE / REPEAT</span><span class="scene-status">IDLE</span></div><div class="scene-control"><span>INTERACTIVE MODEL</span><button data-action="cathedral" type="button">RUN EXPERIMENT <b>↗</b></button></div></div>
-<div class="project-copy"><div><p class="project-index">02 — EXPERIMENTATION</p><h3>Cathedral<span>↗</span></h3><p>An open computing laboratory for isolated experiments, observability, diagnostics and reproducibility.</p><a class="project-link" href="https://github.com/sectorx83/Cathedral" target="_blank" rel="noreferrer">EXPLORE REPOSITORY <span>↗</span></a></div><div class="project-tags"><span>RUST</span><span>RESEARCH TOOLING</span></div></div>
+<article class="project project-cathedral" data-project="02">
+<a class="project-art" href="https://github.com/sectorx83/Cathedral" target="_blank" rel="noreferrer" aria-label="Explore Cathedral on GitHub"><div class="cathedral-frame"><div class="cathedral-top"><i></i><i></i><i></i><span>EXPERIMENT / 001</span></div><div class="cathedral-columns"><span></span><span></span><span></span><span></span><span></span></div><div class="cathedral-signal"></div></div><span class="art-index">02 / EXPERIMENT LAB</span><span class="art-open">↗</span><span class="art-caption">ISOLATE / OBSERVE / REPEAT</span></a>
+<div class="project-info"><div class="project-number">02 <i>—</i> EXPERIMENTATION</div><div class="project-title-line"><h3>Cathedral</h3><span>RUST / OBSERVABILITY</span></div><p>An open computing laboratory for isolated experiments, observability, diagnostics and reproducibility.</p><div class="project-foot"><span>RESEARCH TOOLING</span><a href="https://github.com/sectorx83/Cathedral" target="_blank" rel="noreferrer">EXPLORE PROJECT <b>↗</b></a></div></div>
 </article>
-<article class="project reveal">
-<div class="project-visual flux-visual"><canvas class="scene" data-scene="flux" aria-label="Flux Agent workflow visualisation"></canvas><div class="visual-top"><span>03 / AI DEVELOPER TOOLS</span><span>PYTHON · AGENTS</span></div><div class="visual-bottom"><span>LOCAL FIRST / HUMAN IN CONTROL</span><span class="scene-status">PLANNING</span></div><div class="scene-control"><span>INTERACTIVE MODEL</span><button data-action="flux" type="button">ADVANCE FLOW <b>↗</b></button></div></div>
-<div class="project-copy"><div><p class="project-index">03 — AUTOMATION</p><h3>Flux Agent<span>↗</span></h3><p>A local-first AI agent and automation CLI for planning, software development and controlled execution.</p><a class="project-link" href="https://github.com/sectorx83/Flux-agent" target="_blank" rel="noreferrer">EXPLORE REPOSITORY <span>↗</span></a></div><div class="project-tags"><span>PYTHON</span><span>AI / AUTOMATION</span></div></div>
+<article class="project project-flux" data-project="03">
+<a class="project-art" href="https://github.com/sectorx83/Flux-agent" target="_blank" rel="noreferrer" aria-label="Explore Flux Agent on GitHub"><div class="flux-flow"><span class="flow-node">PLAN</span><i></i><span class="flow-node">ACT</span><i></i><span class="flow-node">VERIFY</span></div><div class="flux-orbit"></div><span class="art-index">03 / AI DEVELOPER TOOLS</span><span class="art-open">↗</span><span class="art-caption">LOCAL FIRST / HUMAN IN CONTROL</span></a>
+<div class="project-info"><div class="project-number">03 <i>—</i> AUTOMATION</div><div class="project-title-line"><h3>Flux Agent</h3><span>PYTHON / AI</span></div><p>A local-first AI agent and automation CLI for planning, software development and controlled execution.</p><div class="project-foot"><span>AGENTIC WORKFLOWS</span><a href="https://github.com/sectorx83/Flux-agent" target="_blank" rel="noreferrer">EXPLORE PROJECT <b>↗</b></a></div></div>
 </article>
-<article class="project reveal">
-<div class="project-visual edith-visual"><canvas class="scene" data-scene="edith" aria-label="EDITH X1 voice assistant visualisation"></canvas><div class="visual-top"><span>04 / AI PRODUCT</span><span>TYPESCRIPT · VOICE</span></div><div class="visual-bottom"><span>VOICE / CONTEXT / ACTION</span><span class="scene-status">STANDBY</span></div><div class="scene-control"><span>INTERACTIVE MODEL</span><button data-action="edith" type="button">START SESSION <b>↗</b></button></div></div>
-<div class="project-copy"><div><p class="project-index">04 — INTELLIGENT INTERFACE</p><h3>EDITH X1<span>↗</span></h3><p>A multi-user AI assistant with chat, voice interaction and an extensible execution layer.</p><a class="project-link" href="https://github.com/sectorx83/edithx1" target="_blank" rel="noreferrer">EXPLORE REPOSITORY <span>↗</span></a></div><div class="project-tags"><span>TYPESCRIPT</span><span>AI APPLICATION</span></div></div>
+<article class="project project-edith" data-project="04">
+<a class="project-art" href="https://github.com/sectorx83/edithx1" target="_blank" rel="noreferrer" aria-label="Explore EDITH X1 on GitHub"><div class="edith-rings"><i></i><i></i><i></i><b>e</b></div><div class="edith-wave"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div><span class="art-index">04 / AI PRODUCT</span><span class="art-open">↗</span><span class="art-caption">VOICE / CONTEXT / ACTION</span></a>
+<div class="project-info"><div class="project-number">04 <i>—</i> INTELLIGENT INTERFACE</div><div class="project-title-line"><h3>EDITH X1</h3><span>TYPESCRIPT / VOICE</span></div><p>A multi-user AI assistant with chat, voice interaction and an extensible execution layer.</p><div class="project-foot"><span>AI APPLICATION</span><a href="https://github.com/sectorx83/edithx1" target="_blank" rel="noreferrer">EXPLORE PROJECT <b>↗</b></a></div></div>
 </article>
-<article class="project reveal">
-<div class="project-visual d3x8-visual"><canvas class="scene" data-scene="d3x8" aria-label="D3X8 operating system desktop visualisation"></canvas><div class="visual-top"><span>05 / OPERATING SYSTEM</span><span>C / C++ · X86_64</span></div><div class="visual-bottom"><span>LOW LEVEL / DESKTOP EXPERIENCE</span><span class="scene-status">WORKSPACE 01</span></div><div class="scene-control"><span>INTERACTIVE MODEL</span><button data-action="d3x8" type="button">SWITCH DESKTOP <b>↗</b></button></div></div>
-<div class="project-copy"><div><p class="project-index">05 — SYSTEM SOFTWARE</p><h3>D3X8<span>↗</span></h3><p>An experimental x86_64 operating system exploring low-level systems and desktop computing.</p><a class="project-link" href="https://github.com/sectorx83/D3X8" target="_blank" rel="noreferrer">EXPLORE REPOSITORY <span>↗</span></a></div><div class="project-tags"><span>C / C++</span><span>OS DEVELOPMENT</span></div></div>
+<article class="project project-d3x8" data-project="05">
+<a class="project-art" href="https://github.com/sectorx83/D3X8" target="_blank" rel="noreferrer" aria-label="Explore D3X8 on GitHub"><div class="d3-window"><div class="d3-bar"><i></i><i></i><i></i><span>D3X8 / SYSTEM MONITOR</span></div><div class="d3-content"><div class="d3-side"><i></i><i></i><i></i><i></i></div><div class="d3-terminal"><span>root@d3x8:~$</span><b>kernel ready_</b><i></i></div><div class="d3-chart"><i></i><i></i><i></i><i></i><i></i><i></i></div></div></div><span class="art-index">05 / OPERATING SYSTEM</span><span class="art-open">↗</span><span class="art-caption">CLOSE TO THE METAL</span></a>
+<div class="project-info"><div class="project-number">05 <i>—</i> SYSTEM SOFTWARE</div><div class="project-title-line"><h3>D3X8</h3><span>C / C++ / X86_64</span></div><p>An experimental x86_64 operating system exploring low-level systems and desktop computing.</p><div class="project-foot"><span>OS DEVELOPMENT</span><a href="https://github.com/sectorx83/D3X8" target="_blank" rel="noreferrer">EXPLORE PROJECT <b>↗</b></a></div></div>
 </article>
 </div>
-<a class="all-projects" href="https://github.com/sectorx83?tab=repositories" target="_blank" rel="noreferrer"><span>THE WORK KEEPS GOING</span><b>VIEW ALL REPOSITORIES ↗</b></a>
+<div class="work-end"><span>THE UNIVERSE KEEPS EXPANDING</span><a href="https://github.com/sectorx83?tab=repositories" target="_blank" rel="noreferrer">ALL REPOSITORIES <b>↗</b></a></div>
 </section>
-<section class="about-section section" id="about"><div class="about-kicker reveal"><p class="eyebrow">02 / THE THINKING</p><span>BUILD WITH INTENTION</span></div><div class="about-grid"><h2 class="reveal">Curiosity<br>is the <em>engine.</em></h2><div class="about-profile reveal"><figure class="profile-art"><img src="https://raw.githubusercontent.com/sectorx83/Sectorx83/main/spiralbetty_1792941117707.png" alt="Artwork uploaded to the portfolio repository" width="800" height="1000" loading="lazy" decoding="async"><figcaption><span>PERSONAL ARTWORK</span><span>SECTORX83 / 001</span></figcaption></figure><div class="about-copy"><p class="about-lede">I’m an independent developer interested in how software works, how it feels, and what happens when you push it a little further.</p><p>My work moves between systems programming, developer infrastructure, AI tooling and full-stack products. I enjoy the hard parts: lifecycle management, state, scheduling, reliability and the details that make an experience feel considered.</p><p>I learn by building, testing, studying established projects and being honest about what works. The goal is to make something useful, understandable and worth maintaining.</p><a href="https://github.com/sectorx83" target="_blank" rel="noreferrer">MORE ON GITHUB ↗</a></div></div></div><div class="principles reveal"><div><b>01</b><h3>Think deeply.</h3><p>Understand the problem before the implementation.</p></div><div><b>02</b><h3>Build carefully.</h3><p>Prefer clear foundations over clever shortcuts.</p></div><div><b>03</b><h3>Prove it works.</h3><p>Test the guarantees. Document the limits.</p></div></div></section>
-<section class="stack-section section"><div class="stack-heading reveal"><p class="eyebrow">03 / THE TOOLKIT</p><h2>Tools are a means.<br><em>Questions are the point.</em></h2></div><div class="stack-list reveal"><div><span>LANGUAGES</span><p>Rust <i>·</i> Python <i>·</i> TypeScript <i>·</i> JavaScript <i>·</i> C <i>·</i> C++</p></div><div><span>FRAMEWORKS & DATA</span><p>React <i>·</i> Tauri <i>·</i> SQLite <i>·</i> Supabase</p></div><div><span>INFRASTRUCTURE</span><p>Linux <i>·</i> Git <i>·</i> GitHub Actions <i>·</i> Vercel</p></div><div><span>AI & AUTOMATION</span><p>Groq <i>·</i> Tool-calling agents <i>·</i> Playwright <i>·</i> MCP</p></div></div></section>
-<section class="contact-section section" id="contact"><div class="contact-glow"></div><div class="contact-content reveal"><p class="eyebrow">04 / START A CONVERSATION</p><h2>Let's build<br>something <em>real.</em></h2><p>Have an interesting problem, a project idea or just want to talk engineering? My inbox is open.</p><a class="contact-mail" href="mailto:sectorx83@gmail.com">sectorx83@gmail.com <span>↗</span></a><div class="social-links"><a href="https://instagram.com/manazz.io" target="_blank" rel="noreferrer">INSTAGRAM ↗</a><a href="https://github.com/sectorx83" target="_blank" rel="noreferrer">GITHUB ↗</a></div></div><div class="contact-note">GOOD IDEAS<br>WELCOME.</div></section>
+<section class="about-section section" id="about">
+<div class="section-top"><span>02 / THE PERSON BEHIND THE PIXELS</span><span>NOT A FINISHED PRODUCT</span></div>
+<div class="about-layout"><div class="about-heading"><p class="eyebrow">A LITTLE CONTEXT</p><h2>Curious by<br>default<span>.</span></h2><div class="about-orbit" aria-hidden="true"><i></i><b>83</b></div></div><div class="about-copy"><p class="about-lede">I'm an independent developer interested in how software works, how it feels, and what happens when you push it a little further.</p><p>My work moves between systems programming, developer infrastructure, AI tooling and full-stack products. I enjoy the hard parts: lifecycle management, state, scheduling, reliability and the details that make an experience feel considered.</p><p>I learn by building, testing, studying established projects and being honest about what works. The goal is to make something useful, understandable and worth maintaining.</p><a class="text-link" href="https://github.com/sectorx83" target="_blank" rel="noreferrer">FOLLOW THE WORK ON GITHUB <b>↗</b></a></div></div>
+<div class="principles"><div><span>01</span><h3>Stay curious.</h3><p>Follow the question past the obvious answer.</p></div><div><span>02</span><h3>Build with intent.</h3><p>Good engineering is felt in the details.</p></div><div><span>03</span><h3>Make it real.</h3><p>Test the idea. Ship the thing. Learn again.</p></div></div>
+</section>
+<section class="toolkit-section section"><div class="section-top"><span>03 / CURRENT TOOLKIT</span><span>TOOLS CHANGE. CURIOSITY DOESN'T.</span></div><div class="toolkit-layout"><h2>Many tools.<br><em>One direction.</em></h2><div class="toolkit-list"><div><span>LANGUAGES</span><p>Rust <i>·</i> Python <i>·</i> TypeScript <i>·</i> JavaScript <i>·</i> C <i>·</i> C++</p></div><div><span>FRAMEWORKS & DATA</span><p>React <i>·</i> Tauri <i>·</i> SQLite <i>·</i> Supabase</p></div><div><span>INFRASTRUCTURE</span><p>Linux <i>·</i> Git <i>·</i> GitHub Actions <i>·</i> Vercel</p></div><div><span>AI & AUTOMATION</span><p>Groq <i>·</i> Tool-calling agents <i>·</i> Playwright <i>·</i> MCP</p></div></div></div></section>
+<section class="contact-section section" id="contact"><div class="contact-orbit" aria-hidden="true"><i></i><b>LET'S<br>MAKE<br>THINGS</b></div><div class="section-top"><span>04 / OPEN CHANNEL</span><span>GOOD QUESTIONS WELCOME</span></div><div class="contact-main"><p class="eyebrow">HAVE SOMETHING IN MIND?</p><h2>Let's make<br>it <em>happen.</em></h2><a class="contact-email" href="mailto:sectorx83@gmail.com">sectorx83@gmail.com <b>↗</b></a><div class="contact-links"><a href="https://github.com/sectorx83" target="_blank" rel="noreferrer">GITHUB ↗</a><a href="https://instagram.com/manazz.io" target="_blank" rel="noreferrer">INSTAGRAM ↗</a></div></div></section>
 </main>
-<footer class="footer"><a class="brand" href="#home"><span class="brand-mark">s<span>×</span></span><span>sectorx83<sup>®</sup></span></a><span>INDEPENDENTLY BUILT · CONSTANTLY ITERATING</span><a href="#home">BACK TO TOP ↑</a><small>© 2026 SECTORX83</small></footer>
-</body></html>
+<footer class="footer"><a class="wordmark" href="#top"><span class="wordmark-symbol">s<span>×</span></span><span>sectorx83<sup>®</sup></span></a><span>AN INDEPENDENT UNIVERSE / MADE WITH CURIOSITY</span><a href="#top">BACK TO ORBIT ↑</a><small>© 2026 SECTORX83</small></footer>
+</body>
+</html>
