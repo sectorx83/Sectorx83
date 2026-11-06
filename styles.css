@@ -202,3 +202,14 @@ body.day .brand-name sup{color:#5a5b5e}
  .work-art:before{display:none}
  .reveal{transform:none}
 }
+
+.work-art{transform:var(--tilt,none);transition:transform .65s var(--out),border-color .5s,filter .6s}
+.work-card:hover .work-art{filter:saturate(1.08)}
+.header nav a.active{color:var(--text)}
+.header nav a.active b{color:#c47770}
+::view-transition-old(root),::view-transition-new(root){animation-duration:.7s;animation-timing-function:cubic-bezier(.16,1,.3,1)}
+::view-transition-old(root){animation-name:theme-out}
+::view-transition-new(root){animation-name:theme-in}
+@keyframes theme-out{to{opacity:0;filter:blur(5px)}}
+@keyframes theme-in{from{opacity:0;filter:blur(5px)}to{opacity:1;filter:blur(0)}}
+@media(prefers-reduced-motion:reduce){::view-transition-old(root),::view-transition-new(root){animation:none}.work-art{transform:none!important}}
