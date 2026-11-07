@@ -7,6 +7,14 @@ export default defineConfig({
     target: "es2022",
     cssCodeSplit: true,
     sourcemap: false,
+    modulePreload: {
+      resolveDependencies(filename, deps, context) {
+        if (context.hostType === "html") {
+          return deps.filter((dependency) => !dependency.includes("three-scene"));
+        }
+        return deps;
+      }
+    },
     rollupOptions: {
       output: {
         manualChunks(id) {
