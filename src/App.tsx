@@ -117,7 +117,8 @@ function CircuitPanel() {
           <circle cx="101" cy="203" r="39"/><circle cx="101" cy="203" r="29" className="camera-glass"/>
           <circle cx="176" cy="137" r="17"/><circle cx="176" cy="137" r="8" className="camera-glass"/>
           <rect x="164" y="178" width="26" height="26" rx="2" className="camera-flash"/>
-          <circle cx="453" cy="190" r="21"/><circle cx="453" cy="190" r="9" className="camera-glass camera-glass--red"/>
+          <circle cx="453" cy="190" r="21" className="camera-sensor-ring"/><circle cx="453" cy="190" r="9" className="camera-glass camera-glass--red"/>
+          <path className="camera-glint" d="M72 77Q83 62 101 62M72 186Q83 171 101 171M168 130q5-5 10-4"/>
         </g>
         <g className="hardware-screws">
           <circle cx="184" cy="35" r="5"/><circle cx="438" cy="46" r="5"/><circle cx="476" cy="116" r="5"/>

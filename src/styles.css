@@ -369,14 +369,22 @@ h2 { font-size: clamp(37px, 5vw, 59px); line-height: 1.05; letter-spacing: -.075
 .hardware-glyph { fill: none; stroke: var(--inverse-ink); stroke-width: 8; stroke-linecap: round; opacity: .8; }
 .hardware-glyph--slash { stroke-width: 9; animation: glyph-glint 7s ease-in-out infinite; }
 .hardware-glyph--vertical { stroke-width: 8; animation: glyph-glint 6s ease-in-out infinite reverse; }
-.hardware-cameras > rect { fill: var(--bg); stroke: currentColor; stroke-width: 5; }
-.hardware-cameras > circle { fill: var(--panel); stroke: currentColor; stroke-width: 2; }
-.camera-glass { fill: var(--inverse); stroke: currentColor; stroke-width: 1.5; }
-.camera-glass--red { fill: #7b343c; }
-.camera-flash { fill: var(--inverse-ink); }
+.hardware-cameras > rect { fill: var(--soft); stroke: var(--ink); stroke-width: 5; }
+.hardware-cameras > circle { fill: var(--soft); stroke: var(--ink); stroke-width: 2.5; }
+.hardware-cameras .camera-glass { fill: var(--inverse); stroke: var(--muted); stroke-width: 2; }
+.hardware-cameras .camera-glass--red { fill: #7b343c; stroke: #c58b8d; }
+.camera-sensor-ring { fill: none !important; stroke: var(--muted) !important; stroke-width: 4 !important; }
+.camera-glint { fill: none; stroke: var(--inverse-ink); stroke-width: 2; stroke-linecap: round; opacity: .8; }
+.camera-flash { fill: var(--inverse-ink); stroke: var(--muted); stroke-width: 1.5; }
 .hardware-screws { fill: var(--bg); stroke: currentColor; stroke-width: 2; }
 .hardware-screws circle { fill: var(--bg); stroke: currentColor; stroke-width: 2; }
-.hardware-coil { transform-origin: 260px 526px; }
+.hardware-coil { transform-origin: 260px 526px; animation: coil-breathe 9s ease-in-out infinite; }
+.hardware-cameras > rect { animation: camera-halo 5s ease-in-out infinite; }
+.hardware-cameras > circle:not(.camera-glass) { animation: lens-rim 6s ease-in-out infinite; }
+.hardware-cameras > circle:nth-of-type(2) { animation-delay: -2.8s; }
+.camera-glint { animation: camera-glint 7s ease-in-out infinite; }
+.hardware-top > .hardware-panel { transform-box: fill-box; transform-origin: center; animation: panel-hover 8s ease-in-out infinite; }
+.hardware-screws { animation: screw-shimmer 9s ease-in-out infinite; }
 .coil-glyph { fill: none; stroke: var(--inverse-ink); stroke-width: 8; stroke-linecap: round; opacity: .9; }
 .coil-outer, .coil-mid, .coil-inner { fill: none; stroke: currentColor; }
 .coil-outer { stroke-width: 2.2; opacity: .8; }
@@ -400,6 +408,12 @@ h2 { font-size: clamp(37px, 5vw, 59px); line-height: 1.05; letter-spacing: -.075
 @keyframes coil-signal { 0%,100% { opacity: .25; stroke-dashoffset: 0; } 50% { opacity: .95; stroke-dashoffset: -220; } }
 @keyframes sensor-pulse { 0%,100% { opacity: .35; } 50% { opacity: 1; } }
 @keyframes glyph-glint { 0%,72%,100% { opacity: .62; } 82% { opacity: 1; } }
+@keyframes coil-breathe { 0%,100% { transform: scale(1); } 50% { transform: scale(1.012); } }
+@keyframes camera-halo { 0%,100% { stroke: var(--ink); filter: drop-shadow(0 0 0 transparent); } 50% { stroke: var(--muted); filter: drop-shadow(0 0 4px var(--muted)); } }
+@keyframes lens-rim { 0%,100% { stroke-width: 2.5; opacity: .9; } 50% { stroke-width: 4; opacity: 1; } }
+@keyframes camera-glint { 0%,65%,100% { opacity: .25; } 76% { opacity: .9; } }
+@keyframes panel-hover { 0%,100% { opacity: .9; } 50% { opacity: 1; } }
+@keyframes screw-shimmer { 0%,80%,100% { opacity: 1; } 87% { opacity: .55; } }
 
 .site-shell { position: relative; }
 .topbar, main, .footer { position: relative; z-index: 1; }
@@ -414,5 +428,7 @@ h2 { font-size: clamp(37px, 5vw, 59px); line-height: 1.05; letter-spacing: -.075
   .hardware-stage-foot { font-size: 7px; }
 }
 @media (prefers-reduced-motion: reduce) {
+  .hardware-coil, .hardware-cameras > rect, .hardware-cameras > circle, .camera-glint, .hardware-top > .hardware-panel, .hardware-screws,
+  .coil-mid, .coil-inner, .coil-sweep, .hardware-glyph { animation: none !important; }
   .circuit-traces, .circuit-secondary, .circuit-nodes circle { animation: none !important; }
 }
