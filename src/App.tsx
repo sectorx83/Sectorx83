@@ -1,7 +1,7 @@
 import { lazy, Suspense, useCallback, useEffect, useRef, useState } from "react";
 import type { CSSProperties } from "react";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
-import { ArrowDown, ArrowDownRight, ArrowUpRight, ArrowUp, Github, Instagram, MoveUpRight, Menu, X, Sparkles } from "lucide-react";
+import { ArrowDown, ArrowDownRight, ArrowUpRight, ArrowUp, Github, Instagram, MoveUpRight, Menu, X, Sparkles, Terminal, Copy, Check, FlaskConical, BookOpen, Command } from "lucide-react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import Lenis from "lenis";
@@ -46,7 +46,7 @@ function ProjectVisual({ type }: { type: string }) {
   return <div className="visual-d3x8"><div className="d3-screen"><div className="d3-screen-head"><i /><i /><i /><span>D3X8 / KERNEL MONITOR</span></div><div className="d3-screen-body"><div className="d3-side"><i /><i /><i /><i /></div><div className="d3-terminal"><span>root@d3x8:~$</span><b>kernel ready_</b><div className="d3-bars">{Array.from({ length: 14 }, (_, i) => <i key={i} style={{ "--bar": 18 + ((i * 19) % 64) + "%" } as CSSProperties} />)}</div></div></div></div><span className="visual-coord">SYSTEM / 005</span></div>;
 }
 
-function ProjectCard({ project, index }: { project: (typeof projects)[number]; index: number }) {
+function ProjectCard({ project, index, onOpen }: { project: (typeof projects)[number]; index: number; onOpen: (project: (typeof projects)[number]) => void }) {
   return (
     <motion.article className={"project-card project-" + project.slug} initial={{ opacity: 0, y: 80, rotateX: 7 }} whileInView={{ opacity: 1, y: 0, rotateX: 0 }} viewport={{ once: true, amount: 0.16 }} transition={{ duration: 0.9, delay: index * 0.035, ease: [0.2, 0.75, 0.2, 1] }}>
       <a className="project-image" href={project.href} target="_blank" rel="noreferrer" aria-label={"Open " + project.name + " on GitHub"}>
@@ -58,7 +58,7 @@ function ProjectCard({ project, index }: { project: (typeof projects)[number]; i
       <div className="project-meta"><span>{project.number} / {project.category}</span><span>{project.year}</span></div>
       <div className="project-title-row"><h3>{project.name}</h3><a href={project.href} target="_blank" rel="noreferrer" aria-label={"Explore " + project.name}><MoveUpRight size={21} /></a></div>
       <p className="project-description">{project.description}</p>
-      <div className="project-tags">{project.stack.map(tag => <span key={tag}>{tag}</span>)}</div>
+      <div className="project-tags">{project.stack.map(tag => <span key={tag}>{tag}</span>)}</div><button className="project-dossier-link" onClick={() => onOpen(project)}>OPEN PROJECT DOSSIER <ArrowUpRight size={14} /></button>
     </motion.article>
   );
 }
@@ -67,6 +67,11 @@ export default function App() {
   const [loading, setLoading] = useState(true);
   const [menuOpen, setMenuOpen] = useState(false);
   const [time, setTime] = useState("00:00:00");
+  const [selectedProject, setSelectedProject] = useState<(typeof projects)[number] | null>(null);
+  const [terminalOpen, setTerminalOpen] = useState(false);
+  const [terminalInput, setTerminalInput] = useState("");
+  const [terminalLines, setTerminalLines] = useState<string[]>(["SECTORX83 INTERACTIVE SHELL / VERSION 1.0", "Type help to inspect available commands."]);
+  const [copied, setCopied] = useState(false);
   const root = useRef<HTMLDivElement>(null);
   const reduced = useReducedMotion();
   const finishLoader = useCallback(() => setLoading(false), []);
@@ -201,6 +206,35 @@ export default function App() {
   }, [reduced]);
 
   const closeMenu = () => setMenuOpen(false);
+  const runTerminalCommand = (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    const command = terminalInput.trim().toLowerCase();
+    if (!command) return;
+    const responses: Record<string, string[]> = {
+      help: ["Available: help, projects, about, toolkit, experiments, journal, contact, clear, exit"],
+      projects: projects.map((project) => project.number + "  " + project.name + "  /  " + project.category),
+      about: ["Independent developer focused on systems, AI tooling, developer infrastructure and digital experiences."],
+      toolkit: ["Rust · Python · TypeScript · C/C++ · React · Tauri · Linux systems · AI tooling"],
+      experiments: ["Open the Experiments Lab to explore visual studies, runtime concepts and isolation research."],
+      journal: ["Open the Engineering Journal for notes on topology, reproducibility and low-level debugging."],
+      contact: ["sectorx83@gmail.com", "github.com/sectorx83", "instagram.com/manazz.io"],
+      clear: [],
+      exit: ["Closing interactive shell."]
+    };
+    if (command === "clear") setTerminalLines([]);
+    else if (command === "exit") setTerminalOpen(false);
+    else setTerminalLines((lines) => [...lines, "visitor@sectorx83:~$ " + command, ...(responses[command] ?? ["Command not found: " + command + ". Type help for the command index."])].slice(-18));
+    setTerminalInput("");
+  };
+  const copyEmail = async () => {
+    try {
+      await navigator.clipboard.writeText("sectorx83@gmail.com");
+      setCopied(true);
+      window.setTimeout(() => setCopied(false), 1600);
+    } catch {
+      window.location.href = "mailto:sectorx83@gmail.com";
+    }
+  };
   return (
     <div className="site-shell" ref={root}>
       <AnimatePresence>{loading && <Loader onFinish={finishLoader} />}</AnimatePresence>
@@ -209,9 +243,9 @@ export default function App() {
       <header className="site-header">
         <a href="#top" className="brand" aria-label="sectorx83 home"><span className="brand-mark">s<span>×</span></span><span>SECTORX83<sup>®</sup></span></a>
         <nav className={menuOpen ? "main-nav is-open" : "main-nav"}>
-          <a href="#work" onClick={closeMenu}>WORK <sup>05</sup></a><a href="#about" onClick={closeMenu}>ABOUT</a><a href="#toolkit" onClick={closeMenu}>TOOLKIT</a><a href="#contact" onClick={closeMenu}>CONTACT</a>
+          <a href="#work" onClick={closeMenu}>WORK <sup>05</sup></a><a href="#about" onClick={closeMenu}>ABOUT</a><a href="#toolkit" onClick={closeMenu}>TOOLKIT</a><a href="#lab" onClick={closeMenu}>LAB</a><a href="#journal" onClick={closeMenu}>JOURNAL</a><button className="nav-terminal" onClick={() => { closeMenu(); setTerminalOpen(true); }}><Terminal size={13} /> TERMINAL</button>
         </nav>
-        <div className="header-right"><span className="live-indicator"><i /> AVAILABLE FOR IDEAS</span><button className="menu-toggle" onClick={() => setMenuOpen(!menuOpen)} aria-label={menuOpen ? "Close menu" : "Open menu"}>{menuOpen ? <X /> : <Menu />}</button></div>
+        <div className="header-right"><span className="live-indicator"><i /> AVAILABLE FOR IDEAS</span><button className="terminal-trigger" onClick={() => setTerminalOpen(true)} aria-label="Open interactive terminal"><Terminal size={16} /></button><button className="menu-toggle" onClick={() => setMenuOpen(!menuOpen)} aria-label={menuOpen ? "Close menu" : "Open menu"}>{menuOpen ? <X /> : <Menu />}</button></div>
       </header>
 
       <main id="top">
@@ -234,7 +268,7 @@ export default function App() {
         <section className="work-section section-wrap" id="work">
           <div className="section-kicker"><span>01 / SELECTED WORK</span><span>FIVE PROJECTS / ONE CURIOSITY</span></div>
           <div className="work-heading"><h2 className="section-title">Built to<br /><em>be explored.</em></h2><p>Different questions. Different scales. A collection of systems and experiments that started with “what if?”</p></div>
-          <div className="project-grid">{projects.map((project, index) => <ProjectCard key={project.slug} project={project} index={index} />)}</div>
+          <div className="project-grid">{projects.map((project, index) => <ProjectCard key={project.slug} project={project} index={index} onOpen={setSelectedProject} />)}</div>
           <div className="work-outro"><span>THE WORK IS NEVER REALLY FINISHED.</span><a href="https://github.com/sectorx83?tab=repositories" target="_blank" rel="noreferrer">EXPLORE ALL REPOSITORIES <ArrowUpRight size={15} /></a></div>
         </section>
 
@@ -253,12 +287,36 @@ export default function App() {
           <p className="toolkit-note">This index reflects the actual engineering across Gravity, Cathedral, Flux Agent, EDITH X1 and D3X8. It spans application development, AI tooling, runtime isolation, desktop systems and low-level operating-system work.</p>
         </section>
 
+        <section className="lab-section section-wrap" id="lab">
+          <div className="section-kicker"><span>04 / EXPERIMENTS LAB</span><span>IDEAS BEFORE THEY BECOME PRODUCTS</span></div>
+          <div className="lab-heading"><h2 className="section-title">Curiosity<br /><em>in motion.</em></h2><p>A working shelf for visual studies, system concepts and the questions that don't fit neatly inside a project card.</p></div>
+          <div className="lab-grid">
+            <article className="lab-card lab-shader"><div className="lab-art"><div className="lab-nebula" /><span>VISUAL STUDY / 001</span></div><div className="lab-card-meta"><span>SHADERS / REALTIME GRAPHICS</span><span>01</span></div><h3>Chromatic matter</h3><p>Procedural color, distortion and moving light explored through the portfolio's shader experiments.</p></article>
+            <article className="lab-card lab-topology"><div className="lab-art"><div className="topology-nodes"><i /><i /><i /><i /><b /><b /></div><span>RUNTIME STUDY / 002</span></div><div className="lab-card-meta"><span>GRAVITY / TOPOLOGY</span><span>02</span></div><h3>Systems that reshape</h3><p>A visual study of workload movement, changing connections and preserving accepted work during topology changes.</p></article>
+            <article className="lab-card lab-isolation"><div className="lab-art"><div className="isolation-stack"><i /><i /><i /><i /></div><span>LAB STUDY / 003</span></div><div className="lab-card-meta"><span>CATHEDRAL / ISOLATION</span><span>03</span></div><h3>Reproducible space</h3><p>Exploring isolated experiments, observable boundaries and repeatable diagnostics.</p></article>
+          </div>
+          <div className="lab-footnote"><FlaskConical size={15} /> CONCEPT STUDIES AND TECHNICAL EXPLORATIONS. NOT CLAIMED AS STANDALONE RELEASES.</div>
+        </section>
+
+        <section className="journal-section section-wrap" id="journal">
+          <div className="section-kicker"><span>05 / ENGINEERING JOURNAL</span><span>NOTES FROM THE BUILD PROCESS</span></div>
+          <div className="journal-heading"><h2 className="section-title">Thinking<br /><em>in public.</em></h2><p>Short engineering notes grounded in the actual work: architecture, trade-offs, debugging and the things worth remembering.</p></div>
+          <div className="journal-list">
+            <article className="journal-entry"><span className="journal-index">NOTE / 001</span><div><span className="journal-topic">DISTRIBUTED RUNTIME · GRAVITY</span><h3>Changing topology without losing the work</h3><p>Why a runtime needs to treat in-flight work and connection changes as first-class concerns, not cleanup tasks after scaling.</p></div><span className="journal-arrow"><ArrowUpRight /></span></article>
+            <article className="journal-entry"><span className="journal-index">NOTE / 002</span><div><span className="journal-topic">EXPERIMENT DESIGN · CATHEDRAL</span><h3>Reproducibility is an engineering feature</h3><p>Isolation, observability and repeatable runs make experiments easier to trust and failures easier to understand.</p></div><span className="journal-arrow"><ArrowUpRight /></span></article>
+            <article className="journal-entry"><span className="journal-index">NOTE / 003</span><div><span className="journal-topic">SYSTEMS DEBUGGING · D3X8</span><h3>When the interface is not the bottleneck</h3><p>Investigating scheduling pressure, busy loops and the difference between an application symptom and a system-level cause.</p></div><span className="journal-arrow"><ArrowUpRight /></span></article>
+          </div>
+          <div className="journal-disclaimer"><BookOpen size={14} /> FIELD NOTES FROM ONGOING PROJECTS. DETAILS EVOLVE WITH THE CODE.</div>
+        </section>
+
         <section className="contact-section section-wrap" id="contact">
           <div className="section-kicker"><span>04 / OPEN CHANNEL</span><span>GOOD QUESTIONS WELCOME</span></div>
-          <div className="contact-layout"><div className="contact-orb"><div className="contact-orb-inner">83</div><span>LET'S BUILD SOMETHING</span></div><div className="contact-content"><span className="eyebrow">HAVE SOMETHING IN MIND?</span><h2 className="section-title">Let's make<br /><em>it matter.</em></h2><a className="contact-email" href="mailto:sectorx83@gmail.com">sectorx83@gmail.com <ArrowUpRight size={23} /></a><div className="social-links"><a href="https://github.com/sectorx83" target="_blank" rel="noreferrer"><Github size={15} /> GITHUB <ArrowUpRight size={13} /></a><a href="https://instagram.com/manazz.io" target="_blank" rel="noreferrer"><Instagram size={15} /> INSTAGRAM <ArrowUpRight size={13} /></a></div></div></div>
+          <div className="contact-layout"><div className="contact-orb"><div className="contact-orb-inner">83</div><span>LET'S BUILD SOMETHING</span></div><div className="contact-content"><span className="eyebrow">HAVE SOMETHING IN MIND?</span><h2 className="section-title">Let's make<br /><em>it matter.</em></h2><div className="contact-actions"><a className="contact-email" href="mailto:sectorx83@gmail.com">sectorx83@gmail.com <ArrowUpRight size={23} /></a><button className="copy-email" onClick={copyEmail}>{copied ? <Check size={14} /> : <Copy size={14} />}{copied ? "COPIED" : "COPY EMAIL"}</button></div><div className="social-links"><a href="https://github.com/sectorx83" target="_blank" rel="noreferrer"><Github size={15} /> GITHUB <ArrowUpRight size={13} /></a><a href="https://instagram.com/manazz.io" target="_blank" rel="noreferrer"><Instagram size={15} /> INSTAGRAM <ArrowUpRight size={13} /></a></div></div></div>
         </section>
       </main>
-      <footer className="site-footer"><a href="#top" className="brand"><span className="brand-mark">s<span>×</span></span><span>SECTORX83<sup>®</sup></span></a><span>AN INDEPENDENT UNIVERSE / MADE WITH CURIOSITY</span><a href="#top" className="back-top">BACK TO TOP <ArrowUp size={13} /></a><small>© 2026 SECTORX83</small></footer>
+      <footer className="site-footer"><a href="#top" className="brand"><span className="brand-mark">s<span>×</span></span><span>SECTORX83<sup>®</sup></span></a><span>AN INDEPENDENT UNIVERSE / MADE WITH CURIOSITY</span><button className="footer-terminal" onClick={() => setTerminalOpen(true)}><Terminal size={13} /> OPEN TERMINAL</button><a href="#top" className="back-top">BACK TO TOP <ArrowUp size={13} /></a><small>© 2026 SECTORX83</small></footer>
+      <AnimatePresence>{selectedProject && <motion.div className="dossier-backdrop" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={() => setSelectedProject(null)}><motion.section className="dossier-panel" role="dialog" aria-modal="true" aria-labelledby="dossier-title" initial={{ y: 45, scale: .97 }} animate={{ y: 0, scale: 1 }} exit={{ y: 24, scale: .98 }} transition={{ duration: .38, ease: [0.2, .8, .2, 1] }} onClick={(event) => event.stopPropagation()}><div className="dossier-top"><span>PROJECT DOSSIER / {selectedProject.number}</span><button onClick={() => setSelectedProject(null)} aria-label="Close project dossier"><X /></button></div><div className="dossier-class">{selectedProject.category} / {selectedProject.year}</div><h2 id="dossier-title">{selectedProject.name}</h2><p>{selectedProject.description}</p><div className="dossier-stack">{selectedProject.stack.map((item) => <span key={item}>{item}</span>)}</div><div className="dossier-bottom"><span>{selectedProject.metric}</span><a href={selectedProject.href} target="_blank" rel="noreferrer">OPEN REPOSITORY <ArrowUpRight size={16} /></a></div></motion.section></motion.div>}</AnimatePresence>
+      <AnimatePresence>{terminalOpen && <motion.div className="terminal-backdrop" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={() => setTerminalOpen(false)}><motion.section className="terminal-window" role="dialog" aria-modal="true" aria-label="Sectorx83 interactive terminal" initial={{ y: 35, scale: .97 }} animate={{ y: 0, scale: 1 }} exit={{ y: 20, scale: .98 }} onClick={(event) => event.stopPropagation()}><div className="terminal-bar"><div><i /><i /><i /><span>SECTORX83 / INTERACTIVE SHELL</span></div><button onClick={() => setTerminalOpen(false)} aria-label="Close terminal"><X size={18} /></button></div><div className="terminal-output" aria-live="polite">{terminalLines.map((line, index) => <p key={index}>{line}</p>)}</div><form className="terminal-form" onSubmit={runTerminalCommand}><label htmlFor="terminal-command">visitor@sectorx83:~$</label><input id="terminal-command" value={terminalInput} onChange={(event) => setTerminalInput(event.target.value)} autoFocus autoComplete="off" spellCheck={false} placeholder="type a command..." /><button type="submit" aria-label="Run command"><ArrowUpRight size={17} /></button></form><div className="terminal-hint">TRY: HELP · PROJECTS · TOOLKIT · EXPERIMENTS · CONTACT</div></motion.section></motion.div>}</AnimatePresence>
     </div>
   );
 }
