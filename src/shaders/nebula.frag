@@ -25,6 +25,9 @@ float noise(vec3 x) {
 void main() {
   vec2 uv = vUv - 0.5;
   float t = uTime * 0.16;
+  float slice = step(0.985, sin(floor(uv.y * 74.0) + floor(uTime * 2.4)));
+  float sliceShift = slice * sin(uTime * 31.0) * 0.018;
+  uv.x += sliceShift;
   vec3 p = vec3(uv * 3.4, t);
   float n = noise(p * 2.1 + vec3(sin(t), cos(t * 0.7), 0.0));
   float bands = sin((uv.x * 8.0 + uv.y * 5.0) + n * 5.0 + t * 2.0);
@@ -36,5 +39,8 @@ void main() {
   color += uHot * (rim * 0.9 + pointerGlow * 0.28) * uIntensity;
   color += uGlow * (0.5 + 0.5 * sin(t + uv.y * 9.0)) * 0.22;
   float alpha = smoothstep(0.0, 0.18, length(uv)) * 0.94 + 0.06;
+  float chromaHit = smoothstep(0.985, 1.0, sin(uTime * 1.7 + floor(uv.y * 42.0)));
+  color.r += chromaHit * 0.12;
+  color.b += chromaHit * 0.16;
   gl_FragColor = vec4(color, alpha);
 }
