@@ -123,6 +123,26 @@ function ProjectCard({ project }: { project: Project }) {
     <div className="project-side"><span className="project-status"><i />{project.status}</span><span className="project-arrow"><ArrowUpRight size={20} /></span></div>
   </a>
 }
+function BlackHoleSection() {
+ return <section className="black-hole-section section-wrap" data-reveal aria-labelledby="black-hole-title"><div className="black-hole-copy"><Label>FIELD STUDY / 01</Label><p className="mono black-hole-index">GRAVITATIONAL SYSTEM</p><h2 id="black-hole-title">Pulling ideas<br /><span>into orbit.</span></h2><p>A motion study: light bends, matter spirals inward and the event horizon stays still. Built from layered CSS shapes and animated orbital details, not a video.</p><div className="black-hole-readout mono"><span><i /> LIVE SIMULATION</span><span>EVENT HORIZON / 01</span></div></div><div className="black-hole-stage" role="img" aria-label="Animated monochrome black hole with a dark event horizon, swirling accretion disk and orbiting particles"><div className="black-hole-stars" /><div className="black-hole-aura" /><div className="black-hole-orbit" /><div className="black-hole-disk black-hole-disk--back"><i/><i/><i/><i/><i/><i/></div><div className="black-hole-lens"><span/><span/></div><div className="black-hole-core"/><div className="black-hole-disk black-hole-disk--front"><i/><i/><i/><i/><i/><i/><i/><i/></div><div className="black-hole-particles"><i/><i/><i/><i/><i/><i/><i/><i/><i/><i/></div><div className="black-hole-crosshair black-hole-crosshair--one"/><div className="black-hole-crosshair black-hole-crosshair--two"/><span className="black-hole-coordinate mono">X 83.04 / Y 01.27</span><span className="black-hole-scale mono">EVENT HORIZON / NOT TO SCALE</span></div></section>
+}
+function SystemStatus() {
+ const [now,setNow]=useState(() => new Date());
+ useEffect(() => { const timer=window.setInterval(() => setNow(new Date()),1000); return () => window.clearInterval(timer) },[]);
+ return <section className="system-status section-wrap" data-reveal aria-label="Live system status"><div className="system-status-heading mono"><span>SECTORX83 / SYSTEM MONITOR</span><span><i/> ALL SYSTEMS NOMINAL</span></div><div className="system-status-grid"><div><span className="mono">LOCAL TIME</span><strong className="mono">{now.toLocaleTimeString([], {hour:'2-digit',minute:'2-digit',second:'2-digit'})}</strong><small>{now.toLocaleDateString([], {weekday:'short',day:'2-digit',month:'short'})}</small></div><div><span className="mono">PUBLIC PROJECTS</span><strong className="mono">05</strong><small>Software & systems</small></div><div><span className="mono">CURRENT FOCUS</span><strong>Gravity</strong><small>Adaptive runtime research</small></div><div><span className="mono">PROJECT STATE</span><strong>01 ACTIVE · 03 COMPLETE</strong><small>D3X8 remains experimental</small></div></div></section>
+}
+const milestones = [
+ {id:'01',phase:'RUNTIME RESEARCH',title:'Gravity enters active development',detail:'Safe graph evolution, workload transfer and live topology changes.',state:'IN PROGRESS',slug:'gravity'},
+ {id:'02',phase:'EXPERIMENTAL SYSTEMS',title:'D3X8 operating-system work',detail:'Kernel, scheduling, userspace, drivers and networking experiments.',state:'ONGOING EXPERIMENT',slug:'d3x8'},
+ {id:'03',phase:'AI DEVELOPER TOOLING',title:'Flux Agent project scope completed',detail:'Local-first agent workflows for planning and controlled execution.',state:'COMPLETED',slug:'flux-agent'},
+ {id:'04',phase:'ISOLATED COMPUTING',title:'Cathedral project scope completed',detail:'A workspace for isolated and repeatable software experiments.',state:'COMPLETED',slug:'cathedral'},
+ {id:'05',phase:'ASSISTANT PLATFORM',title:'EDITH X1 core experience completed',detail:'Multi-user chat, voice, speech playback and EDITH NETWORK.',state:'COMPLETED',slug:'edithx1'}
+];
+function ActivityTimeline() { return <section className="activity-section section-wrap" data-reveal><div className="section-heading"><Label>03 / PROJECT ACTIVITY</Label><ScrollGlyph/><span className="mono section-side-note">MILESTONES · NO INVENTED DATES.</span></div><div className="activity-intro"><h2>Work leaves<br/><span>a trail.</span></h2><p>A project log of major outcomes and active threads. Each entry opens its project record.</p></div><div className="activity-list">{milestones.map(item => <a className="activity-item" href={'/projects/'+item.slug} key={item.id}><span className="activity-id mono">{item.id}</span><span className="activity-marker"><i/></span><span className="activity-main"><small className="mono">{item.phase}</small><strong>{item.title}</strong><em>{item.detail}</em></span><span className={item.state==='COMPLETED'?'activity-state activity-state--done mono':'activity-state mono'}>{item.state}</span><ArrowUpRight size={17}/></a>)}</div></section> }
+function ProjectSchematic({project}:{project:Project}) {
+ const [active,setActive]=useState(0);
+ return <section className="project-schematic" aria-label="Interactive project schematic"><div className="schematic-copy"><Label>INTERACTIVE SCHEMATIC</Label><h2>Explore the<br/><span>system layers.</span></h2><p>Select a node to inspect an engineering area in this project.</p></div><div className="schematic-board"><div className="schematic-root mono"><span/>{project.name.toUpperCase()} / CORE</div><div className="schematic-nodes">{project.areas.map((area,i)=><button type="button" className={active===i?'schematic-node is-active':'schematic-node'} onClick={()=>setActive(i)} key={area}><span className="mono">0{i+1}</span><strong>{area}</strong><i/></button>)}</div><div className="schematic-detail"><span className="mono">SELECTED SUBSYSTEM / 0{active+1}</span><strong>{project.areas[active]}</strong><p>{project.details[active%project.details.length]}</p></div></div></section>
+}
 function HomePage() {
   return <main id="top">
     <section className="hero section-wrap">
@@ -133,6 +153,8 @@ function HomePage() {
       </div>
       <div className="hero-footer"><span className="mono">SCROLL TO EXPLORE</span><span className="scroll-line" /><span className="mono">01 — 05</span></div>
     </section>
+    <BlackHoleSection />
+    <SystemStatus />
     <section className="intro-band section-wrap panel-rule" data-reveal><div className="band-index mono">A NOTE</div><p>I like understanding how things work, then making my own version. Sometimes that's an app. Sometimes it's a system that starts much closer to the metal.</p><Mark /></section>
     <section className="content-section section-wrap" id="about" data-reveal>
       <div className="section-heading"><Label>01 / ABOUT</Label><ScrollGlyph /><span className="mono section-side-note">A PERSON, NOT A PITCH DECK.</span></div>
@@ -146,6 +168,7 @@ function HomePage() {
       <div className="project-list">{projects.map((project) => <ProjectCard project={project} key={project.number} />)}</div>
       <a className="all-projects" href="https://github.com/sectorx83?tab=repositories" target="_blank" rel="noreferrer">More experiments on GitHub <ArrowRight size={16} /></a>
     </section>
+    <ActivityTimeline />
     <section className="building-section section-wrap" id="building" data-reveal>
       <div className="section-heading"><Label>03 / CURRENTLY BUILDING</Label><ScrollGlyph /><span className="mono section-side-note">THE WORKBENCH, NOT A ROADMAP.</span></div>
       <div className="building-intro"><h2>What's on<br /><span>the workbench.</span></h2><p>A quick snapshot of the themes I'm spending time on across the projects. These are focus areas, not made-up percentage bars.</p></div>
@@ -189,6 +212,7 @@ function ProjectPage({ project }: { project: Project }) {
       <section className="detail-notes"><Label>{project.status === 'COMPLETED' ? 'DELIVERED WORK' : 'ENGINEERING NOTES'}</Label><h2>{project.status === 'COMPLETED' ? <>What was<br /><span>delivered.</span></> : <>What I'm<br /><span>working through.</span></>}</h2><ul>{project.details.map((detail) => <li key={detail}><span>↳</span>{detail}</li>)}</ul></section>
     </div>
     <section className="detail-stack"><div><Label>AREAS OF FOCUS</Label><h2>Inside the<br /><span>project.</span></h2></div><div className="detail-area-grid">{project.areas.map((area, i) => <div key={area}><span className="mono">0{i + 1}</span><strong>{area}</strong></div>)}</div></section>
+    <ProjectSchematic project={project} />
     <section className="detail-bottom"><div><span className="mono">NEXT PROJECT / {next.number}</span><h2>{next.name}</h2></div><a href={`/projects/${next.slug}`}>Explore project <ArrowRight size={17} /></a></section>
   </main>
 }
