@@ -124,7 +124,21 @@ function ProjectCard({ project }: { project: Project }) {
   </a>
 }
 function BlackHoleSection() {
- return <section className="black-hole-section section-wrap" data-reveal aria-labelledby="black-hole-title"><div className="black-hole-copy"><Label>FIELD STUDY / 01</Label><p className="mono black-hole-index">GRAVITATIONAL SYSTEM</p><h2 id="black-hole-title">Pulling ideas<br /><span>into orbit.</span></h2><p>A motion study: light bends, matter spirals inward and the event horizon stays still. Built from layered CSS shapes and animated orbital details, not a video.</p><div className="black-hole-readout mono"><span><i /> LIVE SIMULATION</span><span>EVENT HORIZON / 01</span></div></div><div className="black-hole-stage" role="img" aria-label="Animated monochrome black hole with a dark event horizon, swirling accretion disk and orbiting particles"><div className="black-hole-stars" /><div className="black-hole-aura" /><div className="black-hole-orbit" /><div className="black-hole-disk black-hole-disk--back"><i/><i/><i/><i/><i/><i/></div><div className="black-hole-lens"><span/><span/></div><div className="black-hole-core"/><div className="black-hole-disk black-hole-disk--front"><i/><i/><i/><i/><i/><i/><i/><i/></div><div className="black-hole-particles"><i/><i/><i/><i/><i/><i/><i/><i/><i/><i/></div><div className="black-hole-crosshair black-hole-crosshair--one"/><div className="black-hole-crosshair black-hole-crosshair--two"/><span className="black-hole-coordinate mono">X 83.04 / Y 01.27</span><span className="black-hole-scale mono">EVENT HORIZON / NOT TO SCALE</span></div></section>
+ return <section className="black-hole-section" aria-label="Animated black hole">
+  <div className="black-hole-stage" role="img" aria-label="A black hole with a rapidly swirling, glowing accretion disk, gravitational lensing and orbiting particles">
+   <div className="bh-nebula" />
+   <div className="bh-stars bh-stars-a" /><div className="bh-stars bh-stars-b" />
+   <div className="bh-gravity" />
+   <div className="bh-ring bh-ring-outer" />
+   <div className="bh-disk bh-disk-back"><i/><i/><i/><i/><i/><i/><i/></div>
+   <div className="bh-lens"><i/><i/><i/></div>
+   <div className="bh-shadow" />
+   <div className="bh-disk bh-disk-front"><i/><i/><i/><i/><i/><i/><i/><i/><i/></div>
+   <div className="bh-arcs"><i/><i/><i/><i/></div>
+   <div className="bh-debris">{Array.from({length:24},(_,i)=><i key={i} />)}</div>
+   <div className="bh-flare bh-flare-a" /><div className="bh-flare bh-flare-b" />
+  </div>
+ </section>
 }
 function SystemStatus() {
  const [now,setNow]=useState(() => new Date());
