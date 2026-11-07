@@ -114,5 +114,5 @@
 .site-shell .work-outro{border-color:var(--line)}
 .site-shell .section-title{animation:retro-neon-pulse 8s ease-in-out infinite}
 @media(max-width:900px){}
-@media(max-width:680px){.retro-theme-toggle span{max-width:58px;overflow:hidden;text-overflow:ellipsis}.site-shell .hero-title{font-size:clamp(55px,13.5vw,94px)}.retro-scanlines{opacity:.09}.site-shell:before{opacity:.08}}
+@media(max-width:680px){.site-shell .hero-title{font-size:clamp(55px,13.5vw,94px)}.retro-scanlines{opacity:.09}.site-shell:before{opacity:.08}}
 @media(prefers-reduced-motion:reduce){.site-shell .hero-main,.site-shell .hero-title .line:nth-child(2) .line-inner,.site-shell .hero-orbit-label,.site-shell .section-title{animation:none!important}.retro-scanlines{opacity:.05}}
