@@ -16,18 +16,18 @@ The portfolio is designed as a motion-led digital environment rather than a stat
 - TypeScript throughout the application.
 - Vite for fast local development and production bundling.
 
-## Technology
+## Toolkit
 
-| Area | Tools |
+The toolkit shown on the portfolio is sourced from the five featured repositories: Gravity, Cathedral, Flux Agent, EDITH X1 and D3X8. The portfolio repository itself is intentionally excluded from this project index.
+
+| Area | Technologies |
 | --- | --- |
-| Language and shaders | TypeScript, GLSL |
-| Build and framework ecosystem | Vite, React |
-| Other framework experience | Next.js, Nuxt.js |
-| Motion | GSAP, Framer Motion, Lenis |
-| Real-time 3D | Three.js, React Three Fiber, Drei |
-| 3D creation workflow | Blender |
-
-Vite + React is the actual runtime/build stack for this portfolio. Next.js and Nuxt.js are listed as framework experience rather than being installed together. Blender is part of the 3D asset creation workflow.
+| Languages and systems | Rust, Python, TypeScript, C, C++, x86_64 Assembly, Lua |
+| Application and UI | React, TanStack Start, Vite, Tauri v2, Harp UI |
+| AI and developer tools | Groq, Gemini, Cerebras, OpenRouter, FastEmbed, Playwright, Rich |
+| Data and backends | Supabase, SQLite, server-sent events, PTY |
+| Runtime and systems | Bubblewrap, Linux namespaces, cgroups v2, Limine, mlibc, BusyBox, ACPI, SMP, TCP/IP, FAT32, Intel e1000 |
+| Engineering and delivery | Cargo, CMake, Make, GitHub Actions, Docker, Vercel, GitHub CLI |
 
 ## Featured work
 
