@@ -81,9 +81,10 @@ export const projects: Project[] = [
 ];
 
 export const toolkit = [
-  { group: "LANGUAGES & SHADING", items: ["TypeScript", "GLSL"] },
-  { group: "WEB FRAMEWORKS", items: ["Next.js", "Nuxt.js", "Vite"] },
-  { group: "MOTION SYSTEMS", items: ["GSAP", "Framer Motion", "Lenis"] },
-  { group: "REAL-TIME 3D", items: ["Three.js", "React Three Fiber", "Drei"] },
-  { group: "3D CREATION", items: ["Blender"] }
+  { group: "LANGUAGES & SYSTEMS", items: ["Rust", "Python", "TypeScript", "C", "C++", "x86_64 Assembly", "Lua"] },
+  { group: "APPLICATION & UI", items: ["React", "TanStack Start", "Vite", "Tauri v2", "Harp UI"] },
+  { group: "AI & DEVELOPER TOOLS", items: ["Groq", "Gemini", "Cerebras", "OpenRouter", "FastEmbed", "Playwright", "Rich CLI"] },
+  { group: "RUNTIME & ISOLATION", items: ["SQLite", "Bubblewrap", "Linux Namespaces", "cgroups v2", "SSE", "PTY"] },
+  { group: "OPERATING SYSTEMS", items: ["Limine", "mlibc", "BusyBox", "ACPI", "SMP", "TCP/IP", "FAT32", "Intel e1000"] },
+  { group: "ENGINEERING & DELIVERY", items: ["Cargo", "CMake", "Make", "GitHub Actions", "Docker", "Vercel", "GitHub CLI"] }
 ];
