@@ -1,6 +1,9 @@
 uniform float uTime;
 uniform vec2 uPointer;
 uniform float uIntensity;
+uniform vec3 uDeep;
+uniform vec3 uGlow;
+uniform vec3 uHot;
 varying vec2 vUv;
 varying vec3 vNormal;
 varying vec3 vPosition;
@@ -28,13 +31,10 @@ void main() {
   float field = smoothstep(0.12, 0.92, n * 0.7 + bands * 0.17 + 0.24);
   float rim = pow(1.0 - max(dot(normalize(vNormal), normalize(vec3(0.0, 0.0, 1.0))), 0.0), 2.2);
   float pointerGlow = exp(-length(uv - uPointer) * 4.0);
-  vec3 deep = vec3(0.012, 0.035, 0.085);
-  vec3 blue = vec3(0.16, 0.34, 0.62);
-  vec3 ice = vec3(0.72, 0.86, 1.0);
-  vec3 color = mix(deep, blue, field);
-  color = mix(color, ice, smoothstep(0.64, 1.0, field) * 0.58);
-  color += ice * (rim * 0.9 + pointerGlow * 0.28) * uIntensity;
-  color += vec3(0.04, 0.12, 0.26) * (0.5 + 0.5 * sin(t + uv.y * 9.0)) * 0.22;
+  vec3 color = mix(uDeep, uGlow, field);
+  color = mix(color, uHot, smoothstep(0.64, 1.0, field) * 0.58);
+  color += uHot * (rim * 0.9 + pointerGlow * 0.28) * uIntensity;
+  color += uGlow * (0.5 + 0.5 * sin(t + uv.y * 9.0)) * 0.22;
   float alpha = smoothstep(0.0, 0.18, length(uv)) * 0.94 + 0.06;
   gl_FragColor = vec4(color, alpha);
 }
