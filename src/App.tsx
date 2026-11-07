@@ -123,22 +123,21 @@ function ProjectCard({ project }: { project: Project }) {
     <div className="project-side"><span className="project-status"><i />{project.status}</span><span className="project-arrow"><ArrowUpRight size={20} /></span></div>
   </a>
 }
-function BlackHoleSection() {
- return <section className="black-hole-section" aria-label="Animated black hole">
-  <div className="black-hole-stage" role="img" aria-label="A black hole with a rapidly swirling, glowing accretion disk, gravitational lensing and orbiting particles">
-   <div className="bh-nebula" />
-   <div className="bh-stars bh-stars-a" /><div className="bh-stars bh-stars-b" />
-   <div className="bh-gravity" />
-   <div className="bh-ring bh-ring-outer" />
-   <div className="bh-disk bh-disk-back"><i/><i/><i/><i/><i/><i/><i/></div>
-   <div className="bh-lens"><i/><i/><i/></div>
-   <div className="bh-shadow" />
-   <div className="bh-disk bh-disk-front"><i/><i/><i/><i/><i/><i/><i/><i/><i/></div>
-   <div className="bh-arcs"><i/><i/><i/><i/></div>
-   <div className="bh-debris">{Array.from({length:24},(_,i)=><i key={i} />)}</div>
-   <div className="bh-flare bh-flare-a" /><div className="bh-flare bh-flare-b" />
-  </div>
- </section>
+function BlackHoleVisual() {
+ return <div className="hero-blackhole" role="img" aria-label="A black hole with luminous orbital rings rotating around its dark event horizon">
+  <div className="space-haze"/><div className="space-stars"/>
+  <div className="gravity-lens"><i/><i/><i/></div>
+  <div className="accretion accretion-back"><i/><i/><i/></div>
+  <div className="orbit orbit-one"><i/><b/></div>
+  <div className="orbit orbit-two"><i/><b/></div>
+  <div className="orbit orbit-three"><i/><b/></div>
+  <div className="horizon-glow"/>
+  <div className="event-horizon"/>
+  <div className="accretion accretion-front"><i/><i/><i/></div>
+  <div className="orbit orbit-four"><i/><b/></div>
+  <div className="orbit orbit-five"><i/><b/></div>
+  <div className="light-streak light-streak-one"/><div className="light-streak light-streak-two"/>
+ </div>
 }
 function SystemStatus() {
  const [now,setNow]=useState(() => new Date());
@@ -163,11 +162,11 @@ function HomePage() {
       <div className="hero-meta"><Label>INDEPENDENT DEVELOPER</Label><span className="mono hero-index"><span className="signal-live" /> PORTFOLIO / {new Date().getFullYear()}</span></div>
       <div className="hero-main">
         <div className="hero-copy"><p className="hero-kicker mono">A LITTLE BIT OF CURIOSITY. A LOT OF BUILDING.</p><h1>Making things.<br /><span>Figuring them out.</span></h1><p className="hero-intro">I'm an independent developer interested in software, systems and the details that make things work. This is where I keep some of what I've been building.</p><div className="hero-links"><a className="button button--dark" href="#work">Explore the work <ArrowDown size={15} /></a><a className="text-link" href="https://github.com/sectorx83" target="_blank" rel="noreferrer">GitHub profile <ArrowUpRight size={15} /></a></div></div>
-        <aside className="hero-repos panel-frame" aria-label="Selected GitHub repositories"><div className="repo-panel-head mono"><span>SELECTED REPOSITORIES</span><span>05</span></div>{projects.map((project) => <a className="repo-index-row" href={`/projects/${project.slug}`} key={project.number}><span className="repo-index-number mono">{project.number}</span><span className="repo-index-name">{project.repo}</span><ArrowUpRight size={14} /></a>)}<a className="repo-panel-foot mono" href="https://github.com/sectorx83?tab=repositories" target="_blank" rel="noreferrer">VIEW ALL REPOSITORIES <ArrowRight size={13} /></a></aside>
+        <div className="hero-visual"><BlackHoleVisual /></div>
+
       </div>
       <div className="hero-footer"><span className="mono">SCROLL TO EXPLORE</span><span className="scroll-line" /><span className="mono">01 — 05</span></div>
     </section>
-    <BlackHoleSection />
     <SystemStatus />
     <section className="intro-band section-wrap panel-rule" data-reveal><div className="band-index mono">A NOTE</div><p>I like understanding how things work, then making my own version. Sometimes that's an app. Sometimes it's a system that starts much closer to the metal.</p><Mark /></section>
     <section className="content-section section-wrap" id="about" data-reveal>
