@@ -27,7 +27,10 @@ function Core() {
     }
     if (group.current) {
       group.current.rotation.y += delta * 0.055;
+      group.current.rotation.z = Math.sin(state.clock.elapsedTime * 0.42) * 0.035;
       group.current.rotation.x = THREE.MathUtils.damp(group.current.rotation.x, pointer.y * 0.12, 2, delta);
+      const pulse = 1 + Math.pow(Math.max(0, Math.sin(state.clock.elapsedTime * 0.72)), 18) * 0.018;
+      group.current.scale.setScalar(pulse);
     }
   });
 
