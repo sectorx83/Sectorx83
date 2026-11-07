@@ -60,7 +60,7 @@ button { color: inherit; }
 .eyebrow { display: inline-flex; align-items: center; gap: 9px; font-size: 10px; letter-spacing: .09em; color: var(--muted); }
 .eyebrow-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--ink); display: inline-block; }
 .hero-index, .section-side-note { font-size: 9px; letter-spacing: .07em; color: var(--muted); }
-.hero-main { display: grid; grid-template-columns: 1.25fr .75fr; gap: 60px; align-items: center; padding: 88px 0 80px; }
+.hero-main { display: grid; grid-template-columns: 1.05fr .95fr; gap: 72px; align-items: center; padding: 88px 0 80px; }
 .hero-kicker { color: var(--muted); font-size: 9px; letter-spacing: .1em; margin: 0 0 22px; }
 h1, h2, h3, p { margin-top: 0; }
 h1 { font-size: clamp(48px, 7.2vw, 88px); line-height: .99; letter-spacing: -.085em; font-weight: 600; margin: 0; }
@@ -72,12 +72,15 @@ h1 span, h2 span { color: var(--muted); }
 .button--dark { background: var(--inverse); color: var(--inverse-ink); }
 .text-link { display: inline-flex; align-items: center; gap: 7px; font-size: 11px; color: var(--muted); }
 .text-link:hover { color: var(--ink); }
-.hero-art { width: 100%; max-width: 370px; justify-self: end; padding: 15px; border: 1px solid var(--line); background: var(--panel); }
-.art-top, .art-bottom { display: flex; justify-content: space-between; color: var(--muted); font-size: 8px; letter-spacing: .08em; }
-.dot-field { aspect-ratio: 1; display: grid; grid-template-columns: repeat(11, 1fr); place-items: center; padding: 22px; }
-.matrix-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--ink); }
-.matrix-dot--solid { width: 10px; height: 10px; }
-.art-bottom { border-top: 1px solid var(--line); padding-top: 12px; }
+.hero-repos { width: 100%; max-width: 430px; justify-self: end; border-top: 1px solid var(--ink); }
+.repo-panel-head { display: flex; justify-content: space-between; padding: 13px 0; color: var(--muted); font-size: 8px; letter-spacing: .1em; }
+.repo-index-row { display: grid; grid-template-columns: 28px 1fr 16px; align-items: center; gap: 12px; min-height: 51px; border-top: 1px solid var(--line); transition: padding .2s ease, background .2s ease; }
+.repo-index-row:hover { padding-inline: 9px; background: var(--soft); }
+.repo-index-number { font-size: 9px; color: var(--muted); }
+.repo-index-name { font: 11px var(--mono); letter-spacing: -.02em; }
+.repo-index-row svg { color: var(--muted); }
+.repo-panel-foot { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 14px 0; border-top: 1px solid var(--line); color: var(--muted); font-size: 8px; letter-spacing: .08em; }
+.repo-panel-foot:hover { color: var(--ink); }
 .hero-footer { display: flex; align-items: center; gap: 14px; padding: 16px 0; border-top: 1px solid var(--line); color: var(--muted); font-size: 8px; letter-spacing: .08em; }
 .hero-footer span:last-child { margin-left: auto; }
 .scroll-line { height: 1px; width: 54px; background: var(--line); }
@@ -103,7 +106,10 @@ h2 { font-size: clamp(37px, 5vw, 59px); line-height: 1.05; letter-spacing: -.075
 .project-number { color: var(--muted); font-size: 10px; padding-top: 3px; }
 .project-card--featured .project-number, .project-card--featured .project-type { color: #999b93; }
 .project-type { color: var(--muted); font-size: 8px; letter-spacing: .1em; }
-.project-main h3 { font-size: 28px; letter-spacing: -.06em; font-weight: 600; margin: 9px 0 7px; }
+.project-main h3 { font-size: 28px; letter-spacing: -.06em; font-weight: 600; margin: 9px 0 3px; }
+.project-repo { display: inline-flex; align-items: center; gap: 5px; color: var(--muted); font-size: 8px; letter-spacing: .01em; margin-bottom: 10px; }
+.project-repo:hover { color: var(--ink); }
+.project-card--featured .project-repo:hover { color: var(--inverse-ink); }
 .project-main p { max-width: 580px; color: var(--muted); font-size: 12px; line-height: 1.75; margin-bottom: 15px; }
 .project-card--featured .project-main p { color: #b4b5af; }
 .project-tags { display: flex; flex-wrap: wrap; gap: 7px; }
@@ -157,10 +163,7 @@ h2 { font-size: clamp(37px, 5vw, 59px); line-height: 1.05; letter-spacing: -.075
   .hero { padding-top: 36px; }
   .hero-main { grid-template-columns: 1fr; gap: 48px; padding: 67px 0 55px; }
   h1 { font-size: clamp(48px, 12vw, 76px); }
-  .hero-art { justify-self: start; max-width: 330px; }
-  .dot-field { padding: 24px; }
-  .matrix-dot { width: 6px; height: 6px; }
-  .matrix-dot--solid { width: 9px; height: 9px; }
+  .hero-repos { justify-self: start; max-width: none; }
   .intro-band { grid-template-columns: 1fr auto; gap: 18px; }
   .intro-band p { grid-column: 1 / -1; grid-row: 2; }
   .intro-band .brand-mark { grid-column: 2; grid-row: 1; }

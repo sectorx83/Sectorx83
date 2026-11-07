@@ -9,6 +9,7 @@ type Project = {
   description: string
   stack: string[]
   url: string
+  repo: string
   featured?: boolean
   status: string
 }
@@ -18,8 +19,9 @@ const projects: Project[] = [
     number: '01',
     name: 'Gravity',
     type: 'STREAM PROCESSING',
-    description: 'An exploration into distributed data processing, event flow and the systems that keep work moving.',
-    stack: ['Rust', 'Systems', 'Concurrency'],
+    description: 'An adaptive computational runtime exploring safe changes to a running computational graph without restarting the whole application.',
+    stack: ['Rust', 'Runtime', 'Computational graphs'],
+    repo: 'sectorx83/Gravity',
     url: 'https://github.com/sectorx83/Gravity',
     featured: true,
     status: 'IN DEVELOPMENT',
@@ -27,9 +29,10 @@ const projects: Project[] = [
   {
     number: '02',
     name: 'Cathedral',
-    type: 'SOFTWARE PROJECT',
-    description: 'A project built through deliberate engineering, iteration and a healthy respect for the details.',
-    stack: ['Systems', 'Engineering'],
+    type: 'OPEN COMPUTING LABORATORY',
+    description: 'A developer platform for running isolated software experiments, inspecting behaviour and reproducing environments.',
+    stack: ['Rust', 'Tauri', 'Linux isolation'],
+    repo: 'sectorx83/Cathedral',
     url: 'https://github.com/sectorx83/Cathedral',
     status: 'BUILDING',
   },
@@ -37,8 +40,9 @@ const projects: Project[] = [
     number: '03',
     name: 'Flux Agent',
     type: 'LOCAL AI TOOLING',
-    description: 'A local-first command-line agent focused on making useful AI workflows feel native to the terminal.',
-    stack: ['Python', 'AI', 'CLI'],
+    description: 'A local-first AI agent and automation CLI for conversation, planning, development and approved task execution.',
+    stack: ['Python', 'Groq', 'CLI'],
+    repo: 'sectorx83/Flux-agent',
     url: 'https://github.com/sectorx83/Flux-agent',
     status: 'BUILDING',
   },
@@ -46,18 +50,20 @@ const projects: Project[] = [
     number: '04',
     name: 'EDITH X1',
     type: 'PERSONAL AI ASSISTANT',
-    description: 'An assistant interface connecting conversation, voice and everyday tools in one place.',
-    stack: ['React', 'TypeScript', 'Groq'],
+    description: 'A multi-user assistant app combining AI chat, voice input, speech playback and the EDITH NETWORK execution layer.',
+    stack: ['React', 'TypeScript', 'Supabase'],
+    repo: 'sectorx83/edithx1',
     url: 'https://github.com/sectorx83/edithx1',
     status: 'BUILDING',
   },
   {
     number: '05',
-    name: 'Rawzap',
-    type: 'OPERATING SYSTEM',
-    description: 'Low-level operating-system work, from process scheduling to the pieces that make a machine feel alive.',
-    stack: ['C++', 'Kernel', 'x86_64'],
-    url: 'https://github.com/jadeking5128-beep/D3X8',
+    name: 'D3X8 / Rawzap OS',
+    type: '64-BIT OPERATING SYSTEM',
+    description: 'An x86_64 operating system built from the ground up, including its kernel, userspace, drivers, networking and desktop.',
+    stack: ['C', 'x86_64', 'Kernel'],
+    repo: 'sectorx83/D3X8',
+    url: 'https://github.com/sectorx83/D3X8',
     status: 'RESEARCH',
   },
 ]
@@ -146,18 +152,17 @@ function App() {
                 <a className="text-link" href="https://github.com/sectorx83" target="_blank" rel="noreferrer">GitHub profile <ArrowUpRight size={15} /></a>
               </div>
             </div>
-            <div className="hero-art" aria-label="Abstract dot matrix graphic">
-              <div className="art-top mono"><span>FIG. 001</span><span>DOT STUDY</span></div>
-              <div className="dot-field">
-                {Array.from({ length: 121 }, (_, index) => {
-                  const x = index % 11
-                  const y = Math.floor(index / 11)
-                  const distance = Math.sqrt((x - 5) ** 2 + (y - 5) ** 2)
-                  return <i key={index} className={distance < 2.4 ? 'matrix-dot matrix-dot--solid' : 'matrix-dot'} style={{ opacity: Math.max(0.12, 1 - distance / 9) }} />
-                })}
-              </div>
-              <div className="art-bottom mono"><span>11 × 11</span><span>EST. BY CURIOSITY</span></div>
-            </div>
+            <aside className="hero-repos" aria-label="Selected GitHub repositories">
+              <div className="repo-panel-head mono"><span>SELECTED REPOSITORIES</span><span>05</span></div>
+              {projects.map((project) => (
+                <a className="repo-index-row" href={project.url} target="_blank" rel="noreferrer" key={project.number}>
+                  <span className="repo-index-number mono">{project.number}</span>
+                  <span className="repo-index-name">{project.repo}</span>
+                  <ArrowUpRight size={14} />
+                </a>
+              ))}
+              <a className="repo-panel-foot mono" href="https://github.com/sectorx83?tab=repositories" target="_blank" rel="noreferrer">VIEW ALL REPOSITORIES <ArrowRight size={13} /></a>
+            </aside>
           </div>
           <div className="hero-footer">
             <span className="mono">SCROLL TO EXPLORE</span>
@@ -206,6 +211,7 @@ function App() {
                 <div className="project-main">
                   <div className="project-type mono">{project.type}</div>
                   <h3>{project.name}</h3>
+                  <a className="project-repo mono" href={project.url} target="_blank" rel="noreferrer" onClick={(event) => event.stopPropagation()}>{project.repo} <ArrowUpRight size={11} /></a>
                   <p>{project.description}</p>
                   <div className="project-tags">{project.stack.map((tag) => <span key={tag}>{tag}</span>)}</div>
                 </div>
