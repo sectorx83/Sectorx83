@@ -79,7 +79,45 @@ const groups = [
 ]
 
 function Mark({ small = false }: { small?: boolean }) {
-  return <span className={small ? 'brand-mark brand-mark--small' : 'brand-mark'} aria-hidden="true"><svg viewBox="0 0 76 38" role="presentation"><path className="brand-frame" d="M1 1H75V37H1Z" /><path className="brand-corner" d="M1 9V1H10M66 1H75V10M75 28V37H66M10 37H1V28" /><text x="8" y="27">SX83</text></svg></span>
+  return <span className={small ? 'brand-mark brand-mark--small' : 'brand-mark'} aria-hidden="true"><svg viewBox="0 0 76 38" role="presentation"><path className="brand-frame" d="M1 1H75V37H1Z" /><path className="brand-corner" d="M1 9V1H10M66 1H75V10M75 28V37H66M10 37H1V28" /><text x="8" y="27">SX83</text></svg><sup className="brand-registered">®</sup></span>
+}
+function CircuitPanel() {
+  return <div className="circuit-panel" aria-hidden="true">
+    <svg viewBox="0 0 520 820" preserveAspectRatio="xMidYMid meet">
+      <g className="circuit-traces">
+        <path d="M20 55H155V112H225V170H310V130H470" />
+        <path d="M65 0V88H115V205H180V270H270V325H430V275H520" />
+        <path d="M0 230H75V300H145V360H215V430H355V390H500" />
+        <path d="M520 80H410V155H365V220H310V285H250V350H190" />
+        <path d="M40 470H115V420H180V500H260V565H350V520H490" />
+        <path d="M0 610H95V555H160V610H235V680H325V635H420V700H520" />
+        <path d="M75 820V735H145V690H215V735H295V785H390" />
+        <path d="M300 0V65H350V110H405V190H470V235" />
+        <path d="M480 360V430H430V475H390V545H330" />
+        <path d="M20 360H55V400H95V455" />
+        <path d="M185 0V42H225V90" />
+        <path d="M260 820V760H300V720H360V675" />
+      </g>
+      <g className="circuit-secondary">
+        <path d="M155 112V75H190V55H235M310 130V85H350V50H390" />
+        <path d="M145 360V320H105V280H80M355 390V345H395V315H455" />
+        <path d="M115 420V385H80V350H35M260 565V610H300V650H345" />
+        <path d="M160 610V655H125V700H85M420 700V750H465V790" />
+        <path d="M365 220H420V250H460M215 430V390H255V365" />
+      </g>
+      <g className="circuit-nodes">
+        <circle cx="155" cy="112" r="5"/><circle cx="310" cy="130" r="4"/><circle cx="145" cy="360" r="5"/>
+        <circle cx="355" cy="390" r="4"/><circle cx="260" cy="565" r="5"/><circle cx="420" cy="700" r="4"/>
+        <circle cx="225" cy="90" r="3"/><circle cx="395" cy="315" r="3"/><circle cx="85" cy="700" r="3"/>
+      </g>
+      <g className="circuit-chips">
+        <rect x="220" y="190" width="76" height="48" rx="2"/><path d="M232 180V190M248 180V190M264 180V190M280 180V190M232 238V248M248 238V248M264 238V248M280 238V248"/>
+        <rect x="95" y="500" width="64" height="42" rx="2"/><path d="M106 490V500M122 490V500M138 490V500M154 490V500M106 542V552M122 542V552M138 542V552M154 542V552"/>
+        <rect x="370" y="570" width="72" height="46" rx="2"/><path d="M382 560V570M398 560V570M414 560V570M430 560V570M382 616V626M398 616V626M414 616V626M430 616V626"/>
+      </g>
+      <g className="circuit-labels"><text x="226" y="216">SX / 83</text><text x="104" y="525">BUS 01</text><text x="381" y="596">NODE 03</text></g>
+    </svg>
+  </div>
 }
 function Label({ children }: { children: ReactNode }) { return <span className="eyebrow"><span className="eyebrow-dot" />{children}</span> }
 function Brand({ closeMenu }: { closeMenu?: () => void }) {
@@ -201,6 +239,6 @@ function App() {
     return () => observer.disconnect()
   }, [path])
   useEffect(() => { document.title = project ? `${project.name} — Sectorx83` : 'Sectorx83 — Independent developer' }, [project])
-  return <div className="site-shell"><Header dark={dark} setDark={setDark} />{project ? <ProjectPage project={project} /> : projectSlug ? <main className="not-found section-wrap"><Label>404 / NOT FOUND</Label><h1>That project<br /><span>isn't here.</span></h1><a className="button button--dark" href="/#work">Back to projects <ArrowLeft size={15} /></a></main> : <HomePage />}<Footer /></div>
+  return <div className="site-shell"><CircuitPanel /><Header dark={dark} setDark={setDark} />{project ? <ProjectPage project={project} /> : projectSlug ? <main className="not-found section-wrap"><Label>404 / NOT FOUND</Label><h1>That project<br /><span>isn't here.</span></h1><a className="button button--dark" href="/#work">Back to projects <ArrowLeft size={15} /></a></main> : <HomePage />}<Footer /></div>
 }
 export default App

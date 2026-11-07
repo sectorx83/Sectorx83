@@ -343,3 +343,29 @@ h2 { font-size: clamp(37px, 5vw, 59px); line-height: 1.05; letter-spacing: -.075
   .detail-area-grid strong { font-size: 10px; }
   .detail-bottom { align-items: start; flex-direction: column; gap: 18px; }
 }
+
+/* Animated circuit-board panel, inspired by transparent hardware detailing */
+.brand-mark { position: relative; }
+.brand-registered { position: absolute; top: -5px; right: -9px; color: var(--muted); font: 500 9px/1 var(--mono); letter-spacing: 0; }
+.brand-mark--small .brand-registered { top: -4px; right: -8px; font-size: 8px; }
+.circuit-panel { position: fixed; z-index: 0; top: 92px; right: max(-110px, calc((100vw - 1440px) / 2)); width: min(46vw, 570px); height: min(82vh, 820px); color: var(--muted); opacity: .15; pointer-events: none; overflow: hidden; mask-image: linear-gradient(to left, #000 35%, transparent 100%); }
+.circuit-panel svg { width: 100%; height: 100%; overflow: visible; }
+.circuit-traces, .circuit-secondary { fill: none; stroke: currentColor; stroke-linecap: square; stroke-linejoin: round; }
+.circuit-traces { stroke-width: 1.15; stroke-dasharray: 8 12; animation: circuit-flow 22s linear infinite; }
+.circuit-secondary { stroke-width: .7; opacity: .65; stroke-dasharray: 3 8; animation: circuit-flow-reverse 28s linear infinite; }
+.circuit-nodes { fill: var(--bg); stroke: currentColor; stroke-width: 1.5; }
+.circuit-nodes circle { transform-box: fill-box; transform-origin: center; animation: circuit-pulse 3.6s ease-in-out infinite; }
+.circuit-nodes circle:nth-child(2n) { animation-delay: -1.8s; }
+.circuit-chips { fill: none; stroke: currentColor; stroke-width: 1; opacity: .8; }
+.circuit-labels { fill: currentColor; font: 7px var(--mono); letter-spacing: 1.2px; opacity: .85; }
+.site-shell { position: relative; }
+.topbar, main, .footer { position: relative; z-index: 1; }
+@keyframes circuit-flow { to { stroke-dashoffset: -420; } }
+@keyframes circuit-flow-reverse { to { stroke-dashoffset: 260; } }
+@keyframes circuit-pulse { 0%,100% { opacity: .45; transform: scale(.82); } 50% { opacity: 1; transform: scale(1.28); } }
+@media (max-width: 760px) {
+  .circuit-panel { top: 105px; right: -150px; width: 85vw; height: 66vh; opacity: .11; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .circuit-traces, .circuit-secondary, .circuit-nodes circle { animation: none !important; }
+}
