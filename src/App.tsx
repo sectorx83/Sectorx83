@@ -66,8 +66,6 @@ function ProjectCard({ project, index }: { project: (typeof projects)[number]; i
 export default function App() {
   const [loading, setLoading] = useState(true);
   const [menuOpen, setMenuOpen] = useState(false);
-  const [retroTheme, setRetroTheme] = useState<"synthwave" | "arcade" | "amber">("synthwave");
-  const cycleRetroTheme = () => setRetroTheme(current => current === "synthwave" ? "arcade" : current === "arcade" ? "amber" : "synthwave");
   const [time, setTime] = useState("00:00:00");
   const root = useRef<HTMLDivElement>(null);
   const reduced = useReducedMotion();
@@ -178,7 +176,7 @@ export default function App() {
 
   const closeMenu = () => setMenuOpen(false);
   return (
-    <div className="site-shell" ref={root} data-retro-theme={retroTheme}>
+    <div className="site-shell" ref={root}>
       <AnimatePresence>{loading && <Loader onFinish={finishLoader} />}</AnimatePresence>
       <div className="cursor" /><div className="cursor-dot" />
       <div className="noise-layer" /><div className="retro-scanlines" aria-hidden="true" /><div className="retro-vignette" aria-hidden="true" /><div className="scroll-progress" aria-hidden="true"><i /></div>
@@ -187,14 +185,14 @@ export default function App() {
         <nav className={menuOpen ? "main-nav is-open" : "main-nav"}>
           <a href="#work" onClick={closeMenu}>WORK <sup>05</sup></a><a href="#about" onClick={closeMenu}>ABOUT</a><a href="#toolkit" onClick={closeMenu}>TOOLKIT</a><a href="#contact" onClick={closeMenu}>CONTACT</a>
         </nav>
-        <div className="header-right"><button className="retro-theme-toggle" onClick={cycleRetroTheme} aria-label={"Change retro theme. Current theme: " + retroTheme}><i /> <span>{retroTheme.toUpperCase()}</span><b>↻</b></button><span className="live-indicator"><i /> AVAILABLE FOR IDEAS</span><button className="menu-toggle" onClick={() => setMenuOpen(!menuOpen)} aria-label={menuOpen ? "Close menu" : "Open menu"}>{menuOpen ? <X /> : <Menu />}</button></div>
+        <div className="header-right"><span className="live-indicator"><i /> AVAILABLE FOR IDEAS</span><button className="menu-toggle" onClick={() => setMenuOpen(!menuOpen)} aria-label={menuOpen ? "Close menu" : "Open menu"}>{menuOpen ? <X /> : <Menu />}</button></div>
       </header>
 
       <main id="top">
         <section className="hero">
           <div className="hero-grid" />
           <div className="hero-kicker"><span>INDEPENDENT DEVELOPER / DIGITAL CRAFT</span><span>INDIA <i>10°31'N / 76°13'E</i></span></div>
-          {!loading && <Suspense fallback={<div className="experience-fallback" />}><ExperienceScene theme={retroTheme} /></Suspense>}
+          {!loading && <Suspense fallback={<div className="experience-fallback" />}><ExperienceScene /></Suspense>}
           <div className="hero-vertical"><span>SOFTWARE / SYSTEMS / EXPERIMENTS</span><span className="hero-orbit-label">CREATIVE ENGINEERING · 2026 · </span></div>
           <div className="hero-main">
             <p className="hero-eyebrow"><Sparkles size={13} /> A PERSONAL UNIVERSE IN CONSTANT MOTION</p>
