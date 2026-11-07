@@ -148,6 +148,8 @@ export default function App() {
       gsap.to(".scroll-progress i", { scaleX: 1, ease: "none", scrollTrigger: { trigger: document.documentElement, start: "top top", end: "bottom bottom", scrub: 0.18 } });
       gsap.from(".principle-row > div", { y: 54, opacity: 0, rotateX: 12, transformOrigin: "50% 100%", stagger: 0.14, duration: 1, ease: "power3.out", scrollTrigger: { trigger: ".principle-row", start: "top 86%", once: true } });
       gsap.from(".social-links a", { x: 24, opacity: 0, stagger: 0.13, duration: 0.8, ease: "power3.out", scrollTrigger: { trigger: ".social-links", start: "top 92%", once: true } });
+      gsap.from(".lab-card", { y: 58, opacity: 0, rotateY: -7, stagger: 0.12, duration: 0.95, ease: "power3.out", scrollTrigger: { trigger: ".lab-grid", start: "top 84%", once: true } });
+      gsap.from(".journal-entry", { x: -34, opacity: 0, stagger: 0.14, duration: 0.85, ease: "power3.out", scrollTrigger: { trigger: ".journal-list", start: "top 86%", once: true } });
       gsap.from(".work-outro > *", { y: 18, opacity: 0, stagger: 0.12, duration: 0.8, ease: "power3.out", scrollTrigger: { trigger: ".work-outro", start: "top 92%", once: true } });
       gsap.utils.toArray<HTMLElement>(".section-kicker").forEach((el) => {
         gsap.from(el, { x: -32, opacity: 0, duration: 0.9, ease: "power3.out", scrollTrigger: { trigger: el, start: "top 94%", once: true } });
