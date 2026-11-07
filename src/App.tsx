@@ -70,6 +70,7 @@ export default function App() {
   const [selectedProject, setSelectedProject] = useState<(typeof projects)[number] | null>(null);
   const [copied, setCopied] = useState(false);
   const root = useRef<HTMLDivElement>(null);
+  const explorer = useRef<HTMLDivElement>(null);
   const reduced = useReducedMotion();
   const finishLoader = useCallback(() => setLoading(false), []);
 
@@ -161,6 +162,34 @@ export default function App() {
   }, [reduced]);
 
   useEffect(() => {
+    const character = explorer.current;
+    if (!character || reduced) return;
+    const moveX = gsap.quickTo(character, "x", { duration: 0.72, ease: "power3.out" });
+    const moveY = gsap.quickTo(character, "y", { duration: 0.72, ease: "power3.out" });
+    const tilt = gsap.quickTo(character, "rotation", { duration: 0.45, ease: "power2.out" });
+    let lastX = window.innerWidth * 0.78;
+    const move = (event: PointerEvent) => {
+      const x = Math.min(window.innerWidth - 30, Math.max(30, event.clientX + 34));
+      const y = Math.min(window.innerHeight - 30, Math.max(35, event.clientY - 42));
+      moveX(x); moveY(y);
+      tilt(Math.max(-13, Math.min(13, (event.clientX - lastX) * 0.32)));
+      lastX = event.clientX;
+      character.classList.add("is-travelling");
+    };
+    const settle = () => character.classList.remove("is-travelling");
+    window.addEventListener("pointermove", move, { passive: true });
+    window.addEventListener("pointerup", settle, { passive: true });
+    window.addEventListener("blur", settle);
+    gsap.set(character, { x: window.innerWidth * 0.78, y: window.innerHeight * 0.72 });
+    return () => {
+      window.removeEventListener("pointermove", move);
+      window.removeEventListener("pointerup", settle);
+      window.removeEventListener("blur", settle);
+      gsap.killTweensOf(character);
+    };
+  }, [reduced]);
+
+  useEffect(() => {
     if (reduced || !window.matchMedia("(pointer:fine)").matches) return;
     const cursor = document.querySelector<HTMLElement>(".cursor");
     const dot = document.querySelector<HTMLElement>(".cursor-dot");
@@ -217,7 +246,7 @@ export default function App() {
   return (
     <div className="site-shell" ref={root}>
       <AnimatePresence>{loading && <Loader onFinish={finishLoader} />}</AnimatePresence>
-      <div className="cursor" /><div className="cursor-dot" />
+      <div className="cursor" /><div className="cursor-dot" /><div className="space-explorer" ref={explorer} aria-hidden="true"><span className="explorer-thruster" /><span className="explorer-backpack" /><span className="explorer-head"><i /></span><span className="explorer-body" /><span className="explorer-arm explorer-arm-left" /><span className="explorer-arm explorer-arm-right" /><span className="explorer-leg explorer-leg-left" /><span className="explorer-leg explorer-leg-right" /><span className="explorer-visor" /><span className="explorer-star">✦</span></div>
       <div className="noise-layer" /><div className="retro-scanlines" aria-hidden="true" /><div className="retro-vignette" aria-hidden="true" /><div className="comic-glitch-overlay" aria-hidden="true" /><div className="scroll-progress" aria-hidden="true"><i /></div>
       <header className="site-header">
         <a href="#top" className="brand" aria-label="sectorx83 home"><span className="brand-mark">s<span>×</span></span><span>SECTORX83<sup>®</sup></span></a>
@@ -229,7 +258,7 @@ export default function App() {
 
       <main id="top">
         <section className="hero">
-          <div className="hero-grid" />
+          <div className="hero-grid" /><div className="hero-black-hole" aria-hidden="true"><div className="black-hole-lens" /><div className="black-hole-ring black-hole-ring-a" /><div className="black-hole-ring black-hole-ring-b" /><div className="black-hole-core" /><span>EVENT HORIZON / 0083</span></div>
           <div className="hero-kicker"><span>INDEPENDENT DEVELOPER / DIGITAL CRAFT</span><span>INDIA <i>10°31'N / 76°13'E</i></span></div>
           {!loading && <Suspense fallback={<div className="experience-fallback" />}><ExperienceScene /></Suspense>}
           <div className="hero-vertical"><span>SOFTWARE / SYSTEMS / EXPERIMENTS</span><span className="hero-orbit-label">CREATIVE ENGINEERING · 2026 · </span></div>
