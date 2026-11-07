@@ -1,7 +1,7 @@
 import { lazy, Suspense, useCallback, useEffect, useRef, useState } from "react";
-import type { CSSProperties, FormEvent } from "react";
+import type { CSSProperties } from "react";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
-import { ArrowDown, ArrowDownRight, ArrowUpRight, ArrowUp, Github, Instagram, MoveUpRight, Menu, X, Sparkles, Terminal, Copy, Check, FlaskConical, BookOpen, Command } from "lucide-react";
+import { ArrowDown, ArrowDownRight, ArrowUpRight, ArrowUp, Github, Instagram, MoveUpRight, Menu, X, Sparkles, Copy, Check, BookOpen } from "lucide-react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import Lenis from "lenis";
@@ -68,9 +68,6 @@ export default function App() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [time, setTime] = useState("00:00:00");
   const [selectedProject, setSelectedProject] = useState<(typeof projects)[number] | null>(null);
-  const [terminalOpen, setTerminalOpen] = useState(false);
-  const [terminalInput, setTerminalInput] = useState("");
-  const [terminalLines, setTerminalLines] = useState<string[]>(["SECTORX83 INTERACTIVE SHELL / VERSION 1.0", "Type help to inspect available commands."]);
   const [copied, setCopied] = useState(false);
   const root = useRef<HTMLDivElement>(null);
   const reduced = useReducedMotion();
@@ -208,26 +205,6 @@ export default function App() {
   }, [reduced]);
 
   const closeMenu = () => setMenuOpen(false);
-  const runTerminalCommand = (event: FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    const command = terminalInput.trim().toLowerCase();
-    if (!command) return;
-    const responses: Record<string, string[]> = {
-      help: ["Available: help, projects, about, toolkit, experiments, journal, contact, clear, exit"],
-      projects: projects.map((project) => project.number + "  " + project.name + "  /  " + project.category),
-      about: ["Independent developer focused on systems, AI tooling, developer infrastructure and digital experiences."],
-      toolkit: ["Rust · Python · TypeScript · C/C++ · React · Tauri · Linux systems · AI tooling"],
-      experiments: ["Open the Experiments Lab to explore visual studies, runtime concepts and isolation research."],
-      journal: ["Open the Engineering Journal for notes on topology, reproducibility and low-level debugging."],
-      contact: ["sectorx83@gmail.com", "github.com/sectorx83", "instagram.com/manazz.io"],
-      clear: [],
-      exit: ["Closing interactive shell."]
-    };
-    if (command === "clear") setTerminalLines([]);
-    else if (command === "exit") setTerminalOpen(false);
-    else setTerminalLines((lines) => [...lines, "visitor@sectorx83:~$ " + command, ...(responses[command] ?? ["Command not found: " + command + ". Type help for the command index."])].slice(-18));
-    setTerminalInput("");
-  };
   const copyEmail = async () => {
     try {
       await navigator.clipboard.writeText("sectorx83@gmail.com");
@@ -245,9 +222,9 @@ export default function App() {
       <header className="site-header">
         <a href="#top" className="brand" aria-label="sectorx83 home"><span className="brand-mark">s<span>×</span></span><span>SECTORX83<sup>®</sup></span></a>
         <nav className={menuOpen ? "main-nav is-open" : "main-nav"}>
-          <a href="#work" onClick={closeMenu}>WORK <sup>05</sup></a><a href="#about" onClick={closeMenu}>ABOUT</a><a href="#toolkit" onClick={closeMenu}>TOOLKIT</a><a href="#lab" onClick={closeMenu}>LAB</a><a href="#journal" onClick={closeMenu}>JOURNAL</a><button className="nav-terminal" onClick={() => { closeMenu(); setTerminalOpen(true); }}><Terminal size={13} /> TERMINAL</button>
+          <a href="#work" onClick={closeMenu}>WORK <sup>05</sup></a><a href="#about" onClick={closeMenu}>ABOUT</a><a href="#toolkit" onClick={closeMenu}>TOOLKIT</a><a href="#lab" onClick={closeMenu}>LAB</a><a href="#journal" onClick={closeMenu}>JOURNAL</a>
         </nav>
-        <div className="header-right"><span className="live-indicator"><i /> AVAILABLE FOR IDEAS</span><button className="terminal-trigger" onClick={() => setTerminalOpen(true)} aria-label="Open interactive terminal"><Terminal size={16} /></button><button className="menu-toggle" onClick={() => setMenuOpen(!menuOpen)} aria-label={menuOpen ? "Close menu" : "Open menu"}>{menuOpen ? <X /> : <Menu />}</button></div>
+        <div className="header-right"><span className="live-indicator"><i /> AVAILABLE FOR IDEAS</span><button className="menu-toggle" onClick={() => setMenuOpen(!menuOpen)} aria-label={menuOpen ? "Close menu" : "Open menu"}>{menuOpen ? <X /> : <Menu />}</button></div>
       </header>
 
       <main id="top">
@@ -293,11 +270,11 @@ export default function App() {
           <div className="section-kicker"><span>04 / EXPERIMENTS LAB</span><span>IDEAS BEFORE THEY BECOME PRODUCTS</span></div>
           <div className="lab-heading"><h2 className="section-title">Curiosity<br /><em>in motion.</em></h2><p>A working shelf for visual studies, system concepts and the questions that don't fit neatly inside a project card.</p></div>
           <div className="lab-grid">
-            <article className="lab-card lab-shader"><div className="lab-art"><div className="lab-nebula" /><span>VISUAL STUDY / 001</span></div><div className="lab-card-meta"><span>SHADERS / REALTIME GRAPHICS</span><span>01</span></div><h3>Chromatic matter</h3><p>Procedural color, distortion and moving light explored through the portfolio's shader experiments.</p></article>
+            
             <article className="lab-card lab-topology"><div className="lab-art"><div className="topology-nodes"><i /><i /><i /><i /><b /><b /></div><span>RUNTIME STUDY / 002</span></div><div className="lab-card-meta"><span>GRAVITY / TOPOLOGY</span><span>02</span></div><h3>Systems that reshape</h3><p>A visual study of workload movement, changing connections and preserving accepted work during topology changes.</p></article>
             <article className="lab-card lab-isolation"><div className="lab-art"><div className="isolation-stack"><i /><i /><i /><i /></div><span>LAB STUDY / 003</span></div><div className="lab-card-meta"><span>CATHEDRAL / ISOLATION</span><span>03</span></div><h3>Reproducible space</h3><p>Exploring isolated experiments, observable boundaries and repeatable diagnostics.</p></article>
           </div>
-          <div className="lab-footnote"><FlaskConical size={15} /> CONCEPT STUDIES AND TECHNICAL EXPLORATIONS. NOT CLAIMED AS STANDALONE RELEASES.</div>
+          <div className="lab-footnote">SELECTED TECHNICAL STUDIES FROM ACTIVE PROJECT WORK.</div>
         </section>
 
         <section className="journal-section section-wrap" id="journal">
@@ -316,9 +293,9 @@ export default function App() {
           <div className="contact-layout"><div className="contact-orb"><div className="contact-orb-inner">83</div><span>LET'S BUILD SOMETHING</span></div><div className="contact-content"><span className="eyebrow">HAVE SOMETHING IN MIND?</span><h2 className="section-title">Let's make<br /><em>it matter.</em></h2><div className="contact-actions"><a className="contact-email" href="mailto:sectorx83@gmail.com">sectorx83@gmail.com <ArrowUpRight size={23} /></a><button className="copy-email" onClick={copyEmail}>{copied ? <Check size={14} /> : <Copy size={14} />}{copied ? "COPIED" : "COPY EMAIL"}</button></div><div className="social-links"><a href="https://github.com/sectorx83" target="_blank" rel="noreferrer"><Github size={15} /> GITHUB <ArrowUpRight size={13} /></a><a href="https://instagram.com/manazz.io" target="_blank" rel="noreferrer"><Instagram size={15} /> INSTAGRAM <ArrowUpRight size={13} /></a></div></div></div>
         </section>
       </main>
-      <footer className="site-footer"><a href="#top" className="brand"><span className="brand-mark">s<span>×</span></span><span>SECTORX83<sup>®</sup></span></a><span>AN INDEPENDENT UNIVERSE / MADE WITH CURIOSITY</span><button className="footer-terminal" onClick={() => setTerminalOpen(true)}><Terminal size={13} /> OPEN TERMINAL</button><a href="#top" className="back-top">BACK TO TOP <ArrowUp size={13} /></a><small>© 2026 SECTORX83</small></footer>
+      <footer className="site-footer"><a href="#top" className="brand"><span className="brand-mark">s<span>×</span></span><span>SECTORX83<sup>®</sup></span></a><span>AN INDEPENDENT UNIVERSE / MADE WITH CURIOSITY</span><a href="#top" className="back-top">BACK TO TOP <ArrowUp size={13} /></a><small>© 2026 SECTORX83</small></footer>
       <AnimatePresence>{selectedProject && <motion.div className="dossier-backdrop" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={() => setSelectedProject(null)}><motion.section className="dossier-panel" role="dialog" aria-modal="true" aria-labelledby="dossier-title" initial={{ y: 45, scale: .97 }} animate={{ y: 0, scale: 1 }} exit={{ y: 24, scale: .98 }} transition={{ duration: .38, ease: [0.2, .8, .2, 1] }} onClick={(event) => event.stopPropagation()}><div className="dossier-top"><span>PROJECT DOSSIER / {selectedProject.number}</span><button onClick={() => setSelectedProject(null)} aria-label="Close project dossier"><X /></button></div><div className="dossier-class">{selectedProject.category} / {selectedProject.year}</div><h2 id="dossier-title">{selectedProject.name}</h2><p>{selectedProject.description}</p><div className="dossier-stack">{selectedProject.stack.map((item) => <span key={item}>{item}</span>)}</div><div className="dossier-bottom"><span>{selectedProject.metric}</span><a href={selectedProject.href} target="_blank" rel="noreferrer">OPEN REPOSITORY <ArrowUpRight size={16} /></a></div></motion.section></motion.div>}</AnimatePresence>
-      <AnimatePresence>{terminalOpen && <motion.div className="terminal-backdrop" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={() => setTerminalOpen(false)}><motion.section className="terminal-window" role="dialog" aria-modal="true" aria-label="Sectorx83 interactive terminal" initial={{ y: 35, scale: .97 }} animate={{ y: 0, scale: 1 }} exit={{ y: 20, scale: .98 }} onClick={(event) => event.stopPropagation()}><div className="terminal-bar"><div><i /><i /><i /><span>SECTORX83 / INTERACTIVE SHELL</span></div><button onClick={() => setTerminalOpen(false)} aria-label="Close terminal"><X size={18} /></button></div><div className="terminal-output" aria-live="polite">{terminalLines.map((line, index) => <p key={index}>{line}</p>)}</div><form className="terminal-form" onSubmit={runTerminalCommand}><label htmlFor="terminal-command">visitor@sectorx83:~$</label><input id="terminal-command" value={terminalInput} onChange={(event) => setTerminalInput(event.target.value)} autoFocus autoComplete="off" spellCheck={false} placeholder="type a command..." /><button type="submit" aria-label="Run command"><ArrowUpRight size={17} /></button></form><div className="terminal-hint">TRY: HELP · PROJECTS · TOOLKIT · EXPERIMENTS · CONTACT</div></motion.section></motion.div>}</AnimatePresence>
+
     </div>
   );
 }
