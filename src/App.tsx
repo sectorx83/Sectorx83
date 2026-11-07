@@ -58,9 +58,9 @@ const projects: Project[] = [
   },
   {
     number: '05',
-    name: 'D3X8 / Rawzap OS',
+    name: 'D3X8',
     type: '64-BIT OPERATING SYSTEM',
-    description: 'An x86_64 operating system built from the ground up, including its kernel, userspace, drivers, networking and desktop.',
+    description: 'An x86_64 operating system project, built from the ground up across its kernel, userspace, drivers, networking and desktop.',
     stack: ['C', 'x86_64', 'Kernel'],
     repo: 'sectorx83/D3X8',
     url: 'https://github.com/sectorx83/D3X8',
