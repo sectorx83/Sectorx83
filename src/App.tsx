@@ -16,24 +16,30 @@ function Loader({ onFinish }: { onFinish: () => void }) {
   useEffect(() => {
     const start = performance.now();
     let frame = 0;
+    let timeout = 0;
     const tick = (now: number) => {
-      const p = Math.min(1, (now - start) / 1180);
+      const p = Math.min(1, (now - start) / 1580);
       setProgress(Math.round((1 - Math.pow(1 - p, 3)) * 100));
       if (p < 1) frame = requestAnimationFrame(tick);
-      else window.setTimeout(onFinish, 120);
+      else timeout = window.setTimeout(onFinish, 180);
     };
     frame = requestAnimationFrame(tick);
-    return () => cancelAnimationFrame(frame);
+    return () => { cancelAnimationFrame(frame); window.clearTimeout(timeout); };
   }, [onFinish]);
   return (
-    <motion.div className="preloader" initial={{ opacity: 1 }} exit={{ opacity: 0, y: "-100%" }} transition={{ duration: 0.9, ease: [0.76, 0, 0.24, 1] }}>
-      <div className="loader-top"><span>SECTORX83®</span><span>INDEPENDENT DIGITAL PRACTICE / 2026</span></div>
-      <div className="loader-center">
-        <div className="loader-glyph"><span>83</span><i /><i /><i /></div>
-        <p>MAKING IDEAS MOVE<br /><b>PLEASE STAND BY.</b></p>
+    <motion.div className="preloader cinematic-loader" initial={{ opacity: 1 }} exit={{ opacity: 0, scale: 1.025, filter: "blur(10px)" }} transition={{ duration: 0.95, ease: [0.76, 0, 0.24, 1] }}>
+      <div className="loader-stars" aria-hidden="true"><i /><i /><i /><i /><i /><i /><i /><i /><i /><i /><i /><i /><i /><i /><i /><i /></div>
+      <div className="loader-top"><span>SECTORX83® <i> / </i> INDEPENDENT DIGITAL PRACTICE</span><span>EST. 2026&nbsp;&nbsp; · &nbsp;&nbsp;INDIA</span></div>
+      <div className="loader-cinema">
+        <div className="loader-eclipse" aria-hidden="true"><i className="loader-eclipse-halo" /><i className="loader-eclipse-disk" /><i className="loader-eclipse-core" /><i className="loader-eclipse-flare" /><i className="loader-eclipse-orbit" /></div>
+        <div className="loader-center">
+          <div className="loader-glyph"><span>83</span><i /><i /><i /></div>
+          <p><small>ENTERING THE SECTOR</small><strong>MAKING IDEAS<br /><em>MOVE BEYOND.</em></strong><b>INITIALIZING EXPERIENCE</b></p>
+        </div>
       </div>
-      <div className="loader-bottom"><span>BUILDING THE EXPERIENCE</span><span>{String(progress).padStart(2, "0")}%</span></div>
+      <div className="loader-bottom"><span><i className="loader-live-dot" /> {progress < 100 ? "CALIBRATING THE UNIVERSE" : "SYSTEM READY"}</span><span>{String(progress).padStart(2, "0")}%</span></div>
       <div className="loader-line"><i style={{ width: progress + "%" }} /></div>
+      <span className="loader-coordinate">X83 / DEEP SPACE TRANSMISSION</span>
     </motion.div>
   );
 }
