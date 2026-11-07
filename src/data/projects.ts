@@ -84,7 +84,7 @@ export const toolkit = [
   { group: "LANGUAGES & SYSTEMS", items: ["Rust", "Python", "TypeScript", "C", "C++", "x86_64 Assembly", "Lua"] },
   { group: "APPLICATION & UI", items: ["React", "TanStack Start", "Vite", "Tauri v2", "Harp UI"] },
   { group: "AI & DEVELOPER TOOLS", items: ["Groq", "Gemini", "Cerebras", "OpenRouter", "FastEmbed", "Playwright", "Rich CLI"] },
-  { group: "RUNTIME & ISOLATION", items: ["SQLite", "Bubblewrap", "Linux Namespaces", "cgroups v2", "SSE", "PTY"] },
-  { group: "OPERATING SYSTEMS", items: ["Limine", "mlibc", "BusyBox", "ACPI", "SMP", "TCP/IP", "FAT32", "Intel e1000"] },
+  { group: "DATA & BACKENDS", items: ["Supabase", "SQLite", "SSE", "PTY"] },
+  { group: "RUNTIME & SYSTEMS", items: ["Bubblewrap", "Linux Namespaces", "cgroups v2", "Limine", "mlibc", "BusyBox", "ACPI", "SMP", "TCP/IP", "FAT32", "Intel e1000"] },
   { group: "ENGINEERING & DELIVERY", items: ["Cargo", "CMake", "Make", "GitHub Actions", "Docker", "Vercel", "GitHub CLI"] }
 ];
