@@ -1,5 +1,5 @@
 import { lazy, Suspense, useCallback, useEffect, useRef, useState } from "react";
-import type { CSSProperties } from "react";
+import type { CSSProperties, FormEvent } from "react";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import { ArrowDown, ArrowDownRight, ArrowUpRight, ArrowUp, Github, Instagram, MoveUpRight, Menu, X, Sparkles, Terminal, Copy, Check, FlaskConical, BookOpen, Command } from "lucide-react";
 import gsap from "gsap";
@@ -206,7 +206,7 @@ export default function App() {
   }, [reduced]);
 
   const closeMenu = () => setMenuOpen(false);
-  const runTerminalCommand = (event: React.FormEvent<HTMLFormElement>) => {
+  const runTerminalCommand = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     const command = terminalInput.trim().toLowerCase();
     if (!command) return;
