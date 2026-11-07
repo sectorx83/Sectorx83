@@ -109,14 +109,12 @@ export default function App() {
       });
       gsap.to(".about-orbit", { rotate: 360, duration: 34, repeat: -1, ease: "none" });
       gsap.to(".contact-orb", { y: -22, rotate: 7, duration: 5.5, yoyo: true, repeat: -1, ease: "sine.inOut" });
-      gsap.to(".hero-grid", { backgroundPosition: "100px 180px, 180px 100px", duration: 18, repeat: -1, yoyo: true, ease: "sine.inOut" });
       gsap.to(".hero-eyebrow svg", { rotate: 360, scale: 1.35, duration: 5, repeat: -1, yoyo: true, ease: "sine.inOut" });
       gsap.utils.toArray<HTMLElement>(".project-card").forEach((card, index) => {
         gsap.from(card.querySelector(".project-meta"), { x: index % 2 ? 28 : -28, opacity: 0, duration: 0.75, ease: "power3.out", scrollTrigger: { trigger: card, start: "top 78%", once: true } });
         gsap.from(card.querySelector(".project-tags"), { y: 16, opacity: 0, duration: 0.7, delay: 0.18, ease: "power3.out", scrollTrigger: { trigger: card, start: "top 72%", once: true } });
       });
       gsap.to(".ticker-track", { skewX: -2, duration: 2.4, yoyo: true, repeat: -1, ease: "sine.inOut" });
-      gsap.to(".hero-grid", { backgroundPosition: "72px 72px, -72px -72px", duration: 24, repeat: -1, ease: "none" });
       gsap.utils.toArray<HTMLElement>(".project-card").forEach((card, index) => {
         const visual = card.querySelector(".project-image");
         gsap.fromTo(visual, { filter: "saturate(.78) contrast(1.18)" }, {
@@ -135,7 +133,6 @@ export default function App() {
           scrollTrigger: { trigger: el, start: "top 92%", once: true }
         });
       });
-      gsap.to(".comic-glitch-overlay", { opacity: .2, duration: .06, repeat: -1, yoyo: true, repeatDelay: 5.8, ease: "steps(1)" });
       gsap.utils.toArray<HTMLElement>(".tool-row").forEach((row, index) => {
         gsap.fromTo(row, { x: index % 2 ? 18 : -18, clipPath: "inset(0 0 0 8%)" }, {
           x: 0, clipPath: "inset(0 0 0 0)", duration: .7, ease: "power3.out",
