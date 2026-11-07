@@ -507,3 +507,24 @@ main>section:not(.hero):after{content:"";position:absolute;z-index:-1;left:5vw;r
  .hero-title .line-inner,.section-title,.project-title-row h3,.section-kicker,.hero-kicker,.hero-foot,.contact-content h2,.lab-card h3,.journal-entry h3,.comic-glitch-overlay,.comic-glitch-overlay:before,.comic-glitch-overlay:after{animation:none!important}
  .site-header a:hover,.social-links a:hover,.project-tags span:hover,.project-dossier-link:hover{animation:none}
 }
+
+
+/* STABILITY PASS: remove disruptive glitching and keep the cinematic layout calm. */
+.comic-glitch-overlay{display:none!important;animation:none!important;opacity:0!important}
+.hero-title .line-inner,.section-title,.project-title-row h3,.section-kicker,.hero-kicker,.hero-foot,.contact-content h2,.lab-card h3,.journal-entry h3{
+  animation:none!important;
+  will-change:auto!important;
+  filter:none!important;
+  text-shadow:none;
+  transform:none!important;
+}
+.hero-title .line-inner:after,.section-title:after,.project-title-row h3:after{display:none!important;animation:none!important;content:none!important}
+.project-card:hover .project-title-row h3{animation:none!important;text-shadow:none!important}
+.project-card:hover .project-image{filter:none!important}
+.project-card:hover .project-image:before{background:linear-gradient(140deg,rgba(185,215,255,.1),transparent 36%,rgba(0,0,0,.18))!important}
+.project-description,.about-copy p,.tool-row,.journal-entry p,.lab-card p{transition:color .2s ease!important}
+.project-card:hover .project-description,.about-copy p:hover,.tool-row:hover,.journal-entry:hover p,.lab-card:hover p{filter:none!important;text-shadow:none!important}
+.site-header a:hover,.social-links a:hover,.project-tags span:hover,.project-dossier-link:hover{animation:none!important;text-shadow:none!important}
+@media(prefers-reduced-motion:no-preference){
+  .hero-black-hole,.black-hole-ring-a,.black-hole-ring-b,.black-hole-particles,.black-hole-lensing,.black-hole-glint{animation-duration:1.6s!important;animation-timing-function:ease-in-out!important}
+}
