@@ -348,7 +348,7 @@ h2 { font-size: clamp(37px, 5vw, 59px); line-height: 1.05; letter-spacing: -.075
 .brand-mark { position: relative; }
 .brand-registered { position: absolute; top: -5px; right: -9px; color: var(--muted); font: 500 9px/1 var(--mono); letter-spacing: 0; }
 .brand-mark--small .brand-registered { top: -4px; right: -8px; font-size: 8px; }
-.circuit-panel { position: fixed; z-index: 0; top: 76px; right: max(-125px, calc((100vw - 1440px) / 2)); width: min(48vw, 600px); height: min(88vh, 860px); color: var(--muted); opacity: .2; pointer-events: none; overflow: hidden; mask-image: linear-gradient(to left, #000 48%, transparent 100%); }
+.circuit-panel { position: fixed; z-index: 0; top: 68px; right: max(-108px, calc((100vw - 1440px) / 2)); width: min(54vw, 660px); height: min(91vh, 900px); color: var(--muted); opacity: .29; pointer-events: none; overflow: hidden; mask-image: linear-gradient(to left, #000 72%, transparent 100%); }
 .circuit-panel svg { width: 100%; height: 100%; overflow: visible; }
 .hardware-shell { fill: var(--panel); stroke: currentColor; stroke-width: 2; opacity: .68; }
 .hardware-inner { fill: var(--bg); stroke: currentColor; stroke-width: 1; opacity: .9; }
@@ -370,6 +370,12 @@ h2 { font-size: clamp(37px, 5vw, 59px); line-height: 1.05; letter-spacing: -.075
 .coil-glyph { fill: none; stroke: var(--inverse-ink); stroke-width: 8; stroke-linecap: round; opacity: .9; }
 .coil-outer, .coil-mid, .coil-inner { fill: none; stroke: currentColor; }
 .coil-outer { stroke-width: 2.2; opacity: .8; }
+.coil-groove { fill: none; stroke: currentColor; stroke-width: .8; opacity: .34; }
+.coil-groove--fine { stroke-width: .55; stroke-dasharray: 1 2; opacity: .24; }
+.coil-core-notch { fill: none; stroke: currentColor; stroke-width: 1.4; opacity: .42; }
+.hardware-seam--etched { stroke-width: .65; opacity: .3; }
+.hardware-panel--sensor { fill: var(--soft); opacity: .65; }
+.hardware-panel--port { fill: var(--inverse); stroke: currentColor; stroke-width: .8; opacity: .7; }
 .coil-mid { stroke-width: 1.1; stroke-dasharray: 2 3; opacity: .65; animation: coil-rotate 48s linear infinite; transform-origin: 260px 526px; }
 .coil-inner { stroke-width: 1; stroke-dasharray: 1 5; opacity: .52; animation: coil-rotate 34s linear infinite reverse; transform-origin: 260px 526px; }
 .coil-fill { stroke: currentColor; stroke-width: 1; opacity: .6; }
@@ -391,7 +397,7 @@ h2 { font-size: clamp(37px, 5vw, 59px); line-height: 1.05; letter-spacing: -.075
 @keyframes circuit-flow-reverse { to { stroke-dashoffset: 260; } }
 @keyframes circuit-pulse { 0%,100% { opacity: .45; transform: scale(.82); } 50% { opacity: 1; transform: scale(1.28); } }
 @media (max-width: 760px) {
-  .circuit-panel { top: 105px; right: -150px; width: 85vw; height: 66vh; opacity: .11; }
+  .circuit-panel { top: 112px; right: -178px; width: 96vw; height: 72vh; opacity: .19; }
 }
 @media (prefers-reduced-motion: reduce) {
   .circuit-traces, .circuit-secondary, .circuit-nodes circle { animation: none !important; }

@@ -104,6 +104,10 @@ function CircuitPanel() {
         <rect x="206" y="34" width="202" height="207" rx="12" fill="url(#hardware-weave)"/>
         <path className="hardware-seam" d="M206 241H410L474 177V45"/>
         <path className="hardware-seam" d="M34 335H220V352H294"/>
+        <path className="hardware-seam hardware-seam--etched" d="M38 277H194M38 284H194M38 291H194M420 281H477M420 288H477"/>
+        <rect className="hardware-panel hardware-panel--sensor" x="412" y="260" width="63" height="72" rx="15"/>
+        <circle className="hardware-sensor" cx="444" cy="296" r="17"/>
+        <path className="hardware-seam" d="M432 296h24M444 284v24"/>
         <path className="hardware-panel" d="M292 36H405V224L374 255H208V118L292 36Z"/>
         <path className="hardware-texture" d="M292 36H405V224L374 255H208V118L292 36Z" fill="url(#hardware-weave)"/>
         <path className="hardware-glyph hardware-glyph--slash" d="M427 68L350 165"/>
@@ -123,11 +127,17 @@ function CircuitPanel() {
       <g className="hardware-coil">
         <path className="coil-glyph" d="M56 390Q260 185 464 390V652Q260 812 56 652Z"/>
         <circle className="coil-outer" cx="260" cy="526" r="211"/>
-        <circle className="coil-mid" cx="260" cy="526" r="195"/>
+        <circle className="coil-mid" cx="260" cy="526" r="202"/>
+        <circle className="coil-groove" cx="260" cy="526" r="194"/>
+        <circle className="coil-groove" cx="260" cy="526" r="187"/>
         <circle className="coil-inner" cx="260" cy="526" r="178"/>
+        <circle className="coil-groove" cx="260" cy="526" r="169"/>
         <circle className="coil-fill" cx="260" cy="526" r="164" fill="url(#coil-shade)"/>
         <circle className="coil-texture" cx="260" cy="526" r="158" fill="url(#coil-lines)"/>
+        <circle className="coil-groove coil-groove--fine" cx="260" cy="526" r="145"/>
+        <circle className="coil-groove coil-groove--fine" cx="260" cy="526" r="138"/>
         <circle className="coil-core" cx="260" cy="526" r="55"/>
+        <path className="coil-core-notch" d="M294 484l13-10 9 8"/>
         <path className="coil-sweep" d="M75 396A211 211 0 0 1 445 396"/>
         <path className="coil-sweep coil-sweep--lower" d="M75 656A211 211 0 0 0 445 656"/>
       </g>
@@ -138,6 +148,8 @@ function CircuitPanel() {
         <path className="hardware-glyph hardware-glyph--vertical" d="M260 742V785"/>
         <circle className="glyph-dot" cx="260" cy="794" r="5"/>
         <path className="hardware-seam" d="M49 739H112V771H145M380 752H430V730H468"/>
+        <path className="hardware-seam hardware-seam--etched" d="M203 733H238M203 740H238M203 747H238M284 733H321M284 740H321M284 747H321"/>
+        <rect className="hardware-panel hardware-panel--port" x="342" y="762" width="26" height="12" rx="5"/>
         <circle className="hardware-sensor" cx="410" cy="748" r="9"/>
         <circle className="hardware-screws" cx="55" cy="780" r="5"/>
         <circle className="hardware-screws" cx="466" cy="780" r="5"/>
