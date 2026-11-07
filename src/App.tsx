@@ -211,7 +211,7 @@ function App() {
                 <div className="project-main">
                   <div className="project-type mono">{project.type}</div>
                   <h3>{project.name}</h3>
-                  <a className="project-repo mono" href={project.url} target="_blank" rel="noreferrer" onClick={(event) => event.stopPropagation()}>{project.repo} <ArrowUpRight size={11} /></a>
+                  <span className="project-repo mono">{project.repo}</span>
                   <p>{project.description}</p>
                   <div className="project-tags">{project.stack.map((tag) => <span key={tag}>{tag}</span>)}</div>
                 </div>
