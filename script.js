@@ -20,7 +20,21 @@ const finishEntry=()=>{
   body.classList.remove('is-loading');
   body.classList.add('is-ready');
 };
-if(reduce)finishEntry();else setTimeout(finishEntry,560);
+if(reduce)finishEntry();
+else {
+  const count=document.querySelector('.loader-count');
+  const bar=document.querySelector('.loader-track i');
+  const started=performance.now(),duration=1450;
+  const tick=now=>{
+    const progress=Math.min(1,(now-started)/duration);
+    const eased=1-Math.pow(1-progress,3);
+    if(count)count.textContent=String(Math.round(eased*100)).padStart(2,'0')+'%';
+    if(bar)bar.style.width=(eased*100)+'%';
+    if(progress<1)requestAnimationFrame(tick);
+    else setTimeout(finishEntry,120);
+  };
+  requestAnimationFrame(tick);
+}
 
 /* Day / night is a real theme switch, not a decorative button. */
 const themeButton=document.querySelector('.theme-switch');
@@ -28,11 +42,11 @@ function setTheme(mode){
   const day=mode==='day';
   root.dataset.theme=day?'day':'night';
   if(themeButton){
-    themeButton.setAttribute('aria-label',day?'Switch to night mode':'Switch to day mode');
+    themeButton.setAttribute('aria-label',day?'Switch to navy mode':'Switch to light mode');
     const icon=themeButton.querySelector('.theme-icon');
     const label=themeButton.querySelector('.theme-label');
     if(icon)icon.textContent=day?'☾':'☼';
-    if(label)label.textContent=day?'NIGHT MODE':'DAY MODE';
+    if(label)label.textContent=day?'NAVY MODE':'LIGHT MODE';
   }
   try{localStorage.setItem('sectorx83-theme',day?'day':'night')}catch(_){}
   drawWorld(true);
