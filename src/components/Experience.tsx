@@ -73,8 +73,8 @@ function Scene() {
       <pointLight position={[4, 3, 5]} intensity={18} color={palette[2]} />
       <pointLight position={[-4, -2, -3]} intensity={8} color={palette[1]} />
       <Core />
-      <Sparkles count={96} scale={7} size={1.9} speed={0.35} opacity={0.58} color={palette[2]} />
-      <Stars radius={22} depth={18} count={480} factor={2.2} saturation={0} fade speed={0.3} />
+      <Sparkles count={56} scale={7} size={1.9} speed={0.35} opacity={0.58} color={palette[2]} />
+      <Stars radius={22} depth={18} count={260} factor={2.2} saturation={0} fade speed={0.3} />
     </>
   );
 }
@@ -84,7 +84,7 @@ export default function Experience() {
     <div className="experience-canvas" aria-hidden="true">
       <Canvas
         camera={{ position: [0, 0, 7.2], fov: 34 }}
-        dpr={[1, 1.5]}
+        dpr={[1, 1.15]}
         gl={{ alpha: true, antialias: false, powerPreference: "low-power" }}
         frameloop="always"
       >
