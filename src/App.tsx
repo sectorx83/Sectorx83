@@ -1,11 +1,11 @@
-import { useCallback, useEffect, useRef, useState } from "react";
+import { lazy, Suspense, useCallback, useEffect, useRef, useState } from "react";
 import type { CSSProperties } from "react";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import { ArrowDown, ArrowDownRight, ArrowUpRight, ArrowUp, Github, Instagram, MoveUpRight, Menu, X, Sparkles } from "lucide-react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import Lenis from "lenis";
-import Experience from "./components/Experience";
+const ExperienceScene = lazy(() => import("./components/Experience"));
 import { projects, toolkit } from "./data/projects";
 import "./styles.css";
 
@@ -149,7 +149,7 @@ export default function App() {
         <section className="hero">
           <div className="hero-grid" />
           <div className="hero-kicker"><span>INDEPENDENT DEVELOPER / DIGITAL CRAFT</span><span>INDIA <i>10°31'N / 76°13'E</i></span></div>
-          <Experience />
+          {!loading && <Suspense fallback={<div className="experience-fallback" />}><ExperienceScene /></Suspense>}
           <div className="hero-vertical"><span>SOFTWARE / SYSTEMS / EXPERIMENTS</span><span className="hero-orbit-label">CREATIVE ENGINEERING · 2026 · </span></div>
           <div className="hero-main">
             <p className="hero-eyebrow"><Sparkles size={13} /> A PERSONAL UNIVERSE IN CONSTANT MOTION</p>
