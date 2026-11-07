@@ -77,7 +77,11 @@ const groups = [
 function Mark({ small = false }: { small?: boolean }) {
   return (
     <span className={small ? 'brand-mark brand-mark--small' : 'brand-mark'} aria-hidden="true">
-      {Array.from({ length: 25 }, (_, index) => <i key={index} className={(index === 2 || index === 10 || index === 14 || index === 22) ? 'dot dot--off' : 'dot'} />)}
+      <svg viewBox="0 0 76 38" role="presentation">
+        <path className="brand-frame" d="M1 1H75V37H1Z" />
+        <path className="brand-corner" d="M1 9V1H10M66 1H75V10M75 28V37H66M10 37H1V28" />
+        <text x="8" y="27">SX83</text>
+      </svg>
     </span>
   )
 }
@@ -140,7 +144,7 @@ function App() {
         <section className="hero section-wrap">
           <div className="hero-meta">
             <Label>INDEPENDENT DEVELOPER</Label>
-            <span className="mono hero-index">PORTFOLIO / {year}</span>
+            <span className="mono hero-index"><span className="signal-live" /> PORTFOLIO / {year}</span>
           </div>
           <div className="hero-main">
             <div className="hero-copy">
@@ -152,7 +156,7 @@ function App() {
                 <a className="text-link" href="https://github.com/sectorx83" target="_blank" rel="noreferrer">GitHub profile <ArrowUpRight size={15} /></a>
               </div>
             </div>
-            <aside className="hero-repos" aria-label="Selected GitHub repositories">
+            <aside className="hero-repos panel-frame" aria-label="Selected GitHub repositories">
               <div className="repo-panel-head mono"><span>SELECTED REPOSITORIES</span><span>05</span></div>
               {projects.map((project) => (
                 <a className="repo-index-row" href={project.url} target="_blank" rel="noreferrer" key={project.number}>
@@ -247,7 +251,7 @@ function App() {
         </section>
 
         <section className="contact-section section-wrap" id="contact" data-reveal>
-          <div className="contact-panel">
+          <div className="contact-panel panel-frame">
             <div className="contact-top">
               <Label>04 / CONTACT</Label>
               <span className="mono">OPEN TO INTERESTING CONVERSATIONS</span>
