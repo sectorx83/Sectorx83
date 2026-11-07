@@ -81,86 +81,15 @@ const groups = [
 function Mark({ small = false }: { small?: boolean }) {
   return <span className={small ? 'brand-mark brand-mark--small' : 'brand-mark'} aria-hidden="true"><svg viewBox="0 0 76 38" role="presentation"><path className="brand-frame" d="M1 1H75V37H1Z" /><path className="brand-corner" d="M1 9V1H10M66 1H75V10M75 28V37H66M10 37H1V28" /><text x="8" y="27">SX83</text></svg><sup className="brand-registered">®</sup></span>
 }
-function CircuitPanel() {
-  return <div className="hardware-artwork" aria-hidden="true">
-    <svg viewBox="0 0 520 820" preserveAspectRatio="xMidYMid meet">
-      <defs>
-        <pattern id="hardware-weave" width="7" height="7" patternUnits="userSpaceOnUse">
-          <path d="M0 7L7 0M-2 2L2-2M5 9L9 5" stroke="currentColor" strokeWidth=".45" opacity=".22" />
-        </pattern>
-        <pattern id="coil-lines" width="5" height="5" patternUnits="userSpaceOnUse">
-          <path d="M0 2.5H5" stroke="currentColor" strokeWidth=".45" opacity=".28" />
-        </pattern>
-        <radialGradient id="coil-shade">
-          <stop offset="0" stopColor="currentColor" stopOpacity=".12"/>
-          <stop offset=".72" stopColor="currentColor" stopOpacity=".035"/>
-          <stop offset="1" stopColor="currentColor" stopOpacity=".12"/>
-        </radialGradient>
-      </defs>
-      <rect className="hardware-shell" x="12" y="8" width="496" height="804" rx="35"/>
-      <rect className="hardware-inner" x="25" y="21" width="470" height="778" rx="27"/>
-      <g className="hardware-top">
-        <rect x="34" y="31" width="452" height="310" rx="22"/>
-        <rect x="206" y="34" width="202" height="207" rx="12" fill="url(#hardware-weave)"/>
-        <path className="hardware-seam" d="M206 241H410L474 177V45"/>
-        <path className="hardware-seam" d="M34 335H220V352H294"/>
-        <path className="hardware-seam hardware-seam--etched" d="M38 277H194M38 284H194M38 291H194M420 281H477M420 288H477"/>
-        <rect className="hardware-panel hardware-panel--sensor" x="412" y="260" width="63" height="72" rx="15"/>
-        <circle className="hardware-sensor" cx="444" cy="296" r="17"/>
-        <path className="hardware-seam" d="M432 296h24M444 284v24"/>
-        <path className="hardware-panel" d="M292 36H405V224L374 255H208V118L292 36Z"/>
-        <path className="hardware-texture" d="M292 36H405V224L374 255H208V118L292 36Z" fill="url(#hardware-weave)"/>
-        <path className="hardware-glyph hardware-glyph--slash" d="M427 68L350 165"/>
-        <g className="hardware-cameras">
-          <rect x="45" y="39" width="112" height="219" rx="54"/>
-          <circle cx="101" cy="94" r="39"/><circle cx="101" cy="94" r="29" className="camera-glass"/>
-          <circle cx="101" cy="203" r="39"/><circle cx="101" cy="203" r="29" className="camera-glass"/>
-          <circle cx="176" cy="137" r="17"/><circle cx="176" cy="137" r="8" className="camera-glass"/>
-          <rect x="164" y="178" width="26" height="26" rx="2" className="camera-flash"/>
-          <circle cx="453" cy="190" r="21" className="camera-sensor-ring"/><circle cx="453" cy="190" r="9" className="camera-glass camera-glass--red"/>
-          <path className="camera-glint" d="M72 77Q83 62 101 62M72 186Q83 171 101 171M168 130q5-5 10-4"/>
-        </g>
-        <g className="hardware-screws">
-          <circle cx="184" cy="35" r="5"/><circle cx="438" cy="46" r="5"/><circle cx="476" cy="116" r="5"/>
-          <circle cx="43" cy="302" r="5"/><circle cx="464" cy="300" r="5"/>
-        </g>
-      </g>
-      <g className="hardware-coil">
-        <path className="coil-glyph" d="M56 390Q260 185 464 390V652Q260 812 56 652Z"/>
-        <circle className="coil-outer" cx="260" cy="526" r="211"/>
-        <circle className="coil-mid" cx="260" cy="526" r="202"/>
-        <circle className="coil-groove" cx="260" cy="526" r="194"/>
-        <circle className="coil-groove" cx="260" cy="526" r="187"/>
-        <circle className="coil-inner" cx="260" cy="526" r="178"/>
-        <circle className="coil-groove" cx="260" cy="526" r="169"/>
-        <circle className="coil-fill" cx="260" cy="526" r="164" fill="url(#coil-shade)"/>
-        <circle className="coil-texture" cx="260" cy="526" r="158" fill="url(#coil-lines)"/>
-        <circle className="coil-groove coil-groove--fine" cx="260" cy="526" r="145"/>
-        <circle className="coil-groove coil-groove--fine" cx="260" cy="526" r="138"/>
-        <circle className="coil-core" cx="260" cy="526" r="55"/>
-        <path className="coil-core-notch" d="M294 484l13-10 9 8"/>
-        <path className="coil-sweep" d="M75 396A211 211 0 0 1 445 396"/>
-        <path className="coil-sweep coil-sweep--lower" d="M75 656A211 211 0 0 0 445 656"/>
-      </g>
-      <g className="hardware-bottom">
-        <path className="hardware-panel" d="M35 716H485V782H35Z"/>
-        <path className="hardware-texture" d="M35 716H485V782H35Z" fill="url(#hardware-weave)"/>
-        <path className="hardware-seam" d="M35 716H485M180 716V782M355 716V782"/>
-        <path className="hardware-glyph hardware-glyph--vertical" d="M260 742V785"/>
-        <circle className="glyph-dot" cx="260" cy="794" r="5"/>
-        <path className="hardware-seam" d="M49 739H112V771H145M380 752H430V730H468"/>
-        <path className="hardware-seam hardware-seam--etched" d="M203 733H238M203 740H238M203 747H238M284 733H321M284 740H321M284 747H321"/>
-        <rect className="hardware-panel hardware-panel--port" x="342" y="762" width="26" height="12" rx="5"/>
-        <circle className="hardware-sensor" cx="410" cy="748" r="9"/>
-        <circle className="hardware-screws" cx="55" cy="780" r="5"/>
-        <circle className="hardware-screws" cx="466" cy="780" r="5"/>
-        <circle className="hardware-screws" cx="194" cy="765" r="4"/>
-      </g>
-      <g className="hardware-labels">
-        <text x="217" y="278">SX / 83</text><text x="57" y="686">POWER ARRAY</text><text x="370" y="686">GLYPH / 01</text>
-      </g>
-    </svg>
-  </div>
+function ScrollGlyph() {
+  return <svg className="scroll-glyph" viewBox="0 0 88 54" fill="none" aria-hidden="true">
+    <circle className="glyph-orbit" cx="27" cy="27" r="18" />
+    <circle className="glyph-core" cx="27" cy="27" r="5" />
+    <path className="glyph-trace" d="M45 27H59V12H75M59 27V42H75" />
+    <path className="glyph-bar" d="M67 8V16M75 38V46" />
+    <circle className="glyph-node" cx="75" cy="12" r="3" />
+    <circle className="glyph-node glyph-node--delay" cx="75" cy="42" r="3" />
+  </svg>
 }
 function Label({ children }: { children: ReactNode }) { return <span className="eyebrow"><span className="eyebrow-dot" />{children}</span> }
 function Brand({ closeMenu }: { closeMenu?: () => void }) {
@@ -188,8 +117,8 @@ function Footer() {
   </footer>
 }
 function ProjectCard({ project }: { project: Project }) {
-  return <a className={project.featured ? 'project-card project-card--featured' : 'project-card'} href={`/projects/${project.slug}`}>
-    <div className="project-number mono">{project.number}</div>
+  return <a className={project.featured ? 'project-card project-card--featured' : 'project-card'} data-reveal href={`/projects/${project.slug}`}>
+    <div className="project-number mono">{project.number}<ScrollGlyph /></div>
     <div className="project-main"><div className="project-type mono">{project.type}</div><h3>{project.name}</h3><span className="project-repo mono">{project.repo}</span><p>{project.description}</p><div className="project-tags">{project.stack.map((tag) => <span key={tag}>{tag}</span>)}</div></div>
     <div className="project-side"><span className="project-status"><i />{project.status}</span><span className="project-arrow"><ArrowUpRight size={20} /></span></div>
   </a>
@@ -205,33 +134,20 @@ function HomePage() {
       <div className="hero-footer"><span className="mono">SCROLL TO EXPLORE</span><span className="scroll-line" /><span className="mono">01 — 05</span></div>
     </section>
     <section className="intro-band section-wrap panel-rule" data-reveal><div className="band-index mono">A NOTE</div><p>I like understanding how things work, then making my own version. Sometimes that's an app. Sometimes it's a system that starts much closer to the metal.</p><Mark /></section>
-    <section className="hardware-study section-wrap" aria-labelledby="hardware-study-title" data-reveal>
-      <div className="hardware-study-copy">
-        <Label>DESIGN STUDY / 01</Label>
-        <h2 id="hardware-study-title">Engineering,<br /><span>made visible.</span></h2>
-        <p>A closer look at the layers beneath the surface. A custom animated hardware study built from vector shapes, fine textures, mechanical seams and illuminated glyph details.</p>
-        <div className="hardware-study-spec mono"><span>FORM / MODULAR ASSEMBLY</span><span>DETAIL / ANIMATED SVG</span><span>PALETTE / MONOCHROME</span></div>
-      </div>
-      <div className="hardware-stage">
-        <div className="hardware-stage-head mono"><span>SX83 / HARDWARE STUDY</span><span><i /> LIVE ELEMENT</span></div>
-        <CircuitPanel />
-        <div className="hardware-stage-foot mono"><span>COIL ARRAY / 01</span><span>INTERNAL STRUCTURE</span></div>
-      </div>
-    </section>
     <section className="content-section section-wrap" id="about" data-reveal>
-      <div className="section-heading"><Label>01 / ABOUT</Label><span className="mono section-side-note">A PERSON, NOT A PITCH DECK.</span></div>
+      <div className="section-heading"><Label>01 / ABOUT</Label><ScrollGlyph /><span className="mono section-side-note">A PERSON, NOT A PITCH DECK.</span></div>
       <div className="about-grid"><div><h2>Curious by default.<br /><span>Builder by habit.</span></h2><div className="about-aside mono"><span>MY DEFAULT MODE</span><strong>LEARN → BUILD → TEST → REPEAT</strong></div></div>
         <div className="about-copy"><p>I'm an independent developer who learns by taking things apart and building them again. I like seeing how the pieces fit, from the first interface a person touches down to the systems doing the work underneath.</p><p>That curiosity has pulled me in a few directions: building applications, experimenting with AI tools, designing developer workflows and spending a lot of time with operating-system internals. I don't want to stay in one layer of the stack just because it's familiar.</p><p>I care about the details that make software dependable: clear architecture, useful tests, understandable behaviour and interfaces that feel considered. Most projects are also a way to learn something I couldn't learn by just reading about it.</p><div className="about-note"><span className="note-symbol">↳</span><span>Still learning. Still shipping. Still breaking things occasionally.</span></div></div>
       </div>
     </section>
     <section className="work-section section-wrap" id="work" data-reveal>
-      <div className="section-heading"><Label>02 / SELECTED WORK</Label><span className="mono section-side-note">FIVE PROJECTS. MANY OPEN TABS.</span></div>
+      <div className="section-heading"><Label>02 / SELECTED WORK</Label><ScrollGlyph /><span className="mono section-side-note">FIVE PROJECTS. MANY OPEN TABS.</span></div>
       <div className="work-heading"><h2>Things I've<br /><span>put together.</span></h2><p>Each project has its own rabbit hole. Open one for the idea, the engineering focus and the repository.</p></div>
       <div className="project-list">{projects.map((project) => <ProjectCard project={project} key={project.number} />)}</div>
       <a className="all-projects" href="https://github.com/sectorx83?tab=repositories" target="_blank" rel="noreferrer">More experiments on GitHub <ArrowRight size={16} /></a>
     </section>
     <section className="building-section section-wrap" id="building" data-reveal>
-      <div className="section-heading"><Label>03 / CURRENTLY BUILDING</Label><span className="mono section-side-note">THE WORKBENCH, NOT A ROADMAP.</span></div>
+      <div className="section-heading"><Label>03 / CURRENTLY BUILDING</Label><ScrollGlyph /><span className="mono section-side-note">THE WORKBENCH, NOT A ROADMAP.</span></div>
       <div className="building-intro"><h2>What's on<br /><span>the workbench.</span></h2><p>A quick snapshot of the themes I'm spending time on across the projects. These are focus areas, not made-up percentage bars.</p></div>
       <div className="building-grid">
         <article className="building-card building-card--wide"><div className="building-card-top"><span className="mono">01 / RUNTIME DESIGN</span><span className="building-indicator"><i /> ACTIVE THREAD</span></div><div className="building-card-main"><div className="building-icon"><Layers3 size={19} /></div><div><h3>Gravity</h3><p>Exploring safe graph changes and workload movement inside a running computational system.</p><a href="/projects/gravity">Project details <ArrowUpRight size={14} /></a></div></div></article>
@@ -240,7 +156,7 @@ function HomePage() {
       <div className="building-foot mono"><span>COMPLETED: CATHEDRAL · FLUX AGENT · EDITH X1</span><span>ACTIVE WORK: GRAVITY · D3X8</span></div>
     </section>
     <section className="toolkit-section section-wrap" id="toolkit" data-reveal>
-      <div className="section-heading"><Label>04 / TOOLKIT</Label><span className="mono section-side-note">TOOLS CHANGE. CURIOSITY DOESN'T.</span></div>
+      <div className="section-heading"><Label>04 / TOOLKIT</Label><ScrollGlyph /><span className="mono section-side-note">TOOLS CHANGE. CURIOSITY DOESN'T.</span></div>
       <div className="toolkit-layout"><div><h2>Some tools<br /><span>I've spent time with.</span></h2><p className="toolkit-intro">Not a checklist of expertise. Just technologies I've used, explored or keep coming back to.</p></div><div className="tool-groups">{groups.map((group, index) => <div className="tool-group" key={group.label}><div className="tool-group-head"><span className="mono">{group.label}</span><span className="mono">0{index + 1}</span></div><div className="tool-pills">{group.items.map((item) => <span className="tool-pill" key={item}>{item}</span>)}</div></div>)}</div></div>
     </section>
     <ContactSection />
