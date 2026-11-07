@@ -125,7 +125,7 @@ export default function App() {
     const dx = gsap.quickTo(dot, "x", { duration: 0.12, ease: "power2" });
     const dy = gsap.quickTo(dot, "y", { duration: 0.12, ease: "power2" });
     const move = (event: PointerEvent) => { x(event.clientX); y(event.clientY); dx(event.clientX); dy(event.clientY); };
-    const hover = (event: Event) => cursor.classList.toggle("is-hover", (event.target as HTMLElement).closest("a,button"));
+    const hover = (event: Event) => cursor.classList.toggle("is-hover", !!(event.target as HTMLElement).closest("a,button"));
     window.addEventListener("pointermove", move);
     document.addEventListener("pointerover", hover);
     return () => { window.removeEventListener("pointermove", move); document.removeEventListener("pointerover", hover); };
