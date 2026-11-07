@@ -1,11 +1,11 @@
-import { lazy, Suspense, useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import type { CSSProperties } from "react";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import { ArrowDown, ArrowDownRight, ArrowUpRight, ArrowUp, Github, Instagram, MoveUpRight, Menu, X, Sparkles, Copy, Check, BookOpen } from "lucide-react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import Lenis from "lenis";
-const ExperienceScene = lazy(() => import("./components/Experience"));
+
 import { projects, toolkit } from "./data/projects";
 import "./styles.css";
 
@@ -246,7 +246,7 @@ export default function App() {
   return (
     <div className="site-shell" ref={root}>
       <AnimatePresence>{loading && <Loader onFinish={finishLoader} />}</AnimatePresence>
-      <div className="cursor" /><div className="cursor-dot" /><div className="space-explorer" ref={explorer} aria-hidden="true"><span className="explorer-thruster" /><span className="explorer-backpack" /><span className="explorer-head"><i /></span><span className="explorer-body" /><span className="explorer-arm explorer-arm-left" /><span className="explorer-arm explorer-arm-right" /><span className="explorer-leg explorer-leg-left" /><span className="explorer-leg explorer-leg-right" /><span className="explorer-visor" /><span className="explorer-star">✦</span></div>
+      <div className="cursor" /><div className="cursor-dot" /><div className="space-explorer" ref={explorer} aria-hidden="true"><span className="explorer-thruster" /><span className="explorer-backpack" /><span className="explorer-head"><i /></span><span className="explorer-body" /><span className="explorer-arm explorer-arm-left" /><span className="explorer-arm explorer-arm-right" /><span className="explorer-leg explorer-leg-left" /><span className="explorer-leg explorer-leg-right" /><span className="explorer-visor" /><span className="explorer-star">✦</span><span className="explorer-antenna" /><span className="explorer-pack-light" /><span className="explorer-boot explorer-boot-left" /><span className="explorer-boot explorer-boot-right" /><span className="explorer-trail" /></div>
       <div className="noise-layer" /><div className="retro-scanlines" aria-hidden="true" /><div className="retro-vignette" aria-hidden="true" /><div className="comic-glitch-overlay" aria-hidden="true" /><div className="scroll-progress" aria-hidden="true"><i /></div>
       <header className="site-header">
         <a href="#top" className="brand" aria-label="sectorx83 home"><span className="brand-mark">s<span>×</span></span><span>SECTORX83<sup>®</sup></span></a>
@@ -258,9 +258,8 @@ export default function App() {
 
       <main id="top">
         <section className="hero">
-          <div className="hero-grid" /><div className="hero-black-hole" aria-hidden="true"><div className="black-hole-lens" /><div className="black-hole-ring black-hole-ring-a" /><div className="black-hole-ring black-hole-ring-b" /><div className="black-hole-core" /><span>EVENT HORIZON / 0083</span></div>
+          <div className="hero-grid" /><div className="hero-black-hole" aria-hidden="true"><div className="black-hole-lens" /><div className="black-hole-ring black-hole-ring-a" /><div className="black-hole-ring black-hole-ring-b" /><div className="black-hole-core" /><div className="black-hole-lensing" /><div className="black-hole-particles"><i /><i /><i /><i /><i /><i /><i /><i /><i /><i /><i /><i /></div><div className="black-hole-glint" /><span>EVENT HORIZON / 0083</span></div>
           <div className="hero-kicker"><span>INDEPENDENT DEVELOPER / DIGITAL CRAFT</span><span>INDIA <i>10°31'N / 76°13'E</i></span></div>
-          {!loading && <Suspense fallback={<div className="experience-fallback" />}><ExperienceScene /></Suspense>}
           <div className="hero-vertical"><span>SOFTWARE / SYSTEMS / EXPERIMENTS</span><span className="hero-orbit-label">CREATIVE ENGINEERING · 2026 · </span></div>
           <div className="hero-main">
             <p className="hero-eyebrow"><Sparkles size={13} /> A PERSONAL UNIVERSE IN CONSTANT MOTION</p>
