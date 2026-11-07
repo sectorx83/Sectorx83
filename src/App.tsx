@@ -34,40 +34,40 @@ const projects: Project[] = [
     number: '02', slug: 'cathedral', name: 'Cathedral', type: 'OPEN COMPUTING LABORATORY',
     description: 'A developer platform for running isolated software experiments, inspecting behaviour and reproducing environments.',
     stack: ['Rust', 'Tauri', 'Linux isolation'], repo: 'sectorx83/Cathedral',
-    url: 'https://github.com/sectorx83/Cathedral', status: 'BUILDING',
-    focus: 'Reproducible experiments',
-    overview: 'Cathedral is a workspace for experiments that should be isolated, inspectable and repeatable. The aim is to make it easier to run software in controlled environments and understand what happened inside them.',
-    details: ['Build a clear workflow around creating and running experiments.', 'Use operating-system isolation concepts to keep experiments separated.', 'Make behaviour easier to inspect and reproduce instead of relying on guesswork.'],
+    url: 'https://github.com/sectorx83/Cathedral', status: 'COMPLETED',
+    focus: 'Reproducible experiment workflows',
+    overview: 'Cathedral is a developer workspace for isolated, inspectable and repeatable software experiments. Its completed implementation brings the experiment workflow and environment controls into one focused tool, making it easier to understand what ran and reproduce the result.',
+    details: ['Delivered a workflow for creating and running isolated experiments.', 'Applied operating-system isolation concepts to separate experiment environments.', 'Added a more inspectable, repeatable approach to software experiments.'],
     areas: ['Isolation workflows', 'Experiment lifecycle', 'Observability', 'Developer experience'],
   },
   {
     number: '03', slug: 'flux-agent', name: 'Flux Agent', type: 'LOCAL AI TOOLING',
     description: 'A local-first AI agent and automation CLI for conversation, planning, development and approved task execution.',
     stack: ['Python', 'Groq', 'CLI'], repo: 'sectorx83/Flux-agent',
-    url: 'https://github.com/sectorx83/Flux-agent', status: 'BUILDING',
-    focus: 'Useful, controlled agent workflows',
-    overview: 'Flux Agent is a command-line workspace for working with AI during development. It is designed around local-first usage, practical automation and keeping consequential actions under the user’s control.',
-    details: ['Bring conversation and task planning into a developer-friendly CLI.', 'Connect model providers through a consistent workflow.', 'Keep tool execution understandable, reviewable and explicitly approved.'],
+    url: 'https://github.com/sectorx83/Flux-agent', status: 'COMPLETED',
+    focus: 'Local-first agent workflows',
+    overview: 'Flux Agent is a local-first AI agent and automation CLI for development work. Its completed project scope brings conversation, planning and controlled task execution into a developer-focused command-line workflow.',
+    details: ['Delivered a developer-focused CLI for conversation and task planning.', 'Integrated model-provider workflows behind a consistent interface.', 'Kept consequential tool execution understandable and approval-controlled.'],
     areas: ['CLI experience', 'Model providers', 'Task planning', 'Tool execution'],
   },
   {
     number: '04', slug: 'edithx1', name: 'EDITH X1', type: 'AI ASSISTANT PLATFORM',
     description: 'A multi-user assistant app combining AI chat, voice input, speech playback and the EDITH NETWORK execution layer.',
     stack: ['React', 'TypeScript', 'Supabase'], repo: 'sectorx83/edithx1',
-    url: 'https://github.com/sectorx83/edithx1', status: 'BUILDING',
-    focus: 'A cohesive voice and chat experience',
-    overview: 'EDITH X1 brings conversational AI into a multi-user application. The project combines a responsive interface with chat, voice input, speech playback and an execution layer called EDITH NETWORK.',
-    details: ['Make chat and voice feel like parts of one coherent assistant.', 'Support multiple users rather than a single-user demo.', 'Keep the interface, backend and execution layer connected cleanly.'],
+    url: 'https://github.com/sectorx83/edithx1', status: 'COMPLETED',
+    focus: 'Multi-user assistant experience',
+    overview: 'EDITH X1 is a multi-user assistant application combining AI chat, voice input, speech playback and the EDITH NETWORK execution layer. The project’s current planned scope is complete, bringing its core assistant experience and supporting application pieces together.',
+    details: ['Completed the unified chat and voice assistant experience.', 'Built the application for multiple users rather than a single-user demo.', 'Connected the interface, backend and EDITH NETWORK execution layer.'],
     areas: ['Chat interface', 'Voice interaction', 'Speech playback', 'EDITH NETWORK'],
   },
   {
     number: '05', slug: 'd3x8', name: 'D3X8', type: '64-BIT OPERATING SYSTEM',
-    description: 'An x86_64 operating system project, built from the ground up across its kernel, userspace, drivers, networking and desktop.',
+    description: 'An experimental x86_64 operating system exploring kernel design, userspace, drivers, networking and a graphical desktop.',
     stack: ['C', 'x86_64', 'Kernel'], repo: 'sectorx83/D3X8',
-    url: 'https://github.com/sectorx83/D3X8', status: 'RESEARCH',
-    focus: 'Kernel and system behaviour',
-    overview: 'D3X8 is an operating-system project focused on understanding the layers between boot and a usable desktop. It spans low-level kernel work, userspace programs, hardware support and the tools that make the system usable.',
-    details: ['Work across kernel and userspace boundaries.', 'Investigate scheduling, process behaviour and system stability.', 'Develop drivers, networking and desktop components as part of one system.'],
+    url: 'https://github.com/sectorx83/D3X8', status: 'EXPERIMENTAL OS',
+    focus: 'Kernel and operating-system experiments',
+    overview: 'D3X8 is an experimental operating system built to explore the layers between boot and a usable desktop. It spans low-level kernel work, userspace programs, hardware support and the tools that make the system usable. It is an ongoing systems experiment, not a finished commercial OS.',
+    details: ['Experiment across kernel and userspace boundaries.', 'Investigate scheduling, process behaviour and system stability.', 'Build and test drivers, networking and desktop components as parts of one system.'],
     areas: ['x86_64 kernel', 'Scheduling and processes', 'Drivers and networking', 'Userspace and desktop'],
   },
 ]
@@ -179,10 +179,9 @@ function HomePage() {
       <div className="building-intro"><h2>What's on<br /><span>the workbench.</span></h2><p>A quick snapshot of the themes I'm spending time on across the projects. These are focus areas, not made-up percentage bars.</p></div>
       <div className="building-grid">
         <article className="building-card building-card--wide"><div className="building-card-top"><span className="mono">01 / RUNTIME DESIGN</span><span className="building-indicator"><i /> ACTIVE THREAD</span></div><div className="building-card-main"><div className="building-icon"><Layers3 size={19} /></div><div><h3>Gravity</h3><p>Exploring safe graph changes and workload movement inside a running computational system.</p><a href="/projects/gravity">Project details <ArrowUpRight size={14} /></a></div></div></article>
-        <article className="building-card"><div className="building-card-top"><span className="mono">02 / SYSTEMS</span><span className="building-indicator"><i /> EXPLORING</span></div><div className="building-icon"><Cpu size={19} /></div><h3>D3X8</h3><p>Kernel behaviour, process scheduling and the layers that make an operating system usable.</p><a href="/projects/d3x8">Project details <ArrowUpRight size={14} /></a></article>
-        <article className="building-card"><div className="building-card-top"><span className="mono">03 / DEVELOPER TOOLS</span><span className="building-indicator"><i /> BUILDING</span></div><div className="building-icon"><Terminal size={19} /></div><h3>Flux Agent</h3><p>Local-first agent workflows, task planning and controlled tool execution.</p><a href="/projects/flux-agent">Project details <ArrowUpRight size={14} /></a></article>
-      </div>
-      <div className="building-foot mono"><span>ALSO IN THE MIX: CATHEDRAL · EDITH X1</span><span>UPDATED AS THE WORK EVOLVES</span></div>
+        <article className="building-card"><div className="building-card-top"><span className="mono">02 / EXPERIMENTAL OS</span><span className="building-indicator"><i /> EXPERIMENTAL</span></div><div className="building-icon"><Cpu size={19} /></div><h3>D3X8</h3><p>Experimental kernel, scheduling, userspace and hardware work across an evolving x86_64 operating system.</p><a href="/projects/d3x8">Project details <ArrowUpRight size={14} /></a></article>
+       </div>
+      <div className="building-foot mono"><span>COMPLETED: CATHEDRAL · FLUX AGENT · EDITH X1</span><span>ACTIVE WORK: GRAVITY · D3X8</span></div>
     </section>
     <section className="toolkit-section section-wrap" id="toolkit" data-reveal>
       <div className="section-heading"><Label>04 / TOOLKIT</Label><span className="mono section-side-note">TOOLS CHANGE. CURIOSITY DOESN'T.</span></div>
@@ -211,11 +210,11 @@ function ProjectPage({ project }: { project: Project }) {
   return <main className="project-detail section-wrap" id="top">
     <a className="back-link mono" href="/#work"><ArrowLeft size={14} /> BACK TO ALL PROJECTS</a>
     <div className="detail-meta"><Label>PROJECT / {project.number}</Label><span className="mono">{project.type}</span></div>
-    <div className="detail-hero"><div><p className="hero-kicker mono">SECTORX83 / SELECTED WORK</p><h1>{project.name}<span className="detail-period">.</span></h1><p className="detail-lede">{project.description}</p></div><div className="detail-status"><span className="project-status"><i />{project.status}</span><span className="mono">CURRENT FOCUS</span><strong>{project.focus}</strong></div></div>
+    <div className="detail-hero"><div><p className="hero-kicker mono">SECTORX83 / SELECTED WORK</p><h1>{project.name}<span className="detail-period">.</span></h1><p className="detail-lede">{project.description}</p></div><div className="detail-status"><span className="project-status"><i />{project.status}</span><span className="mono">{project.status === 'COMPLETED' ? 'PROJECT OUTCOME' : 'CURRENT FOCUS'}</span><strong>{project.focus}</strong></div></div>
     <div className="detail-rule" />
     <div className="detail-content-grid">
       <section className="detail-overview"><Label>THE IDEA</Label><h2>What it's<br /><span>about.</span></h2><p>{project.overview}</p><div className="detail-repo"><span className="mono">SOURCE REPOSITORY</span><a href={project.url} target="_blank" rel="noreferrer">{project.repo} <ExternalLink size={15} /></a></div></section>
-      <section className="detail-notes"><Label>ENGINEERING NOTES</Label><h2>What I'm<br /><span>working through.</span></h2><ul>{project.details.map((detail) => <li key={detail}><span>↳</span>{detail}</li>)}</ul></section>
+      <section className="detail-notes"><Label>{project.status === 'COMPLETED' ? 'DELIVERED WORK' : 'ENGINEERING NOTES'}</Label><h2>{project.status === 'COMPLETED' ? <>What was<br /><span>delivered.</span></> : <>What I'm<br /><span>working through.</span></>}</h2><ul>{project.details.map((detail) => <li key={detail}><span>↳</span>{detail}</li>)}</ul></section>
     </div>
     <section className="detail-stack"><div><Label>AREAS OF FOCUS</Label><h2>Inside the<br /><span>project.</span></h2></div><div className="detail-area-grid">{project.areas.map((area, i) => <div key={area}><span className="mono">0{i + 1}</span><strong>{area}</strong></div>)}</div></section>
     <section className="detail-bottom"><div><span className="mono">NEXT PROJECT / {next.number}</span><h2>{next.name}</h2></div><a href={`/projects/${next.slug}`}>Explore project <ArrowRight size={17} /></a></section>
