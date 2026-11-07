@@ -82,7 +82,7 @@ function Mark({ small = false }: { small?: boolean }) {
   return <span className={small ? 'brand-mark brand-mark--small' : 'brand-mark'} aria-hidden="true"><svg viewBox="0 0 76 38" role="presentation"><path className="brand-frame" d="M1 1H75V37H1Z" /><path className="brand-corner" d="M1 9V1H10M66 1H75V10M75 28V37H66M10 37H1V28" /><text x="8" y="27">SX83</text></svg><sup className="brand-registered">®</sup></span>
 }
 function CircuitPanel() {
-  return <div className="circuit-panel" aria-hidden="true">
+  return <div className="hardware-artwork" aria-hidden="true">
     <svg viewBox="0 0 520 820" preserveAspectRatio="xMidYMid meet">
       <defs>
         <pattern id="hardware-weave" width="7" height="7" patternUnits="userSpaceOnUse">
@@ -204,6 +204,19 @@ function HomePage() {
       <div className="hero-footer"><span className="mono">SCROLL TO EXPLORE</span><span className="scroll-line" /><span className="mono">01 — 05</span></div>
     </section>
     <section className="intro-band section-wrap panel-rule" data-reveal><div className="band-index mono">A NOTE</div><p>I like understanding how things work, then making my own version. Sometimes that's an app. Sometimes it's a system that starts much closer to the metal.</p><Mark /></section>
+    <section className="hardware-study section-wrap" aria-labelledby="hardware-study-title" data-reveal>
+      <div className="hardware-study-copy">
+        <Label>DESIGN STUDY / 01</Label>
+        <h2 id="hardware-study-title">Engineering,<br /><span>made visible.</span></h2>
+        <p>A closer look at the layers beneath the surface. A custom animated hardware study built from vector shapes, fine textures, mechanical seams and illuminated glyph details.</p>
+        <div className="hardware-study-spec mono"><span>FORM / MODULAR ASSEMBLY</span><span>DETAIL / ANIMATED SVG</span><span>PALETTE / MONOCHROME</span></div>
+      </div>
+      <div className="hardware-stage">
+        <div className="hardware-stage-head mono"><span>SX83 / HARDWARE STUDY</span><span><i /> LIVE ELEMENT</span></div>
+        <CircuitPanel />
+        <div className="hardware-stage-foot mono"><span>COIL ARRAY / 01</span><span>INTERNAL STRUCTURE</span></div>
+      </div>
+    </section>
     <section className="content-section section-wrap" id="about" data-reveal>
       <div className="section-heading"><Label>01 / ABOUT</Label><span className="mono section-side-note">A PERSON, NOT A PITCH DECK.</span></div>
       <div className="about-grid"><div><h2>Curious by default.<br /><span>Builder by habit.</span></h2><div className="about-aside mono"><span>MY DEFAULT MODE</span><strong>LEARN → BUILD → TEST → REPEAT</strong></div></div>
@@ -280,6 +293,6 @@ function App() {
     return () => observer.disconnect()
   }, [path])
   useEffect(() => { document.title = project ? `${project.name} — Sectorx83` : 'Sectorx83 — Independent developer' }, [project])
-  return <div className="site-shell"><CircuitPanel /><Header dark={dark} setDark={setDark} />{project ? <ProjectPage project={project} /> : projectSlug ? <main className="not-found section-wrap"><Label>404 / NOT FOUND</Label><h1>That project<br /><span>isn't here.</span></h1><a className="button button--dark" href="/#work">Back to projects <ArrowLeft size={15} /></a></main> : <HomePage />}<Footer /></div>
+  return <div className="site-shell"><Header dark={dark} setDark={setDark} />{project ? <ProjectPage project={project} /> : projectSlug ? <main className="not-found section-wrap"><Label>404 / NOT FOUND</Label><h1>That project<br /><span>isn't here.</span></h1><a className="button button--dark" href="/#work">Back to projects <ArrowLeft size={15} /></a></main> : <HomePage />}<Footer /></div>
 }
 export default App
