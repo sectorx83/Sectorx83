@@ -262,3 +262,46 @@ body{font-family:'Space Grotesk',sans-serif}
 @keyframes screen-rip{0%,84%,86%,100%{opacity:0;transform:translateX(0)}85%{opacity:.8;transform:translateX(7px)}87%{opacity:.35;transform:translateX(-4px)}}
 @media(max-width:680px){.hero-black-hole{right:-75px;top:27%;width:235px;opacity:.48}.space-explorer{scale:.82}.site-shell .project-card:nth-child(odd) .project-title-row h3,.site-shell .project-card:nth-child(even) .project-title-row h3{animation:none}}
 @media(prefers-reduced-motion:reduce){.hero-black-hole,.black-hole-ring-a,.black-hole-ring-b,.space-explorer:after,.explorer-star,.explorer-thruster{animation:none!important}.space-explorer{display:none}.site-shell .hero-title .line-inner,.site-shell .project-title-row h3{animation:none!important}}
+
+/* HERO REFOCUS: expose the gravitational centre */
+.experience-canvas{display:none!important}
+.hero-black-hole{z-index:1;right:clamp(5px,8vw,132px);top:14%;width:clamp(310px,43vw,610px);opacity:1;filter:drop-shadow(0 0 34px rgba(142,66,255,.38)) drop-shadow(0 0 90px rgba(255,83,195,.18));animation:hole-drift 10s ease-in-out infinite}
+.black-hole-lens{inset:2%;background:radial-gradient(ellipse at 50% 50%,transparent 0 23%,rgba(8,4,18,.14) 27%,rgba(143,247,255,.18) 35%,rgba(255,114,198,.17) 41%,transparent 57%),conic-gradient(from 35deg,transparent 0 22%,rgba(255,114,198,.14) 27%,transparent 34% 57%,rgba(143,247,255,.16) 64%,transparent 72%);filter:blur(8px);animation:lens-warp 8s ease-in-out infinite alternate}
+.black-hole-ring{left:-3%;top:29%;width:106%;height:42%;border-width:clamp(8px,1.5vw,19px);filter:blur(1.4px) saturate(1.35)}
+.black-hole-ring-a{border-top-color:#ff8bd9;border-bottom-color:#7849ff;box-shadow:0 -10px 38px rgba(255,83,195,.72),0 14px 44px rgba(111,83,255,.65),0 0 85px rgba(143,247,255,.18);animation:hole-spin 7s linear infinite}
+.black-hole-ring-b{left:-8%;top:38%;width:116%;height:24%;border-width:5px;border-left-color:#a5fbff;border-right-color:#ff9a55;filter:blur(2px);opacity:.95;animation:hole-spin-reverse 10s linear infinite}
+.black-hole-core{inset:27%;background:radial-gradient(circle at 43% 38%,#000 0 48%,#020106 63%,rgba(0,0,0,.94) 70%,transparent 74%);box-shadow:0 0 25px 15px rgba(0,0,0,.98),0 0 75px 35px rgba(0,0,0,.88),0 0 120px 45px rgba(112,62,180,.2)}
+.black-hole-lensing{position:absolute;inset:20%;border-radius:50%;border:1px solid rgba(177,238,255,.18);box-shadow:inset 0 0 30px rgba(143,247,255,.12),0 0 24px rgba(255,114,198,.14);transform:scaleY(.38) rotate(-19deg);animation:lens-warp 5.5s ease-in-out infinite alternate}
+.black-hole-particles{position:absolute;inset:-8%;border-radius:50%;animation:particle-orbit 26s linear infinite}
+.black-hole-particles i{position:absolute;left:50%;top:50%;width:3px;height:3px;border-radius:50%;background:#fff;box-shadow:0 0 9px 2px #8ff7ff}
+.black-hole-particles i:nth-child(1){transform:rotate(0deg) translateX(48%)}.black-hole-particles i:nth-child(2){transform:rotate(30deg) translateX(57%);background:#ff8bd9}.black-hole-particles i:nth-child(3){transform:rotate(61deg) translateX(43%)}.black-hole-particles i:nth-child(4){transform:rotate(92deg) translateX(62%);background:#ff8bd9}.black-hole-particles i:nth-child(5){transform:rotate(123deg) translateX(51%)}.black-hole-particles i:nth-child(6){transform:rotate(154deg) translateX(58%)}.black-hole-particles i:nth-child(7){transform:rotate(185deg) translateX(46%);background:#ff8bd9}.black-hole-particles i:nth-child(8){transform:rotate(216deg) translateX(60%)}.black-hole-particles i:nth-child(9){transform:rotate(247deg) translateX(49%)}.black-hole-particles i:nth-child(10){transform:rotate(278deg) translateX(56%);background:#ff8bd9}.black-hole-particles i:nth-child(11){transform:rotate(309deg) translateX(45%)}.black-hole-particles i:nth-child(12){transform:rotate(340deg) translateX(61%)}
+.black-hole-glint{position:absolute;left:12%;top:47%;width:76%;height:2px;background:linear-gradient(90deg,transparent,#a7f8ff 22%,#fff 50%,#ff8bd9 78%,transparent);filter:blur(2px);opacity:.62;transform:rotate(-18deg);animation:glint-flare 4s ease-in-out infinite}
+.hero-black-hole>span{right:0;bottom:3%;color:#b9a0ff;text-shadow:0 0 12px #8f54ff}
+@keyframes lens-warp{0%{transform:scaleY(.34) rotate(-19deg);opacity:.52}100%{transform:scaleY(.5) rotate(-12deg);opacity:1}}
+@keyframes particle-orbit{to{transform:rotate(360deg)}}
+@keyframes glint-flare{0%,100%{opacity:.28;scale:.78 1}50%{opacity:.9;scale:1.08 1}}
+.space-explorer{z-index:95;width:42px;height:58px;filter:drop-shadow(0 0 8px rgba(143,247,255,.5)) drop-shadow(0 7px 10px rgba(0,0,0,.72));transform-origin:50% 45%}
+.explorer-head{left:10px;top:2px;width:22px;height:20px;border-width:3px;background:#f4d9bf;box-shadow:0 -5px 0 #39244e,4px -7px 0 #39244e,0 0 0 2px rgba(143,247,255,.15)}
+.explorer-head:before{left:-3px;top:-6px;width:23px;height:7px;background:#39244e;box-shadow:8px 3px 0 #39244e}
+.explorer-head i{right:3px;top:7px;width:3px;height:3px;box-shadow:-8px 0 0 #171126}
+.explorer-body{left:9px;top:22px;width:25px;height:20px;background:#ff72c6;border:3px solid #171126;box-shadow:inset -6px 0 #a63890,0 0 10px rgba(255,114,198,.35)}
+.explorer-backpack{left:2px;top:24px;width:9px;height:16px;background:#8ff7ff;border:2px solid #171126;box-shadow:0 0 9px rgba(143,247,255,.6)}
+.explorer-visor{left:13px;top:9px;width:15px;height:6px;background:#a9fbff;box-shadow:0 0 11px 2px #8ff7ff}
+.explorer-arm{top:24px;width:9px;height:17px}
+.explorer-arm-left{left:2px}.explorer-arm-right{right:0}
+.explorer-leg{top:39px;width:9px;height:14px;background:#8ff7ff}
+.explorer-leg-left{left:10px}.explorer-leg-right{left:24px}
+.explorer-boot{position:absolute;top:49px;width:12px;height:6px;background:#ff72c6;border:2px solid #171126}
+.explorer-boot-left{left:8px}.explorer-boot-right{left:22px}
+.explorer-antenna{position:absolute;left:29px;top:-8px;width:2px;height:11px;background:#8ff7ff;transform:rotate(25deg)}
+.explorer-antenna:after{content:"";position:absolute;right:-2px;top:-3px;width:5px;height:5px;border-radius:50%;background:#ff72c6;box-shadow:0 0 9px #ff72c6}
+.explorer-pack-light{position:absolute;left:3px;top:28px;width:3px;height:5px;background:#fff;box-shadow:0 0 9px 3px #8ff7ff;animation:pack-blink .6s steps(2,end) infinite}
+.explorer-trail{position:absolute;left:13px;top:57px;width:16px;height:26px;background:linear-gradient(180deg,rgba(255,114,198,.9),rgba(143,247,255,.38),transparent);clip-path:polygon(25% 0,75% 0,100% 100%,0 100%);filter:blur(2px);transform-origin:top;animation:thruster 130ms steps(2,end) infinite alternate}
+.space-explorer:after{display:none}
+.explorer-star{right:-19px;top:-13px;font-size:9px;text-shadow:0 0 12px #ff72c6}
+@keyframes pack-blink{50%{opacity:.25}}
+.space-explorer.is-travelling{filter:drop-shadow(0 0 13px rgba(143,247,255,.7)) drop-shadow(0 8px 13px rgba(0,0,0,.7))}
+.space-explorer.is-travelling .explorer-trail{scale:1.2 1.25}
+@media(max-width:900px){.hero-black-hole{right:-4%;top:20%;width:52vw}.hero-main{max-width:78%}}
+@media(max-width:680px){.hero-black-hole{right:-27%;top:23%;width:84vw;opacity:.82}.hero-main{max-width:100%}.space-explorer{scale:.9}}
+@media(prefers-reduced-motion:reduce){.hero-black-hole,.black-hole-ring-a,.black-hole-ring-b,.black-hole-particles,.black-hole-lensing,.black-hole-glint{animation:none!important}.space-explorer{display:none}}
