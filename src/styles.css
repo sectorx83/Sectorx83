@@ -116,3 +116,36 @@
 @media(max-width:900px){}
 @media(max-width:680px){.site-shell .hero-title{font-size:clamp(55px,13.5vw,94px)}.retro-scanlines{opacity:.09}.site-shell:before{opacity:.08}}
 @media(prefers-reduced-motion:reduce){.site-shell .hero-main,.site-shell .hero-title .line:nth-child(2) .line-inner,.site-shell .hero-orbit-label,.site-shell .section-title{animation:none!important}.retro-scanlines{opacity:.05}}
+
+
+/* COMIC MULTIVERSE MOTION: chromatic offsets, ink texture and panel-slice glitches */
+.site-shell{--glitch-cyan:#62fff1;--glitch-magenta:#ff3eaa}
+.comic-glitch-overlay{position:fixed;inset:0;z-index:76;pointer-events:none;opacity:0;
+  background:
+    linear-gradient(90deg,transparent 0 13%,rgba(98,255,241,.14) 13.1% 13.35%,transparent 13.45% 73%,rgba(255,62,170,.13) 73.1% 73.3%,transparent 73.4%),
+    repeating-linear-gradient(0deg,transparent 0 5px,rgba(255,255,255,.035) 5.5px 6px);
+  mix-blend-mode:screen;animation:comic-flash 7.4s steps(1,end) infinite}
+.site-shell .hero-title,.site-shell .section-title,.site-shell .project-title-row h3{position:relative}
+.site-shell .hero-title .line-inner{animation:comic-title-hit 8.6s steps(1,end) infinite}
+.site-shell .section-title em,.site-shell .project-title-row h3{ text-shadow:2px 0 rgba(98,255,241,.22),-2px 0 rgba(255,62,170,.2)}
+.site-shell .hero-main{isolation:isolate}
+.site-shell .hero-main:after{content:"";position:absolute;inset:-4% -2%;z-index:-1;pointer-events:none;opacity:0;
+  background:repeating-linear-gradient(180deg,transparent 0 13px,rgba(255,62,170,.11) 14px 16px,transparent 17px 25px);
+  mix-blend-mode:screen;animation:comic-slice 9s steps(1,end) infinite}
+.site-shell .project-image{overflow:hidden}
+.site-shell .project-image:before{transition:opacity .25s;opacity:.62}
+.site-shell .project-image:hover:before{opacity:1}
+.site-shell .project-card:nth-child(odd) .project-image:hover{filter:drop-shadow(4px 0 rgba(98,255,241,.22)) drop-shadow(-4px 0 rgba(255,62,170,.2))}
+.site-shell .project-card:nth-child(even) .project-image:hover{filter:drop-shadow(-4px 0 rgba(98,255,241,.22)) drop-shadow(4px 0 rgba(255,62,170,.2))}
+.site-shell .project-image-index,.site-shell .project-image-bottom{position:absolute;z-index:6}
+.site-shell .project-image:hover .project-image-index{animation:comic-label-jitter .24s steps(2,end) 2}
+.site-shell .ticker-track span{ text-shadow:2px 0 rgba(98,255,241,.3),-2px 0 rgba(255,62,170,.28)}
+.site-shell .section-kicker span:first-child{position:relative}
+.site-shell .section-kicker span:first-child:after{content:"";display:inline-block;width:5px;height:5px;margin-left:9px;vertical-align:middle;background:var(--ice);box-shadow:0 0 12px var(--blue);animation:comic-dot 1.4s steps(2,end) infinite}
+@keyframes comic-flash{0%,91%,93%,100%{opacity:0;transform:translateX(0)}92%{opacity:.34;transform:translateX(-3px)}94%{opacity:.18;transform:translateX(2px)}}
+@keyframes comic-title-hit{0%,87%,89%,100%{transform:translateX(0);filter:none;text-shadow:none}88%{transform:translateX(3px);filter:contrast(1.5);text-shadow:-5px 0 var(--glitch-magenta),5px 0 var(--glitch-cyan)}90%{transform:translateX(-2px);text-shadow:4px 0 var(--glitch-magenta),-4px 0 var(--glitch-cyan)}}
+@keyframes comic-slice{0%,84%,86%,100%{opacity:0;clip-path:inset(0 0 100% 0);transform:translateX(0)}85%{opacity:.85;clip-path:inset(36% 0 48% 0);transform:translateX(8px)}87%{opacity:.45;clip-path:inset(68% 0 20% 0);transform:translateX(-5px)}}
+@keyframes comic-label-jitter{0%,100%{transform:translate(0)}25%{transform:translate(3px,-1px)}50%{transform:translate(-2px,1px)}75%{transform:translate(1px,0)}}
+@keyframes comic-dot{0%,100%{opacity:1}50%{opacity:.2}}
+@media(max-width:680px){.comic-glitch-overlay{opacity:0!important}.site-shell .hero-title .line-inner{animation-duration:12s}.site-shell .project-card:nth-child(odd) .project-image:hover,.site-shell .project-card:nth-child(even) .project-image:hover{filter:none}}
+@media(prefers-reduced-motion:reduce){.comic-glitch-overlay,.site-shell .hero-title .line-inner,.site-shell .hero-main:after,.site-shell .section-kicker span:first-child:after{animation:none!important;display:none}.site-shell .section-title em,.site-shell .project-title-row h3{ text-shadow:none}}
