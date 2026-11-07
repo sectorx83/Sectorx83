@@ -194,7 +194,7 @@ export default function App() {
         <section className="hero">
           <div className="hero-grid" />
           <div className="hero-kicker"><span>INDEPENDENT DEVELOPER / DIGITAL CRAFT</span><span>INDIA <i>10°31'N / 76°13'E</i></span></div>
-          {!loading && <Suspense fallback={<div className="experience-fallback" />}><ExperienceScene /></Suspense>}
+          {!loading && <Suspense fallback={<div className="experience-fallback" />}><ExperienceScene theme={retroTheme} /></Suspense>}
           <div className="hero-vertical"><span>SOFTWARE / SYSTEMS / EXPERIMENTS</span><span className="hero-orbit-label">CREATIVE ENGINEERING · 2026 · </span></div>
           <div className="hero-main">
             <p className="hero-eyebrow"><Sparkles size={13} /> A PERSONAL UNIVERSE IN CONSTANT MOTION</p>
