@@ -432,3 +432,78 @@ main>section:not(.hero):after{content:"";position:absolute;z-index:-1;left:5vw;r
  .site-shell:after{display:none}
  .lab-card:hover,.journal-entry:hover,.principle-row>div:hover{transform:none}
 }
+
+
+/* RAPID TYPOGRAPHIC GLITCH SYSTEM */
+:root{--glitch-cyan:#8ff7ff;--glitch-pink:#ff72c6}
+.hero-title .line-inner,.section-title,.project-title-row h3,.section-kicker,.hero-kicker,.hero-foot,.contact-content h2,.lab-card h3,.journal-entry h3{
+  position:relative;
+  animation:rapid-text-glitch 2.35s steps(1,end) infinite;
+  will-change:transform;
+}
+.hero-title .line-inner{animation-duration:1.85s}
+.section-title{animation-duration:2.8s}
+.project-title-row h3{animation-duration:2.15s}
+.section-kicker{animation-duration:1.65s}
+.hero-kicker{animation-duration:2.1s}
+.contact-content h2{animation-duration:2.45s}
+.lab-card h3,.journal-entry h3{animation-duration:3.1s}
+.hero-title .line-inner:nth-child(2n){animation-delay:-.72s}
+.project-card:nth-child(2n) .project-title-row h3{animation-delay:-.9s}
+.section-kicker:nth-of-type(2n){animation-delay:-.45s}
+@keyframes rapid-text-glitch{
+  0%,4%,6%,31%,33%,68%,70%,100%{transform:translate3d(0,0,0);text-shadow:0 0 transparent;filter:none}
+  1%{transform:translate3d(-2px,0,0);text-shadow:3px 0 var(--glitch-cyan),-3px 0 var(--glitch-pink);filter:contrast(1.25)}
+  2%{transform:translate3d(2px,1px,0);text-shadow:-4px 0 var(--glitch-cyan),3px 0 var(--glitch-pink);filter:brightness(1.28)}
+  3%{transform:translate3d(-1px,-1px,0);text-shadow:2px 0 var(--glitch-pink),-2px 0 var(--glitch-cyan)}
+  32%{transform:translate3d(1px,0,0);text-shadow:-2px 0 var(--glitch-cyan),2px 0 var(--glitch-pink)}
+  69%{transform:translate3d(-1px,0,0);text-shadow:2px 0 var(--glitch-cyan),-3px 0 var(--glitch-pink)}
+}
+.project-description,.about-copy p,.tool-row,.journal-entry p,.lab-card p{
+  transition:text-shadow .18s ease,filter .18s ease;
+}
+.project-card:hover .project-description,.about-copy p:hover,.tool-row:hover,.journal-entry:hover p,.lab-card:hover p{
+  text-shadow:1.5px 0 rgba(143,247,255,.36),-1.5px 0 rgba(255,114,198,.3);
+  filter:brightness(1.13);
+}
+.site-header a:hover,.social-links a:hover,.project-tags span:hover,.project-dossier-link:hover{
+  text-shadow:2px 0 rgba(143,247,255,.72),-2px 0 rgba(255,114,198,.62);
+  animation:micro-text-snap .22s steps(2,end) 2;
+}
+@keyframes micro-text-snap{
+  0%,100%{transform:translateX(0)}
+  25%{transform:translateX(-2px)}
+  50%{transform:translateX(2px)}
+  75%{transform:translateX(-1px)}
+}
+.hero-title .line-inner:after,.section-title:after,.project-title-row h3:after{
+  content:attr(data-text);
+  position:absolute;
+  inset:0;
+  pointer-events:none;
+  color:var(--glitch-cyan);
+  opacity:0;
+  clip-path:inset(45% 0 42% 0);
+  transform:translateX(-3px);
+  text-shadow:2px 0 var(--glitch-pink);
+  mix-blend-mode:screen;
+  animation:glitch-ghost 2.35s steps(1,end) infinite;
+}
+@keyframes glitch-ghost{
+  0%,3%,5%,100%{opacity:0;clip-path:inset(45% 0 42% 0);transform:translateX(-3px)}
+  1%,2%{opacity:.42;clip-path:inset(12% 0 76% 0);transform:translateX(4px)}
+  4%{opacity:.3;clip-path:inset(72% 0 14% 0);transform:translateX(-5px)}
+}
+.comic-glitch-overlay{animation-duration:3.2s!important}
+.comic-glitch-overlay:before{animation-duration:3.7s!important}
+.comic-glitch-overlay:after{animation-duration:4.6s!important}
+@media(max-width:680px){
+ .hero-title .line-inner{animation-duration:3.1s!important}
+ .section-title,.section-kicker,.project-title-row h3{animation-duration:3.5s}
+ .comic-glitch-overlay{animation-duration:5s!important}
+ .hero-title .line-inner:after,.section-title:after,.project-title-row h3:after{display:none}
+}
+@media(prefers-reduced-motion:reduce){
+ .hero-title .line-inner,.section-title,.project-title-row h3,.section-kicker,.hero-kicker,.hero-foot,.contact-content h2,.lab-card h3,.journal-entry h3,.comic-glitch-overlay,.comic-glitch-overlay:before,.comic-glitch-overlay:after{animation:none!important}
+ .site-header a:hover,.social-links a:hover,.project-tags span:hover,.project-dossier-link:hover{animation:none}
+}
