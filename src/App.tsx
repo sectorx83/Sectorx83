@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import type { CSSProperties } from "react";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import { ArrowDown, ArrowDownRight, ArrowUpRight, ArrowUp, Github, Instagram, MoveUpRight, Menu, X, Sparkles } from "lucide-react";
 import gsap from "gsap";
@@ -41,8 +42,8 @@ function ProjectVisual({ type }: { type: string }) {
   if (type === "gravity") return <div className="visual-gravity"><div className="gravity-grid" /><div className="gravity-sphere"><i /><i /><i /></div><span className="visual-coord">FIELD / 001</span></div>;
   if (type === "cathedral") return <div className="visual-cathedral"><div className="cathedral-sun" /><div className="cathedral-arches"><i /><i /><i /><i /><i /></div><div className="cathedral-floor" /><span className="visual-coord">OBSERVATION ROOM</span></div>;
   if (type === "flux") return <div className="visual-flux"><div className="flux-orbit flux-orbit-a" /><div className="flux-orbit flux-orbit-b" /><div className="flux-node flux-node-a">PLAN</div><div className="flux-node flux-node-b">ACT</div><div className="flux-node flux-node-c">VERIFY</div><span className="visual-coord">AGENT / 003</span></div>;
-  if (type === "edith") return <div className="visual-edith"><div className="edith-halo"><i /><i /><i /><b>e</b></div><div className="edith-wave">{Array.from({ length: 32 }, (_, i) => <i key={i} style={{ "--bar": 0.2 + Math.abs(Math.sin(i * 0.72)) * 0.8 } as React.CSSProperties} />)}</div><span className="visual-coord">VOICE INTERFACE</span></div>;
-  return <div className="visual-d3x8"><div className="d3-screen"><div className="d3-screen-head"><i /><i /><i /><span>D3X8 / KERNEL MONITOR</span></div><div className="d3-screen-body"><div className="d3-side"><i /><i /><i /><i /></div><div className="d3-terminal"><span>root@d3x8:~$</span><b>kernel ready_</b><div className="d3-bars">{Array.from({ length: 14 }, (_, i) => <i key={i} style={{ "--bar": 18 + ((i * 19) % 64) + "%" } as React.CSSProperties} />)}</div></div></div></div><span className="visual-coord">SYSTEM / 005</span></div>;
+  if (type === "edith") return <div className="visual-edith"><div className="edith-halo"><i /><i /><i /><b>e</b></div><div className="edith-wave">{Array.from({ length: 32 }, (_, i) => <i key={i} style={{ "--bar": 0.2 + Math.abs(Math.sin(i * 0.72)) * 0.8 } as CSSProperties} />)}</div><span className="visual-coord">VOICE INTERFACE</span></div>;
+  return <div className="visual-d3x8"><div className="d3-screen"><div className="d3-screen-head"><i /><i /><i /><span>D3X8 / KERNEL MONITOR</span></div><div className="d3-screen-body"><div className="d3-side"><i /><i /><i /><i /></div><div className="d3-terminal"><span>root@d3x8:~$</span><b>kernel ready_</b><div className="d3-bars">{Array.from({ length: 14 }, (_, i) => <i key={i} style={{ "--bar": 18 + ((i * 19) % 64) + "%" } as CSSProperties} />)}</div></div></div></div><span className="visual-coord">SYSTEM / 005</span></div>;
 }
 
 function ProjectCard({ project, index }: { project: (typeof projects)[number]; index: number }) {
@@ -107,7 +108,6 @@ export default function App() {
       gsap.to(".contact-orb", { y: -22, rotate: 7, duration: 5.5, yoyo: true, repeat: -1, ease: "sine.inOut" });
     }, root);
     return () => {
-      window.clearInterval(timer);
       window.removeEventListener("load", update);
       cancelAnimationFrame(raf);
       ctx.revert();
