@@ -164,9 +164,6 @@ body,.site-shell{background-color:#080612;color:var(--white)}
 .project-image:hover .project-image-open,.project-title-row>a:hover{background:#ff72c6;color:#080612}
 .tool-row>span,.tool-row p i{color:#8ff7ff}
 .live-indicator i{background:#8ff7ff;box-shadow:0 0 12px #8ff7ff}
-.terminal-trigger,.nav-terminal,.footer-terminal{display:flex;align-items:center;gap:8px;border:1px solid rgba(143,247,255,.3);background:rgba(143,247,255,.045);color:#8ff7ff;padding:9px 12px;font:8px var(--mono);letter-spacing:.12em;cursor:pointer;transition:background .25s,border-color .25s,transform .25s}
-.terminal-trigger{padding:9px;border-radius:50%}
-.terminal-trigger:hover,.nav-terminal:hover,.footer-terminal:hover{background:rgba(255,114,198,.14);border-color:#ff72c6;transform:translateY(-2px)}
 .project-dossier-link{display:flex;align-items:center;gap:9px;margin-top:18px;padding:10px 0;border:0;border-bottom:1px solid rgba(143,247,255,.35);background:none;color:#8ff7ff;font:8px var(--mono);letter-spacing:.13em;cursor:pointer;transition:gap .25s,color .25s}
 .project-dossier-link:hover{gap:17px;color:#ff72c6}
 .lab-section,.journal-section{overflow:hidden}
@@ -177,7 +174,6 @@ body,.site-shell{background-color:#080612;color:var(--white)}
 .lab-card:hover{transform:translateY(-9px);border-color:rgba(143,247,255,.55);box-shadow:0 24px 65px rgba(0,0,0,.28),0 0 28px rgba(255,114,198,.08)}
 .lab-art{height:230px;position:relative;overflow:hidden;background:radial-gradient(ellipse at 50% 45%,#30164c,#100c25 72%);display:grid;place-items:center}
 .lab-art>span{position:absolute;left:14px;top:14px;color:#b8a7d2;font:8px var(--mono);letter-spacing:.12em}
-.lab-nebula{width:145px;aspect-ratio:1;border-radius:48% 52% 61% 39%;background:conic-gradient(from 30deg,#ff72c6,#8038c8,#8ff7ff,#ff72c6);filter:blur(1px);box-shadow:0 0 42px rgba(255,114,198,.35),inset 0 0 35px rgba(255,255,255,.3);animation:lab-morph 8s ease-in-out infinite alternate,lab-spin 24s linear infinite}
 .topology-nodes{width:190px;height:150px;position:relative}
 .topology-nodes i{position:absolute;width:28px;height:28px;border:1px solid #8ff7ff;border-radius:50%;background:#14152d;box-shadow:0 0 18px rgba(143,247,255,.4);animation:lab-node 3s ease-in-out infinite alternate}
 .topology-nodes i:nth-child(1){left:8px;top:62px}.topology-nodes i:nth-child(2){left:79px;top:4px;animation-delay:-1s}.topology-nodes i:nth-child(3){right:8px;top:62px;animation-delay:-2s}.topology-nodes i:nth-child(4){left:79px;bottom:2px;animation-delay:-.5s}
@@ -203,31 +199,10 @@ body,.site-shell{background-color:#080612;color:var(--white)}
 .copy-email{display:flex;align-items:center;gap:8px;padding:10px 12px;border:1px solid rgba(143,247,255,.28);background:transparent;color:#8ff7ff;font:8px var(--mono);letter-spacing:.12em;cursor:pointer}
 .copy-email:hover{border-color:#ff72c6;color:#ff72c6}
 .site-footer{display:flex;align-items:center;gap:24px;flex-wrap:wrap}
-.site-footer .footer-terminal{margin-left:auto}
-.dossier-backdrop,.terminal-backdrop{position:fixed;inset:0;z-index:180;background:rgba(4,3,12,.78);backdrop-filter:blur(14px);display:grid;place-items:center;padding:22px}
-.dossier-panel,.terminal-window{width:min(720px,100%);border:1px solid rgba(143,247,255,.34);background:linear-gradient(145deg,#17102a,#090817);box-shadow:0 30px 120px rgba(0,0,0,.6),0 0 55px rgba(255,114,198,.1);padding:clamp(22px,4vw,42px);position:relative}
-.dossier-top,.terminal-bar{display:flex;align-items:center;justify-content:space-between;color:#8ff7ff;font:8px var(--mono);letter-spacing:.14em}
-.dossier-top button,.terminal-bar button{display:grid;place-items:center;width:36px;height:36px;border:1px solid rgba(143,247,255,.3);background:transparent;color:#8ff7ff;cursor:pointer}
-.dossier-class{margin-top:50px;color:#ff72c6;font:9px var(--mono);letter-spacing:.14em}
-.dossier-panel h2{font:600 clamp(48px,10vw,90px)/.9 var(--display);letter-spacing:-.09em;margin:16px 0}
-.dossier-panel>p{max-width:560px;color:var(--muted);font-size:13px;line-height:1.9}
-.dossier-stack{display:flex;flex-wrap:wrap;gap:8px;margin:28px 0}
-.dossier-stack span{padding:8px 10px;border:1px solid rgba(143,247,255,.22);color:#c9c1dc;font:8px var(--mono)}
-.dossier-bottom{display:flex;justify-content:space-between;align-items:center;gap:20px;padding-top:20px;border-top:1px solid var(--line);color:#8ff7ff;font:8px var(--mono);letter-spacing:.1em}
-.dossier-bottom a{display:flex;align-items:center;gap:8px;color:#ff72c6}
-.terminal-window{width:min(760px,100%);padding:0;overflow:hidden}
-.terminal-bar{padding:15px 18px;border-bottom:1px solid var(--line);background:rgba(143,247,255,.035)}
-.terminal-bar>div{display:flex;align-items:center;gap:7px}.terminal-bar i{width:7px;height:7px;border-radius:50%;background:#ff72c6}.terminal-bar i:nth-child(2){background:#8ff7ff}.terminal-bar i:nth-child(3){background:#a98aff}.terminal-bar span{margin-left:10px}
-.terminal-output{height:min(360px,48vh);overflow:auto;padding:20px 22px;font:11px/1.8 var(--mono);color:#c8bddb}
-.terminal-output p{margin:0 0 5px}.terminal-output p:first-child{color:#8ff7ff}
-.terminal-form{display:flex;align-items:center;gap:12px;padding:15px 20px;border-top:1px solid var(--line);border-bottom:1px solid var(--line);color:#8ff7ff;font:10px var(--mono)}
-.terminal-form input{min-width:0;flex:1;border:0;outline:0;background:transparent;color:#fff;font:11px var(--mono)}
-.terminal-form button{border:0;background:transparent;color:#ff72c6;cursor:pointer}
-.terminal-hint{padding:12px 20px;color:#786a8f;font:7px var(--mono);letter-spacing:.1em}
-@keyframes lab-morph{0%{border-radius:48% 52% 61% 39%;transform:scale(.92) rotate(0)}100%{border-radius:61% 39% 42% 58%;transform:scale(1.08) rotate(25deg)}}
-@keyframes lab-spin{to{rotate:360deg}}
-@keyframes lab-node{to{transform:translateY(-9px);box-shadow:0 0 25px rgba(255,114,198,.5)}}
+
+.dossier-backdrop,{position:fixed;inset:0;z-index:180;background:rgba(4,3,12,.78);backdrop-filter:blur(14px);display:grid;place-items:center;padding:22px}
+.dossier-panel,@keyframes lab-node{to{transform:translateY(-9px);box-shadow:0 0 25px rgba(255,114,198,.5)}}
 @keyframes stack-rise{to{transform:translateY(-7px);border-color:#ff72c6}}
-@media(max-width:900px){.main-nav{gap:15px}.nav-terminal{display:none}.lab-grid{grid-template-columns:1fr 1fr}.lab-card:last-child{grid-column:1/-1}.site-footer .footer-terminal{margin-left:0}}
-@media(max-width:680px){.terminal-trigger{display:none}.lab-heading,.journal-heading{display:block;padding:52px 0 36px}.lab-heading>p,.journal-heading>p{margin:24px 0 0}.lab-grid{grid-template-columns:1fr}.lab-card:last-child{grid-column:auto}.lab-art{height:210px}.journal-entry{grid-template-columns:1fr 36px;gap:10px;padding:24px 2px}.journal-index{grid-column:1/-1}.journal-entry>div{grid-column:1}.journal-arrow{grid-column:2;grid-row:2}.dossier-backdrop,.terminal-backdrop{padding:12px}.dossier-bottom{align-items:flex-start;flex-direction:column}.terminal-form{gap:7px;padding:13px 12px;font-size:8px}.terminal-form input{font-size:10px}.contact-actions{align-items:flex-start;flex-direction:column}.site-footer{gap:16px}}
-@media(prefers-reduced-motion:reduce){.lab-nebula,.topology-nodes i,.isolation-stack i{animation:none!important}.lab-card,.journal-entry,.project-dossier-link{transition:none!important}}
+@media(max-width:900px){.main-nav{gap:15px}.lab-grid{grid-template-columns:1fr 1fr}.lab-card:last-child{grid-column:1/-1}}
+@media(max-width:680px){.lab-heading,.journal-heading{display:block;padding:52px 0 36px}.lab-heading>p,.journal-heading>p{margin:24px 0 0}.lab-grid{grid-template-columns:1fr}.lab-card:last-child{grid-column:auto}.lab-art{height:210px}.journal-entry{grid-template-columns:1fr 36px;gap:10px;padding:24px 2px}.journal-index{grid-column:1/-1}.journal-entry>div{grid-column:1}.journal-arrow{grid-column:2;grid-row:2}.dossier-backdrop,{padding:12px}.dossier-bottom{align-items:flex-start;flex-direction:column}.contact-actions{align-items:flex-start;flex-direction:column}.site-footer{gap:16px}}
+@media(prefers-reduced-motion:reduce){,.topology-nodes i,.isolation-stack i{animation:none!important}.lab-card,.journal-entry,.project-dossier-link{transition:none!important}}
