@@ -84,38 +84,68 @@ function Mark({ small = false }: { small?: boolean }) {
 function CircuitPanel() {
   return <div className="circuit-panel" aria-hidden="true">
     <svg viewBox="0 0 520 820" preserveAspectRatio="xMidYMid meet">
-      <g className="circuit-traces">
-        <path d="M20 55H155V112H225V170H310V130H470" />
-        <path d="M65 0V88H115V205H180V270H270V325H430V275H520" />
-        <path d="M0 230H75V300H145V360H215V430H355V390H500" />
-        <path d="M520 80H410V155H365V220H310V285H250V350H190" />
-        <path d="M40 470H115V420H180V500H260V565H350V520H490" />
-        <path d="M0 610H95V555H160V610H235V680H325V635H420V700H520" />
-        <path d="M75 820V735H145V690H215V735H295V785H390" />
-        <path d="M300 0V65H350V110H405V190H470V235" />
-        <path d="M480 360V430H430V475H390V545H330" />
-        <path d="M20 360H55V400H95V455" />
-        <path d="M185 0V42H225V90" />
-        <path d="M260 820V760H300V720H360V675" />
+      <defs>
+        <pattern id="hardware-weave" width="7" height="7" patternUnits="userSpaceOnUse">
+          <path d="M0 7L7 0M-2 2L2-2M5 9L9 5" stroke="currentColor" strokeWidth=".45" opacity=".22" />
+        </pattern>
+        <pattern id="coil-lines" width="5" height="5" patternUnits="userSpaceOnUse">
+          <path d="M0 2.5H5" stroke="currentColor" strokeWidth=".45" opacity=".28" />
+        </pattern>
+        <radialGradient id="coil-shade">
+          <stop offset="0" stopColor="currentColor" stopOpacity=".12"/>
+          <stop offset=".72" stopColor="currentColor" stopOpacity=".035"/>
+          <stop offset="1" stopColor="currentColor" stopOpacity=".12"/>
+        </radialGradient>
+      </defs>
+      <rect className="hardware-shell" x="12" y="8" width="496" height="804" rx="35"/>
+      <rect className="hardware-inner" x="25" y="21" width="470" height="778" rx="27"/>
+      <g className="hardware-top">
+        <rect x="34" y="31" width="452" height="310" rx="22"/>
+        <rect x="206" y="34" width="202" height="207" rx="12" fill="url(#hardware-weave)"/>
+        <path className="hardware-seam" d="M206 241H410L474 177V45"/>
+        <path className="hardware-seam" d="M34 335H220V352H294"/>
+        <path className="hardware-panel" d="M292 36H405V224L374 255H208V118L292 36Z"/>
+        <path className="hardware-texture" d="M292 36H405V224L374 255H208V118L292 36Z" fill="url(#hardware-weave)"/>
+        <path className="hardware-glyph hardware-glyph--slash" d="M427 68L350 165"/>
+        <g className="hardware-cameras">
+          <rect x="45" y="39" width="112" height="219" rx="54"/>
+          <circle cx="101" cy="94" r="39"/><circle cx="101" cy="94" r="29" className="camera-glass"/>
+          <circle cx="101" cy="203" r="39"/><circle cx="101" cy="203" r="29" className="camera-glass"/>
+          <circle cx="176" cy="137" r="17"/><circle cx="176" cy="137" r="8" className="camera-glass"/>
+          <rect x="164" y="178" width="26" height="26" rx="2" className="camera-flash"/>
+          <circle cx="453" cy="190" r="21"/><circle cx="453" cy="190" r="9" className="camera-glass camera-glass--red"/>
+        </g>
+        <g className="hardware-screws">
+          <circle cx="184" cy="35" r="5"/><circle cx="438" cy="46" r="5"/><circle cx="476" cy="116" r="5"/>
+          <circle cx="43" cy="302" r="5"/><circle cx="464" cy="300" r="5"/>
+        </g>
       </g>
-      <g className="circuit-secondary">
-        <path d="M155 112V75H190V55H235M310 130V85H350V50H390" />
-        <path d="M145 360V320H105V280H80M355 390V345H395V315H455" />
-        <path d="M115 420V385H80V350H35M260 565V610H300V650H345" />
-        <path d="M160 610V655H125V700H85M420 700V750H465V790" />
-        <path d="M365 220H420V250H460M215 430V390H255V365" />
+      <g className="hardware-coil">
+        <path className="coil-glyph" d="M56 390Q260 185 464 390V652Q260 812 56 652Z"/>
+        <circle className="coil-outer" cx="260" cy="526" r="211"/>
+        <circle className="coil-mid" cx="260" cy="526" r="195"/>
+        <circle className="coil-inner" cx="260" cy="526" r="178"/>
+        <circle className="coil-fill" cx="260" cy="526" r="164" fill="url(#coil-shade)"/>
+        <circle className="coil-texture" cx="260" cy="526" r="158" fill="url(#coil-lines)"/>
+        <circle className="coil-core" cx="260" cy="526" r="55"/>
+        <path className="coil-sweep" d="M75 396A211 211 0 0 1 445 396"/>
+        <path className="coil-sweep coil-sweep--lower" d="M75 656A211 211 0 0 0 445 656"/>
       </g>
-      <g className="circuit-nodes">
-        <circle cx="155" cy="112" r="5"/><circle cx="310" cy="130" r="4"/><circle cx="145" cy="360" r="5"/>
-        <circle cx="355" cy="390" r="4"/><circle cx="260" cy="565" r="5"/><circle cx="420" cy="700" r="4"/>
-        <circle cx="225" cy="90" r="3"/><circle cx="395" cy="315" r="3"/><circle cx="85" cy="700" r="3"/>
+      <g className="hardware-bottom">
+        <path className="hardware-panel" d="M35 716H485V782H35Z"/>
+        <path className="hardware-texture" d="M35 716H485V782H35Z" fill="url(#hardware-weave)"/>
+        <path className="hardware-seam" d="M35 716H485M180 716V782M355 716V782"/>
+        <path className="hardware-glyph hardware-glyph--vertical" d="M260 742V785"/>
+        <circle className="glyph-dot" cx="260" cy="794" r="5"/>
+        <path className="hardware-seam" d="M49 739H112V771H145M380 752H430V730H468"/>
+        <circle className="hardware-sensor" cx="410" cy="748" r="9"/>
+        <circle className="hardware-screws" cx="55" cy="780" r="5"/>
+        <circle className="hardware-screws" cx="466" cy="780" r="5"/>
+        <circle className="hardware-screws" cx="194" cy="765" r="4"/>
       </g>
-      <g className="circuit-chips">
-        <rect x="220" y="190" width="76" height="48" rx="2"/><path d="M232 180V190M248 180V190M264 180V190M280 180V190M232 238V248M248 238V248M264 238V248M280 238V248"/>
-        <rect x="95" y="500" width="64" height="42" rx="2"/><path d="M106 490V500M122 490V500M138 490V500M154 490V500M106 542V552M122 542V552M138 542V552M154 542V552"/>
-        <rect x="370" y="570" width="72" height="46" rx="2"/><path d="M382 560V570M398 560V570M414 560V570M430 560V570M382 616V626M398 616V626M414 616V626M430 616V626"/>
+      <g className="hardware-labels">
+        <text x="217" y="278">SX / 83</text><text x="57" y="686">POWER ARRAY</text><text x="370" y="686">GLYPH / 01</text>
       </g>
-      <g className="circuit-labels"><text x="226" y="216">SX / 83</text><text x="104" y="525">BUS 01</text><text x="381" y="596">NODE 03</text></g>
     </svg>
   </div>
 }
