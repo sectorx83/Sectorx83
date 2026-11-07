@@ -106,6 +106,13 @@ export default function App() {
       });
       gsap.to(".about-orbit", { rotate: 360, duration: 34, repeat: -1, ease: "none" });
       gsap.to(".contact-orb", { y: -22, rotate: 7, duration: 5.5, yoyo: true, repeat: -1, ease: "sine.inOut" });
+      gsap.to(".scroll-progress i", { scaleX: 1, ease: "none", scrollTrigger: { trigger: document.documentElement, start: "top top", end: "bottom bottom", scrub: 0.18 } });
+      gsap.from(".principle-row > div", { y: 54, opacity: 0, rotateX: 12, transformOrigin: "50% 100%", stagger: 0.14, duration: 1, ease: "power3.out", scrollTrigger: { trigger: ".principle-row", start: "top 86%", once: true } });
+      gsap.from(".social-links a", { x: 24, opacity: 0, stagger: 0.13, duration: 0.8, ease: "power3.out", scrollTrigger: { trigger: ".social-links", start: "top 92%", once: true } });
+      gsap.from(".work-outro > *", { y: 18, opacity: 0, stagger: 0.12, duration: 0.8, ease: "power3.out", scrollTrigger: { trigger: ".work-outro", start: "top 92%", once: true } });
+      gsap.utils.toArray<HTMLElement>(".section-kicker").forEach((el) => {
+        gsap.from(el, { x: -32, opacity: 0, duration: 0.9, ease: "power3.out", scrollTrigger: { trigger: el, start: "top 94%", once: true } });
+      });
     }, root);
     return () => {
       window.removeEventListener("load", update);
@@ -131,12 +138,40 @@ export default function App() {
     return () => { window.removeEventListener("pointermove", move); document.removeEventListener("pointerover", hover); };
   }, [reduced]);
 
+  useEffect(() => {
+    if (reduced || !window.matchMedia("(pointer:fine)").matches) return;
+    const cards = Array.from(document.querySelectorAll<HTMLElement>(".project-image"));
+    const move = (event: PointerEvent) => {
+      const card = event.currentTarget as HTMLElement;
+      const rect = card.getBoundingClientRect();
+      const px = (event.clientX - rect.left) / rect.width - 0.5;
+      const py = (event.clientY - rect.top) / rect.height - 0.5;
+      card.style.setProperty("--tilt-x", (px * 7).toFixed(2) + "deg");
+      card.style.setProperty("--tilt-y", (-py * 7).toFixed(2) + "deg");
+      card.style.setProperty("--spot-x", (event.clientX - rect.left) + "px");
+      card.style.setProperty("--spot-y", (event.clientY - rect.top) + "px");
+    };
+    const reset = (event: PointerEvent) => {
+      const card = event.currentTarget as HTMLElement;
+      card.style.setProperty("--tilt-x", "0deg");
+      card.style.setProperty("--tilt-y", "0deg");
+    };
+    cards.forEach(card => {
+      card.addEventListener("pointermove", move);
+      card.addEventListener("pointerleave", reset);
+    });
+    return () => cards.forEach(card => {
+      card.removeEventListener("pointermove", move);
+      card.removeEventListener("pointerleave", reset);
+    });
+  }, [reduced]);
+
   const closeMenu = () => setMenuOpen(false);
   return (
     <div className="site-shell" ref={root}>
       <AnimatePresence>{loading && <Loader onFinish={finishLoader} />}</AnimatePresence>
       <div className="cursor" /><div className="cursor-dot" />
-      <div className="noise-layer" />
+      <div className="noise-layer" /><div className="scroll-progress" aria-hidden="true"><i /></div>
       <header className="site-header">
         <a href="#top" className="brand" aria-label="sectorx83 home"><span className="brand-mark">s<span>×</span></span><span>SECTORX83<sup>®</sup></span></a>
         <nav className={menuOpen ? "main-nav is-open" : "main-nav"}>
@@ -181,7 +216,7 @@ export default function App() {
         <section className="toolkit-section section-wrap" id="toolkit">
           <div className="section-kicker"><span>03 / THE TOOLKIT</span><span>TOOLS ARE A MEANS, NOT THE POINT</span></div>
           <div className="toolkit-layout"><h2 className="section-title">The right<br /><em>instrument.</em></h2><div className="toolkit-list">{toolkit.map((row, i) => <div className="tool-row" key={row.group}><span>{String(i + 1).padStart(2, "0")} / {row.group}</span><p>{row.items.map((item, j) => <b key={item}>{item}{j < row.items.length - 1 && <i> / </i>}</b>)}</p></div>)}</div></div>
-          <p className="toolkit-note">Vite is the build tool for this portfolio. Next.js and Nuxt.js are complementary framework experience, not competing frameworks running together. React Three Fiber and Drei power the real-time 3D layer.</p>
+          <p className="toolkit-note">This index reflects the actual engineering across Gravity, Cathedral, Flux Agent, EDITH X1 and D3X8. It spans application development, AI tooling, runtime isolation, desktop systems and low-level operating-system work.</p>
         </section>
 
         <section className="contact-section section-wrap" id="contact">
