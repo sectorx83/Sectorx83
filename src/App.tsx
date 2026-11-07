@@ -194,9 +194,16 @@ function ProjectPage({ project }: { project: Project }) {
 }
 function App() {
   const [dark, setDark] = useState(false)
+  const [loading, setLoading] = useState(true)
   const path = window.location.pathname.replace(/\/+$/, '')
   const projectSlug = path.startsWith('/projects/') ? path.slice('/projects/'.length) : ''
   const project = projects.find((item) => item.slug === projectSlug)
+  useEffect(() => {
+    const started = performance.now()
+    const minimumDisplay = window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 900 : 3400
+    const timer = window.setTimeout(() => setLoading(false), Math.max(0, minimumDisplay - (performance.now() - started)))
+    return () => window.clearTimeout(timer)
+  }, [])
   useEffect(() => {
     document.documentElement.dataset.theme = dark ? 'dark' : 'light'
     document.querySelector('meta[name="theme-color"]')?.setAttribute('content', dark ? '#111210' : '#f5f5f2')
@@ -210,6 +217,14 @@ function App() {
     return () => observer.disconnect()
   }, [path])
   useEffect(() => { document.title = project ? `${project.name} — Sectorx83` : 'Sectorx83 — Independent developer' }, [project])
-  return <div className="site-shell"><Header dark={dark} setDark={setDark} />{project ? <ProjectPage project={project} /> : projectSlug ? <main className="not-found section-wrap"><Label>404 / NOT FOUND</Label><h1>That project<br /><span>isn't here.</span></h1><a className="button button--dark" href="/#work">Back to projects <ArrowLeft size={15} /></a></main> : <HomePage />}<Footer /></div>
+  return <>
+    {loading && <div className="site-loader" role="status" aria-label="Loading Sectorx83">
+      <div className="loader-mark"><span>SX</span><i>83</i><b>®</b></div>
+      <div className="loader-caption mono">INITIALIZING INTERFACE</div>
+      <div className="loader-track"><span /></div>
+      <div className="loader-meta mono"><span>SECTORX83 / SYSTEMS & SOFTWARE</span><span>LOADING</span></div>
+    </div>}
+    <div className={loading ? "site-shell site-shell--loading" : "site-shell"}><Header dark={dark} setDark={setDark} />{project ? <ProjectPage project={project} /> : projectSlug ? <main className="not-found section-wrap"><Label>404 / NOT FOUND</Label><h1>That project<br /><span>isn't here.</span></h1><a className="button button--dark" href="/#work">Back to projects <ArrowLeft size={15} /></a></main> : <HomePage />}<Footer /></div>
+  </>
 }
 export default App

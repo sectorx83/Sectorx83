@@ -60,12 +60,25 @@ button { color: inherit; }
 .project-card:hover::after { transform: scaleY(1); }
 .project-card--featured::after { background: var(--inverse-ink); }
 
+
+.site-loader { position: fixed; inset: 0; z-index: 9999; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 28px; background: #111210; color: #f3f3ed; animation: loader-exit .65s 2.85s cubic-bezier(.7,0,.2,1) both; }
+.loader-mark { display: flex; align-items: baseline; font-size: clamp(48px, 9vw, 76px); font-weight: 800; letter-spacing: -.1em; line-height: 1; }
+.loader-mark i { font-style: normal; font-size: .42em; letter-spacing: -.04em; margin-left: 5px; }
+.loader-mark b { font: 500 11px var(--mono); align-self: flex-start; margin: 5px 0 0 5px; }
+.loader-caption { margin-top: 26px; font-size: 9px; letter-spacing: .2em; color: #b8bbb0; }
+.loader-track { width: min(230px, 62vw); height: 1px; margin-top: 17px; background: #3a3d35; overflow: hidden; }
+.loader-track span { display: block; width: 100%; height: 100%; background: #f3f3ed; transform: scaleX(0); transform-origin: left; animation: loader-progress 2.65s .12s cubic-bezier(.2,.7,.2,1) forwards; }
+.loader-meta { display: flex; justify-content: space-between; gap: 28px; width: min(320px, 82vw); margin-top: 12px; font-size: 7px; letter-spacing: .1em; color: #85887f; }
+.site-shell--loading { visibility: hidden; }
+@keyframes loader-progress { to { transform: scaleX(1); } }
+@keyframes loader-exit { to { opacity: 0; visibility: hidden; pointer-events: none; } }
+
 .scroll-glyph { width: 76px; height: 46px; margin-left: auto; margin-right: 18px; overflow: visible; color: var(--muted); flex: 0 0 auto; }
 .scroll-glyph circle, .scroll-glyph path { vector-effect: non-scaling-stroke; }
 .glyph-orbit { stroke: currentColor; stroke-width: 1.1; stroke-dasharray: 114; stroke-dashoffset: 114; opacity: .65; transition: stroke-dashoffset 1.15s cubic-bezier(.2,.7,.2,1); }
 .glyph-core { fill: var(--bg); stroke: currentColor; stroke-width: 1.2; transform-box: fill-box; transform-origin: center; transform: scale(.2); opacity: 0; transition: transform .6s ease .55s, opacity .5s ease .55s; }
 .glyph-trace { stroke: currentColor; stroke-width: 1.1; stroke-dasharray: 90; stroke-dashoffset: 90; transition: stroke-dashoffset .9s ease .25s; }
-.glyph-bar { stroke: var(--inverse-ink); stroke-width: 3.5; stroke-linecap: round; stroke-dasharray: 12; stroke-dashoffset: 12; transition: stroke-dashoffset .5s ease .72s; }
+.glyph-bar { stroke: var(--ink); stroke-width: 3.5; stroke-linecap: round; stroke-dasharray: 12; stroke-dashoffset: 12; transition: stroke-dashoffset .5s ease .72s; }
 .glyph-node { fill: var(--muted); opacity: 0; transform: scale(.2); transform-box: fill-box; transform-origin: center; transition: transform .4s ease .9s, opacity .4s ease .9s; }
 .glyph-node--delay { transition-delay: 1.05s; }
 [data-reveal].is-visible .scroll-glyph .glyph-orbit { stroke-dashoffset: 0; }
@@ -390,4 +403,24 @@ h2 { font-size: clamp(37px, 5vw, 59px); line-height: 1.05; letter-spacing: -.075
 }
 @media (prefers-reduced-motion: reduce) {
   .circuit-traces, .circuit-secondary, .circuit-nodes circle { animation: none !important; }
+}
+
+
+/* Scroll-triggered panel motion */
+[data-reveal] { opacity: 0; transform: translateY(28px); transition: opacity .8s ease, transform .9s cubic-bezier(.2,.7,.2,1); }
+[data-reveal].is-visible { opacity: 1; transform: translateY(0); }
+.project-card[data-reveal] { transition: opacity .7s ease, transform .8s cubic-bezier(.2,.7,.2,1), background .35s ease, border-color .35s ease; }
+.project-card:nth-child(2)[data-reveal] { transition-delay: .08s; }
+.project-card:nth-child(3)[data-reveal] { transition-delay: .16s; }
+.project-card:nth-child(4)[data-reveal] { transition-delay: .24s; }
+.project-card:nth-child(5)[data-reveal] { transition-delay: .32s; }
+.building-card, .tool-group, .contact-channels a, .detail-area-grid > div { transition: transform .35s cubic-bezier(.2,.7,.2,1), border-color .35s ease, background .35s ease, box-shadow .35s ease; }
+.building-card:hover, .tool-group:hover, .contact-channels a:hover, .detail-area-grid > div:hover { transform: translateY(-5px); border-color: var(--muted); box-shadow: 0 14px 35px rgba(0,0,0,.06); }
+.section-heading .section-side-note { color: var(--ink); opacity: .72; }
+.section-heading .scroll-glyph { color: var(--ink); }
+@media (prefers-reduced-motion: reduce) {
+  .site-loader { animation-duration: .01ms; animation-delay: .8s; }
+  .loader-track span { animation-duration: .01ms; }
+  [data-reveal] { opacity: 1; transform: none; transition: none; }
+  .building-card, .tool-group, .contact-channels a, .detail-area-grid > div { transition: none; }
 }
