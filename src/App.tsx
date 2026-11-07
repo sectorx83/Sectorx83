@@ -185,7 +185,6 @@ function ProjectPage({ project }: { project: Project }) {
 }
 function App() {
   const [dark, setDark] = useState(false)
-  const year = new Date().getFullYear()
   const path = window.location.pathname.replace(/\/+$/, '')
   const projectSlug = path.startsWith('/projects/') ? path.slice('/projects/'.length) : ''
   const project = projects.find((item) => item.slug === projectSlug)
