@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import type { ReactNode } from 'react'
 import { ArrowDown, ArrowRight, ArrowUpRight, Github, Instagram, Mail, Menu, Moon, Sun, X } from 'lucide-react'
 
 type Project = {
@@ -75,7 +76,7 @@ function Mark({ small = false }: { small?: boolean }) {
   )
 }
 
-function Label({ children }: { children: React.ReactNode }) {
+function Label({ children }: { children: ReactNode }) {
   return <span className="eyebrow"><span className="eyebrow-dot" />{children}</span>
 }
 
