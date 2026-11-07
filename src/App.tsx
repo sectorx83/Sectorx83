@@ -113,6 +113,32 @@ export default function App() {
         gsap.from(card.querySelector(".project-tags"), { y: 16, opacity: 0, duration: 0.7, delay: 0.18, ease: "power3.out", scrollTrigger: { trigger: card, start: "top 72%", once: true } });
       });
       gsap.to(".ticker-track", { skewX: -2, duration: 2.4, yoyo: true, repeat: -1, ease: "sine.inOut" });
+      gsap.to(".hero-grid", { backgroundPosition: "72px 72px, -72px -72px", duration: 24, repeat: -1, ease: "none" });
+      gsap.utils.toArray<HTMLElement>(".project-card").forEach((card, index) => {
+        const visual = card.querySelector(".project-image");
+        gsap.fromTo(visual, { filter: "saturate(.78) contrast(1.18)" }, {
+          filter: "saturate(1.12) contrast(1.04)", duration: 1.1, ease: "power2.out",
+          scrollTrigger: { trigger: card, start: "top 82%", once: true }
+        });
+        gsap.to(visual, { "--glitch-shift": index % 2 ? "3px" : "-3px", duration: .08, repeat: 3, yoyo: true, paused: true, onComplete: () => gsap.set(visual, { "--glitch-shift": "0px" }) });
+        ScrollTrigger.create({
+          trigger: card, start: "top 78%", once: true,
+          onEnter: () => gsap.fromTo(visual, { x: -5, skewX: index % 2 ? 1.2 : -1.2 }, { x: 0, skewX: 0, duration: .42, ease: "steps(4)" })
+        });
+      });
+      gsap.utils.toArray<HTMLElement>(".section-kicker").forEach((el) => {
+        gsap.fromTo(el, { clipPath: "inset(0 100% 0 0)", x: -12 }, {
+          clipPath: "inset(0 0% 0 0)", x: 0, duration: .85, ease: "steps(8)",
+          scrollTrigger: { trigger: el, start: "top 92%", once: true }
+        });
+      });
+      gsap.to(".comic-glitch-overlay", { opacity: .2, duration: .06, repeat: -1, yoyo: true, repeatDelay: 5.8, ease: "steps(1)" });
+      gsap.utils.toArray<HTMLElement>(".tool-row").forEach((row, index) => {
+        gsap.fromTo(row, { x: index % 2 ? 18 : -18, clipPath: "inset(0 0 0 8%)" }, {
+          x: 0, clipPath: "inset(0 0 0 0)", duration: .7, ease: "power3.out",
+          scrollTrigger: { trigger: row, start: "top 90%", once: true }
+        });
+      });
       gsap.to(".hero-orbit-label", { scale: 1.04, duration: 4, yoyo: true, repeat: -1, ease: "sine.inOut" });
       gsap.to(".scroll-progress i", { scaleX: 1, ease: "none", scrollTrigger: { trigger: document.documentElement, start: "top top", end: "bottom bottom", scrub: 0.18 } });
       gsap.from(".principle-row > div", { y: 54, opacity: 0, rotateX: 12, transformOrigin: "50% 100%", stagger: 0.14, duration: 1, ease: "power3.out", scrollTrigger: { trigger: ".principle-row", start: "top 86%", once: true } });
@@ -179,7 +205,7 @@ export default function App() {
     <div className="site-shell" ref={root}>
       <AnimatePresence>{loading && <Loader onFinish={finishLoader} />}</AnimatePresence>
       <div className="cursor" /><div className="cursor-dot" />
-      <div className="noise-layer" /><div className="retro-scanlines" aria-hidden="true" /><div className="retro-vignette" aria-hidden="true" /><div className="scroll-progress" aria-hidden="true"><i /></div>
+      <div className="noise-layer" /><div className="retro-scanlines" aria-hidden="true" /><div className="retro-vignette" aria-hidden="true" /><div className="comic-glitch-overlay" aria-hidden="true" /><div className="scroll-progress" aria-hidden="true"><i /></div>
       <header className="site-header">
         <a href="#top" className="brand" aria-label="sectorx83 home"><span className="brand-mark">s<span>×</span></span><span>SECTORX83<sup>®</sup></span></a>
         <nav className={menuOpen ? "main-nav is-open" : "main-nav"}>
