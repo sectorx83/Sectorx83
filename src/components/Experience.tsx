@@ -1,13 +1,11 @@
-import { Suspense, useEffect, useMemo, useRef } from "react";
+import { Suspense, useMemo, useRef } from "react";
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
 import { Float, Sparkles, Stars } from "@react-three/drei";
 import * as THREE from "three";
 import vertexShader from "../shaders/nebula.vert?raw";
 import fragmentShader from "../shaders/nebula.frag?raw";
 
-type RetroTheme = "synthwave" | "arcade" | "amber";
-
-function Core({ theme }: { theme: RetroTheme }) {
+function Core() {
   const material = useRef<THREE.ShaderMaterial>(null);
   const group = useRef<THREE.Group>(null);
   const { pointer } = useThree();
@@ -20,14 +18,7 @@ function Core({ theme }: { theme: RetroTheme }) {
     uHot: { value: new THREE.Color("#ff79c6") }
   }), []);
 
-  const palette = theme === "arcade" ? ["#031c19", "#0ca88a", "#a7ff83"] : theme === "amber" ? ["#211006", "#b75a1b", "#ffe2a1"] : ["#10051f", "#8d2f9d", "#ff79c6"];
-
-  useEffect(() => {
-    if (!material.current) return;
-    material.current.uniforms.uDeep.value.set(palette[0]);
-    material.current.uniforms.uGlow.value.set(palette[1]);
-    material.current.uniforms.uHot.value.set(palette[2]);
-  }, [theme]);
+  const palette = ["#10051f", "#8d2f9d", "#ff79c6"];
 
   useFrame((state, delta) => {
     if (material.current) {
@@ -71,21 +62,21 @@ function Core({ theme }: { theme: RetroTheme }) {
   );
 }
 
-function Scene({ theme }: { theme: RetroTheme }) {
-  const palette = theme === "arcade" ? ["#031c19", "#0ca88a", "#a7ff83"] : theme === "amber" ? ["#211006", "#b75a1b", "#ffe2a1"] : ["#10051f", "#8d2f9d", "#ff79c6"];
+function Scene() {
+  const palette = ["#10051f", "#8d2f9d", "#ff79c6"];
   return (
     <>
       <ambientLight intensity={0.8} />
       <pointLight position={[4, 3, 5]} intensity={18} color={palette[2]} />
       <pointLight position={[-4, -2, -3]} intensity={8} color={palette[1]} />
-      <Core theme={theme} />
+      <Core />
       <Sparkles count={96} scale={7} size={1.9} speed={0.35} opacity={0.58} color={palette[2]} />
       <Stars radius={22} depth={18} count={480} factor={2.2} saturation={0} fade speed={0.3} />
     </>
   );
 }
 
-export default function Experience({ theme }: { theme: RetroTheme }) {
+export default function Experience() {
   return (
     <div className="experience-canvas" aria-hidden="true">
       <Canvas
@@ -95,7 +86,7 @@ export default function Experience({ theme }: { theme: RetroTheme }) {
         frameloop="always"
       >
         <Suspense fallback={null}>
-          <Scene theme={theme} />
+          <Scene />
         </Suspense>
       </Canvas>
     </div>
