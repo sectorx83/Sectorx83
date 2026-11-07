@@ -106,6 +106,14 @@ export default function App() {
       });
       gsap.to(".about-orbit", { rotate: 360, duration: 34, repeat: -1, ease: "none" });
       gsap.to(".contact-orb", { y: -22, rotate: 7, duration: 5.5, yoyo: true, repeat: -1, ease: "sine.inOut" });
+      gsap.to(".hero-grid", { backgroundPosition: "100px 180px, 180px 100px", duration: 18, repeat: -1, yoyo: true, ease: "sine.inOut" });
+      gsap.to(".hero-eyebrow svg", { rotate: 360, scale: 1.35, duration: 5, repeat: -1, yoyo: true, ease: "sine.inOut" });
+      gsap.utils.toArray<HTMLElement>(".project-card").forEach((card, index) => {
+        gsap.from(card.querySelector(".project-meta"), { x: index % 2 ? 28 : -28, opacity: 0, duration: 0.75, ease: "power3.out", scrollTrigger: { trigger: card, start: "top 78%", once: true } });
+        gsap.from(card.querySelector(".project-tags"), { y: 16, opacity: 0, duration: 0.7, delay: 0.18, ease: "power3.out", scrollTrigger: { trigger: card, start: "top 72%", once: true } });
+      });
+      gsap.to(".ticker-track", { skewX: -2, duration: 2.4, yoyo: true, repeat: -1, ease: "sine.inOut" });
+      gsap.to(".hero-orbit-label", { scale: 1.04, duration: 4, yoyo: true, repeat: -1, ease: "sine.inOut" });
       gsap.to(".scroll-progress i", { scaleX: 1, ease: "none", scrollTrigger: { trigger: document.documentElement, start: "top top", end: "bottom bottom", scrub: 0.18 } });
       gsap.from(".principle-row > div", { y: 54, opacity: 0, rotateX: 12, transformOrigin: "50% 100%", stagger: 0.14, duration: 1, ease: "power3.out", scrollTrigger: { trigger: ".principle-row", start: "top 86%", once: true } });
       gsap.from(".social-links a", { x: 24, opacity: 0, stagger: 0.13, duration: 0.8, ease: "power3.out", scrollTrigger: { trigger: ".social-links", start: "top 92%", once: true } });
@@ -171,7 +179,7 @@ export default function App() {
     <div className="site-shell" ref={root}>
       <AnimatePresence>{loading && <Loader onFinish={finishLoader} />}</AnimatePresence>
       <div className="cursor" /><div className="cursor-dot" />
-      <div className="noise-layer" /><div className="scroll-progress" aria-hidden="true"><i /></div>
+      <div className="noise-layer" /><div className="retro-scanlines" aria-hidden="true" /><div className="retro-vignette" aria-hidden="true" /><div className="scroll-progress" aria-hidden="true"><i /></div>
       <header className="site-header">
         <a href="#top" className="brand" aria-label="sectorx83 home"><span className="brand-mark">s<span>×</span></span><span>SECTORX83<sup>®</sup></span></a>
         <nav className={menuOpen ? "main-nav is-open" : "main-nav"}>
