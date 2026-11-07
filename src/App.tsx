@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import type { CSSProperties } from "react";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import { ArrowDown, ArrowDownRight, ArrowUpRight, ArrowUp, Github, Instagram, MoveUpRight, Menu, X, Sparkles } from "lucide-react";
@@ -69,7 +69,7 @@ export default function App() {
   const [time, setTime] = useState("00:00:00");
   const root = useRef<HTMLDivElement>(null);
   const reduced = useReducedMotion();
-  const finishLoader = () => setLoading(false);
+  const finishLoader = useCallback(() => setLoading(false), []);
 
   useEffect(() => {
     const updateTime = () => setTime(new Intl.DateTimeFormat("en-GB", { timeZone: "Asia/Kolkata", hour: "2-digit", minute: "2-digit", second: "2-digit", hour12: false }).format(new Date()));
@@ -86,7 +86,7 @@ export default function App() {
       raf = requestAnimationFrame(rafLoop);
     };
     if (!reduced) raf = requestAnimationFrame(rafLoop);
-    lenis.on("scroll", ScrollTrigger.update);
+    lenis.on("scroll", () => ScrollTrigger.update());
     const update = () => ScrollTrigger.refresh();
     window.addEventListener("load", update);
     const ctx = gsap.context(() => {
