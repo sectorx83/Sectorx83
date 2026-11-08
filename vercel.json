@@ -3,6 +3,10 @@
     {
       "source": "/projects/:path*",
       "destination": "/index.html"
+    },
+    {
+      "source": "/sectorx83",
+      "destination": "/index.html"
     }
   ]
 }
