@@ -21,21 +21,25 @@ function Crest({ large = false }: { large?: boolean }) {
 }
 
 function Themis({ large = false }: { large?: boolean }) {
-  return <span className={large ? 'cc-themis cc-themis-large' : 'cc-themis'} role="img" aria-label="Themis, Lady Justice, with balanced scales and a sword">
-    <svg viewBox="0 0 260 300" fill="none" aria-hidden="true">
-      <defs>
-        <linearGradient id="themis-gold" x1="0" y1="0" x2="1" y2="1">
-          <stop offset="0" stopColor="#e8c985"/><stop offset=".52" stopColor="#a97937"/><stop offset="1" stopColor="#65451f"/>
-        </linearGradient>
-        <linearGradient id="themis-ivory" x1="0" y1="0" x2="1" y2="1">
-          <stop offset="0" stopColor="#eee3c9"/><stop offset="1" stopColor="#9f9076"/>
-        </linearGradient>
-      </defs>
-      <cfunction Themis({ large = false }: { large?: boolean }) {
   return <span className={large ? 'cc-themis cc-themis-large' : 'cc-themis'} role="img" aria-label="Themis, Greek goddess of justice">
     <img src="https://commons.wikimedia.org/wiki/Special:FilePath/Themis_lady_of_Justice_statue_in_Amaliada_Greece_08.jpg?width=900" alt="Bronze statue of Themis, the Greek goddess of justice" loading={large ? 'eager' : 'lazy'} decoding="async"/>
   </span>
-}age[]>([])
+}
+
+export default function Society() {
+  const [session, setSession] = useState<any>(null)
+  const [ready, setReady] = useState(false)
+  const [mode, setMode] = useState<'join' | 'signin'>('join')
+  const [email, setEmail] = useState('')
+  const [password, setPassword] = useState('')
+  const [username, setUsername] = useState('')
+  const [displayName, setDisplayName] = useState('')
+  const [profileBio, setProfileBio] = useState('')
+  const [profile, setProfile] = useState<Profile | null>(null)
+  const [posts, setPosts] = useState<Post[]>([])
+  const [members, setMembers] = useState<Profile[]>([])
+  const [comments, setComments] = useState<Comment[]>([])
+  const [chatMessages, setChatMessages] = useState<ChatMessage[]>([])
   const [chatDraft, setChatDraft] = useState('')
   const [dmInbox, setDmInbox] = useState<DirectMessage[]>([])
   const [dmThread, setDmThread] = useState<DirectMessage[]>([])
