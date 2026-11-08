@@ -12,7 +12,7 @@ Deno.serve(async (req: Request) => {
   if (!authorization?.startsWith("Bearer ")) return json({ error: "Authentication required." }, 401);
   const url = Deno.env.get("SUPABASE_URL");
   const serviceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
-  const anonKey = Deno.env.get("SUPABASE_ANON_KEY");
+  const anonKey = Deno.env.get("SUPABASE_PUBLISHABLE_KEY");
   if (!url || !serviceKey || !anonKey) return json({ error: "Function secrets are not configured." }, 503);
   const caller = createClient(url, anonKey, { global: { headers: { Authorization: authorization } } });
   const admin = createClient(url, serviceKey);
