@@ -15,11 +15,10 @@ const sections = ['ALL', 'GENERAL', 'DISCUSSION', 'DECLARATIONS', 'ANNOUNCEMENT'
 
 function Crest({ large = false }: { large?: boolean }) {
   return <span className={large ? 'cc-crest cc-crest-large' : 'cc-crest'} aria-hidden="true"><svg viewBox="0 0 100 100" fill="none">
-    <path className="cc-frame" d="M50 7 87 28v44L50 93 13 72V28L50 7Z"/>
-    <path className="cc-inner" d="M50 18 76 33v34L50 82 24 67V33L50 18Z"/>
-    <path className="cc-lines" d="M50 26v48M28 50h44"/>
-    <circle className="cc-star" cx="50" cy="50" r="7"/>
-    <path className="cc-tools" d="M35 37h30M35 63h30"/>
+    <path className="cc-frame" d="M50 5 88 27v46L50 95 12 73V27L50 5Z"/>
+    <path className="cc-inner" d="M50 15 78 31v38L50 85 22 69V31L50 15Z"/>
+    <path className="cc-star" d="m50 20 4.4 9 9.9 1.4-7.2 7 1.7 9.8-8.8-4.7-8.8 4.7 1.7-9.8-7.2-7 9.9-1.4L50 20Z"/>
+    <path className="cc-tools" d="M34 68 65 42M59 37l11 11M30 63l8 8M39 76c-8-8-8-20 0-28 7-7 18-9 27-4-11-1-19 4-21 12-2 7 1 13 7 18-4 5-8 7-13 8Z"/>
   </svg></span>
 }
 
@@ -27,7 +26,7 @@ export default function Society() {
   const [session, setSession] = useState<any>(null)
   const [ready, setReady] = useState(false)
   const [mode, setMode] = useState<'join' | 'signin'>('join')
-  const [email, setEmail] = useState('')
+  const [email, setEmail] = useState('9562230818@gmail.com')
   const [password, setPassword] = useState('')
   const [username, setUsername] = useState('')
   const [displayName, setDisplayName] = useState('')
