@@ -468,3 +468,15 @@
 .cc-message-report{display:inline-flex;align-items:center;gap:5px;margin-top:8px;padding:5px 7px;border:1px solid rgba(159,29,45,.28);background:transparent;color:#bca79b;font:7px var(--mono);letter-spacing:.06em}
 .cc-message-report:hover{border-color:var(--red);color:#e4c3bd}
 @media(max-width:650px){.cc-dm-thread-head .cc-dm-block{padding:7px!important;font-size:6px!important}}
+
+
+.cc-post-reactions{display:flex;flex-wrap:wrap;gap:7px;margin:14px 0 4px}
+.cc-post-reactions button{display:inline-flex;align-items:center;gap:6px;padding:7px 9px;border:1px solid rgba(176,138,69,.24);background:rgba(176,138,69,.035);color:#b9ad98;font:7px var(--mono);letter-spacing:.06em}
+.cc-post-reactions button b{color:var(--gold);font-weight:600}
+.cc-post-reactions button.active{border-color:rgba(176,138,69,.7);background:rgba(176,138,69,.13);color:#f0dfbb}
+.cc-post-reactions button:disabled{opacity:.4;cursor:not-allowed}
+.cc-draft-status{margin:0 0 12px;color:var(--gold);font:7px var(--mono);letter-spacing:.1em}
+.cc-edit-thread{display:grid;gap:13px}
+.cc-edit-thread label{display:grid;gap:7px;color:var(--gold);font:8px var(--mono);letter-spacing:.1em}
+.cc-edit-thread input,.cc-edit-thread textarea{width:100%;padding:12px;border:1px solid var(--line);background:#11100e;color:var(--ivory);font:12px/1.6 Manrope,sans-serif}
+.cc-edit-thread textarea{resize:vertical}
