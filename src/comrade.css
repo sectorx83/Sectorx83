@@ -22,3 +22,26 @@
 .cc-overlay{position:fixed;z-index:20;inset:0;background:rgba(0,0,0,.78);display:grid;place-items:center;padding:18px}.cc-thread{width:min(700px,100%);max-height:90vh;overflow:auto;background:var(--panel);border:1px solid rgba(177,139,72,.4);padding:24px;box-shadow:0 25px 90px #000}.cc-thread header{display:flex;justify-content:space-between;color:var(--gold);font:8px var(--mono);letter-spacing:.13em;margin-bottom:22px}.cc-thread header button{background:transparent;border:0;color:var(--muted)}.cc-thread h2{font-size:23px}.cc-thread>p,.cc-thread article p{font-size:11px;line-height:1.8;color:#bdb3a4;white-space:pre-wrap}.cc-thread h3{font:8px var(--mono);color:var(--gold);margin-top:24px}.cc-thread article{border-top:1px solid var(--line);padding:13px 0}.cc-thread article strong{font-size:10px}.cc-thread article small,.cc-thread article time{font:7px var(--mono);color:var(--muted)}.cc-thread form{display:grid;gap:10px;border-top:1px solid var(--line);padding-top:15px}
 @media(max-width:900px){.cc-entry-layout{grid-template-columns:1fr;max-width:650px;gap:40px;padding-top:50px}.cc-layout{grid-template-columns:185px minmax(0,1fr)}.cc-sidebar{padding-inline:9px}.cc-members{grid-template-columns:1fr}}
 @media(max-width:650px){.cc-header{height:70px;padding:0 14px}.cc-brand{font-size:8px;letter-spacing:.1em;gap:8px}.cc-brand small{font-size:6px}.cc-crest{width:34px;height:34px}.cc-entry-layout{padding:42px 16px 55px}.cc-manifesto h1{font-size:57px}.cc-manifesto>p:not(.cc-kicker){font-size:12px}.cc-auth-panel{padding:22px 17px}.cc-footer{padding:15px 16px;font-size:6px}.cc-header-inside{height:auto;min-height:68px;padding:12px}.cc-user{font-size:8px}.cc-layout{display:block;min-height:0}.cc-sidebar{display:flex;flex-direction:row;overflow-x:auto;gap:4px;border-right:0;border-bottom:1px solid var(--line);padding:8px}.cc-sidebar>small,.cc-principle,.cc-side-meta{display:none}.cc-sidebar>button{white-space:nowrap;padding:10px;font-size:9px}.cc-sidebar>button.active:before{display:none}.cc-main{padding:0 13px}.cc-crumb{height:40px;font-size:6px}.cc-heading{padding:28px 0 22px}.cc-heading h1{font-size:35px}.cc-heading>.cc-crest{display:none}.cc-toolbar{align-items:stretch}.cc-categories{overflow-x:auto;flex-wrap:nowrap}.cc-categories button{white-space:nowrap}.cc-search{min-width:100%}.cc-compose-toggle{align-items:flex-start;flex-direction:column}.cc-post{padding:15px}.cc-post-bottom{align-items:flex-start;flex-direction:column}.cc-post-bottom>div{width:100%;justify-content:flex-end}.cc-admin-stats{grid-template-columns:repeat(2,1fr)}.cc-admin-section article{align-items:flex-start;flex-direction:column}.cc-admin-section article>div:last-child{width:100%;justify-content:flex-end}.cc-admin-controls select{flex:1}.cc-main-footer{font-size:6px}.cc-main-footer span{margin-left:0}.cc-entry-hero{margin:7vh 14px;padding:26px 20px}.cc-entry-hero h1{font-size:44px}.cc-thread{padding:18px 15px}}
+
+/* Classic Soviet-inspired order insignia */
+.cc-wreath{fill:none;stroke:var(--gold);stroke-width:2.7;stroke-linecap:round;stroke-linejoin:round}
+.cc-globe{fill:rgba(166,25,46,.14);stroke:var(--gold);stroke-width:2}
+.cc-globe-lines{fill:none;stroke:var(--ivory);stroke-width:1.1;opacity:.68}
+.cc-hammer{fill:var(--gold);stroke:var(--gold);stroke-width:1.5;stroke-linejoin:round}
+.cc-sickle{fill:var(--ivory);stroke:var(--ivory);stroke-width:1.2;stroke-linejoin:round}
+.cc-ribbon{fill:var(--red);stroke:var(--gold);stroke-width:.9;stroke-linejoin:round}
+.cc-security-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin:16px 0}
+.cc-security-grid article{display:flex;flex-direction:column;align-items:flex-start;gap:9px;border:1px solid var(--line);padding:16px;background:rgba(238,230,212,.025)}
+.cc-security-grid article svg{color:var(--gold)}
+.cc-security-grid article strong{font-size:10px}
+.cc-security-grid article small{font-size:9px;line-height:1.6;color:var(--muted)}
+.cc-cipher-explainer{display:flex;gap:13px;align-items:flex-start;border:1px solid rgba(177,139,72,.35);padding:16px;margin:22px 0;background:rgba(177,139,72,.07)}
+.cc-cipher-explainer>svg{color:var(--gold);flex:none;margin-top:2px}
+.cc-cipher-explainer strong{font:8px var(--mono);letter-spacing:.1em;color:var(--gold)}
+.cc-cipher-explainer p{font-size:10px;line-height:1.75;color:var(--muted);margin:8px 0 0}
+.cc-cipher-form{max-width:760px}
+.cc-decrypted{border:1px solid rgba(177,139,72,.4);padding:16px;margin-top:15px;background:rgba(177,139,72,.07)}
+.cc-decrypted>div{display:flex;justify-content:space-between;align-items:center;font:8px var(--mono);letter-spacing:.12em;color:var(--gold)}
+.cc-decrypted button{background:none;border:0;color:var(--muted)}
+.cc-decrypted p{white-space:pre-wrap;overflow-wrap:anywhere;color:var(--ivory);font-size:12px;line-height:1.8;margin:14px 0 0}
+@media(max-width:650px){.cc-security-grid{grid-template-columns:1fr}.cc-security-grid article{display:grid;grid-template-columns:22px 1fr;align-items:center}.cc-security-grid article small{grid-column:2}}
