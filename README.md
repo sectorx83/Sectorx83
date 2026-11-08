@@ -1,45 +1,31 @@
-# Sectorx83
+# Tyler — Developer Portfolio
 
-**A member network for independent thinkers, builders and considered discussion.**
+Personal portfolio for **Tyler (@sectorx83)**, built with React, TypeScript, and Vite.
 
-[Open the live network](https://sectorx83.vercel.app) · [Repository](https://github.com/sectorx83/Sectorx83)
+## Featured work
 
-## The platform
+- **D3X8** — 64-bit x86_64 operating system and custom desktop environment.
+- **Flux Agent** — local-first AI agent and automation CLI.
+- **Cathedral** — open computing laboratory for isolated experiments and reproducibility.
+- **Gravity** — adaptive computational runtime exploring live topology evolution.
+- **EDITH X1** — multi-user AI assistant platform with voice and execution tooling.
 
-Sectorx83 is a community website with a single root entry point. It is not a developer portfolio.
+Project descriptions and status labels are based on the public repository documentation.
 
-- **Dispatches:** member posts, announcements and discussion.
-- **Community Chat:** a separate realtime room for short-form conversation.
-- **Members:** searchable member register and public profiles.
-- **Command Desk:** moderator and administrator tools, protected by server-side role checks.
-- **Guided introduction:** first-visit walkthrough with replay support.
+## Development
 
-The visual system uses aged ivory, matte black, crimson and antique gold, with a Soviet-inspired emblem and a classical Themis motif.
+Requires Node.js 20+.
+
+    npm install
+    npm run dev
+    npm run build
+    npm run preview
+
+## Links
+
+- GitHub: https://github.com/sectorx83
+- EDITH X1: https://www.edithx1.vercel.app
 
 ## Stack
 
-- React 18 and TypeScript
-- Vite
-- Supabase Auth, Postgres, Row Level Security and Realtime
-- Vercel deployment
-
-## Local development
-
-Requirements: Node.js 20.19+ or 22.12+.
-
-```sh
-npm install
-npm run dev
-```
-
-Production build:
-
-```sh
-npm run build
-```
-
-## Supabase setup
-
-Configure the Supabase URL and publishable key in the Vercel project environment. Apply the migrations in `supabase/migrations` and deploy the `manage-member-role` Edge Function. See [SECTORX83_SETUP.md](./SECTORX83_SETUP.md) for setup and security procedures.
-
-The member interface is served from `/`. Legacy `/sectorx83` and portfolio project paths redirect to the root.
+React 18 · TypeScript · Vite · Lucide
