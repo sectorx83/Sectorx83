@@ -4,7 +4,7 @@ import { Activity, AlertTriangle, ArrowUpRight, Ban, Check, Flag, LogOut, Messag
 import { supabase } from './lib/supabase'
 import './comrade.css'
 
-type Profile = { id: string; username: string; display_name: string; gender: string | null; bio: string | null; created_at: string }
+type Profile = { id: string; username: string; display_name: string; bio: string | null; created_at: string }
 type Post = { id: string; author_id: string; title: string; body: string; category: string; is_announcement: boolean; created_at: string; author?: { username: string; display_name: string } | null }
 type Comment = { id: string; body: string; created_at: string; author?: { username: string; display_name: string } | null }
 type Report = { id: string; reason: string; status: string; created_at: string; reporter?: { username: string } | null; post?: { title: string } | null }
@@ -25,7 +25,6 @@ export default function Society() {
   const [username, setUsername] = useState('')
   const [displayName, setDisplayName] = useState('')
   const [profileBio, setProfileBio] = useState('')
-  const [gender, setGender] = useState('male')
   const [profile, setProfile] = useState<Profile | null>(null)
   const [posts, setPosts] = useState<Post[]>([])
   const [members, setMembers] = useState<Profile[]>([])
@@ -106,7 +105,7 @@ export default function Society() {
     setBusy(true); setError(''); setNotice('')
     try {
       if (mode === 'join') {
-        const { data, error: e1 } = await supabase.auth.signUp({ email, password, options: { data: { username: username.trim().toLowerCase(), display_name: displayName.trim(), gender } } })
+        const { data, error: e1 } = await supabase.auth.signUp({ email, password, options: { data: { username: username.trim().toLowerCase(), display_name: displayName.trim() } } })
         if (e1) throw e1
         if (!data.session) setNotice('Registration received. Confirm your email, then sign in.')
         else setNotice('Membership created. Welcome to the assembly.')
@@ -154,20 +153,20 @@ export default function Society() {
   }
 
   async function banMember(id: string, ban: boolean) {
-    if (!supabase || !session) return
+    if (!supabase || !session || !admin || id === session.user.id) return
     const result = ban ? await supabase.from('banned_members').insert({ user_id: id, banned_by: session.user.id, reason: 'Community rules violation' }) : await supabase.from('banned_members').delete().eq('user_id', id)
     if (result.error) setError(result.error.message); else setBanned(old => ban ? [...old, id] : old.filter(x => x !== id))
   }
 
   async function changeRole(id: string, next: string) {
-    if (!supabase) return
+    if (!supabase || !admin || id === session.user.id) return
     const { data, error: e1 } = await supabase.functions.invoke('manage-member-role', { body: { user_id: id, role: next } })
     if (e1 || data?.error) setError(e1?.message || data.error)
     else setRoles(old => old.map(x => x.id === id ? { ...x, role: next } : x))
   }
 
   async function reviewReport(id: string, status: string) {
-    if (!supabase) return
+    if (!supabase || !moderator) return
     const { error: e1 } = await supabase.from('reports').update({ status, reviewed_by: session.user.id, reviewed_at: new Date().toISOString() }).eq('id', id)
     if (e1) setError(e1.message); else setReports(old => old.map(x => x.id === id ? { ...x, status } : x))
   }
@@ -186,7 +185,7 @@ export default function Society() {
     <header className="cc-header"><a className="cc-brand" href="/"><Crest/><span>THE COMRADE COMMUNITY<small>SECTORX83 / PUBLIC ASSEMBLY</small></span></a><a className="cc-back" href="/">RETURN TO SECTORX83 ↗</a></header>
     <section className="cc-entry-layout"><div className="cc-manifesto"><p className="cc-kicker">AN OPEN COMMUNITY / 01</p><h1>Ideas are<br/>stronger when<br/><em>shared.</em></h1><p>A place to exchange ideas, examine current affairs, challenge arguments and build a community through open discussion.</p><div className="cc-manifesto-foot">OPEN REGISTRATION <i/> MEMBER-LED DISCUSSION</div><div className="cc-emblem"><Crest large/><span>UNITY · DISCUSSION · SOLIDARITY</span></div></div>
       <section className="cc-auth-panel"><p className="cc-kicker">MEMBER ACCESS / 00</p><h2>{mode === 'join' ? 'Join the assembly.' : 'Welcome back.'}</h2><p className="cc-subtitle">{mode === 'join' ? 'Create a member account to participate.' : 'Sign in to continue to the community.'}</p><div className="cc-mode"><button className={mode === 'join' ? 'active' : ''} onClick={() => { setMode('join'); setError(''); setNotice('') }}>CREATE ACCOUNT</button><button className={mode === 'signin' ? 'active' : ''} onClick={() => { setMode('signin'); setError(''); setNotice('') }}>SIGN IN</button></div>
-      <form onSubmit={auth} className="cc-form">{mode === 'join' && <><label>DISPLAY NAME<input required maxLength={48} value={displayName} onChange={e => setDisplayName(e.target.value)} placeholder="How members will see you"/></label><label>USERNAME<input required minLength={3} maxLength={24} value={username} onChange={e => setUsername(e.target.value.replace(/[^a-zA-Z0-9_]/g,''))} placeholder="Choose a username"/></label><label>GENDER<select value={gender} onChange={e => setGender(e.target.value)}><option value="male">Male</option><option value="female">Female</option></select></label></>}
+      <form onSubmit={auth} className="cc-form">{mode === 'join' && <><label>DISPLAY NAME<input required maxLength={48} value={displayName} onChange={e => setDisplayName(e.target.value)} placeholder="How members will see you"/></label><label>USERNAME<input required minLength={3} maxLength={24} value={username} onChange={e => setUsername(e.target.value.replace(/[^a-zA-Z0-9_]/g,''))} placeholder="Choose a username"/></label></>}
       <label>EMAIL ADDRESS<input required type="email" value={email} onChange={e => setEmail(e.target.value)} placeholder="you@example.com"/></label><label>PASSWORD<input required minLength={8} type="password" value={password} onChange={e => setPassword(e.target.value)} placeholder="At least 8 characters"/></label>
       {error && <p className="cc-error"><AlertTriangle size={14}/>{error}</p>}{notice && <p className="cc-notice"><Check size={14}/>{notice}</p>}
       <button className="cc-primary" disabled={busy}>{busy ? 'PLEASE WAIT…' : mode === 'join' ? 'CREATE MEMBERSHIP' : 'ENTER COMMUNITY'} <ArrowUpRight size={16}/></button></form><small className="cc-auth-note">OPEN MEMBERSHIP · CONSTRUCTIVE DISCUSSION · MUTUAL RESPECT</small></section>
@@ -205,11 +204,11 @@ export default function Society() {
         {showComposer && <form className="cc-composer" onSubmit={publish}><label>SUBJECT<input value={title} onChange={e => setTitle(e.target.value)} maxLength={120} required/></label><label>SECTION<select value={postSection} onChange={e => setPostSection(e.target.value)}>{(moderator ? sections.slice(1) : sections.slice(1,4)).map(s => <option key={s}>{s}</option>)}</select></label><label>YOUR CONTRIBUTION<textarea value={body} onChange={e => setBody(e.target.value)} rows={5} maxLength={10000} required/></label><button className="cc-primary" disabled={busy}>PUBLISH TO ASSEMBLY <ArrowUpRight size={15}/></button></form>}
         <div className="cc-posts">{filtered.map(post => <article className={post.is_announcement ? 'cc-post announcement' : 'cc-post'} key={post.id}><div className="cc-post-meta"><span>{post.is_announcement ? 'OFFICIAL ANNOUNCEMENT' : post.category}</span><time>{dateLabel(post.created_at)}</time></div><h2>{post.title}</h2><p>{post.body}</p><div className="cc-post-bottom"><span>{post.author?.display_name || 'Community member'} <small>@{post.author?.username || 'member'}</small></span><div><button onClick={() => setSelected(post)}><MessageCircle size={14}/> DISCUSS</button>{!post.is_announcement && <button onClick={() => setReporting(post)}><Flag size={13}/> REPORT</button>}{(moderator || post.author_id === session.user.id) && <button onClick={() => removePost(post)}><X size={14}/></button>}</div></div></article>)}{!filtered.length && <div className="cc-empty">No discussions found. Start the first conversation.</div>}</div>
       </>}
-      {tab === 'members' && <><div className="cc-heading"><div><p className="cc-kicker">MEMBERSHIP REGISTER / 02</p><h1>The <em>comrades.</em></h1><p>People who make the community through participation and exchange.</p></div><strong className="cc-count">{members.length.toString().padStart(2,'0')}<small>MEMBERS</small></strong></div><label className="cc-search cc-member-search"><Search size={14}/><input value={search} onChange={e => setSearch(e.target.value)} placeholder="Find a member"/></label><div className="cc-members">{members.filter(m => (m.display_name + m.username).toLowerCase().includes(search.toLowerCase())).map(m => <article key={m.id}><i>{m.display_name.slice(0,1).toUpperCase()}</i><div><strong>{m.display_name}</strong><span>@{m.username}</span><small>{m.gender?.toUpperCase() || 'MEMBER'} · JOINED {new Date(m.created_at).toLocaleDateString()}</small>{m.bio && <p>{m.bio}</p>}</div></article>)}</div></>}
+      {tab === 'members' && <><div className="cc-heading"><div><p className="cc-kicker">MEMBERSHIP REGISTER / 02</p><h1>The <em>comrades.</em></h1><p>People who make the community through participation and exchange.</p></div><strong className="cc-count">{members.length.toString().padStart(2,'0')}<small>MEMBERS</small></strong></div><label className="cc-search cc-member-search"><Search size={14}/><input value={search} onChange={e => setSearch(e.target.value)} placeholder="Find a member"/></label><div className="cc-members">{members.filter(m => (m.display_name + m.username).toLowerCase().includes(search.toLowerCase())).map(m => <article key={m.id}><i>{m.display_name.slice(0,1).toUpperCase()}</i><div><strong>{m.display_name}</strong><span>@{m.username}</span><small>MEMBER · JOINED {new Date(m.created_at).toLocaleDateString()}</small>{m.bio && <p>{m.bio}</p>}</div></article>)}</div></>}
       {tab === 'profile' && <><div className="cc-heading"><div><p className="cc-kicker">MEMBER RECORD / 03</p><h1>Your <em>profile.</em></h1><p>Keep your public member details current.</p></div></div><form className="cc-composer cc-profile" onSubmit={saveProfile}><label>DISPLAY NAME<input value={displayName} onChange={e => setDisplayName(e.target.value)} maxLength={48} required/></label><label>ABOUT YOU<textarea rows={4} maxLength={240} value={profileBio} onChange={e => setProfileBio(e.target.value)} placeholder="A short introduction (optional)"/></label><button className="cc-primary">SAVE PROFILE <Check size={15}/></button></form></>}
       {tab === 'admin' && moderator && <><div className="cc-heading"><div><p className="cc-kicker">RESTRICTED ACCESS / 04</p><h1>Administration <em>desk.</em></h1><p>Moderate discussions, review reports and manage membership permissions.</p></div><ShieldCheck size={34}/></div><div className="cc-admin-stats"><div><strong>{members.length}</strong><small>MEMBERS</small></div><div><strong>{posts.length}</strong><small>POSTS</small></div><div><strong>{reports.filter(r => r.status === 'open').length}</strong><small>OPEN REPORTS</small></div><div><strong>{banned.length}</strong><small>SUSPENDED</small></div></div>
         <section className="cc-admin-section"><h2>Reported content</h2>{reports.length ? reports.map(r => <article key={r.id}><div><small>{r.status.toUpperCase()} · @{r.reporter?.username || 'member'}</small><strong>{r.post?.title || 'Reported comment'}</strong><p>{r.reason}</p></div><div><button onClick={() => reviewReport(r.id,'reviewed')}>REVIEWED</button><button onClick={() => reviewReport(r.id,'resolved')}>RESOLVE</button></div></article>) : <p className="cc-muted">No reports are waiting for review.</p>}</section>
-        <section className="cc-admin-section"><h2>Member management</h2>{members.map(m => { const r = roles.find(x => x.id === m.id)?.role || 'member'; return <article key={m.id}><div><strong>{m.display_name}</strong><small>@{m.username} · {banned.includes(m.id) ? 'SUSPENDED' : 'ACTIVE'}</small></div><div className="cc-admin-controls"><select value={r} disabled={!admin || m.id === session.user.id} onChange={e => changeRole(m.id,e.target.value)}><option value="member">MEMBER</option><option value="moderator">MODERATOR</option><option value="admin">ADMIN</option></select>{banned.includes(m.id) ? <button onClick={() => banMember(m.id,false)}>UNBAN</button> : <button disabled={!admin || m.id === session.user.id} onClick={() => banMember(m.id,true)}><Ban size={13}/> BAN</button>}</div></article>})}</section>
+        <section className="cc-admin-section"><h2>Member management</h2>{members.map(m => { const r = roles.find(x => x.id === m.id)?.role || 'member'; return <article key={m.id}><div><strong>{m.display_name}</strong><small>@{m.username} · {banned.includes(m.id) ? 'SUSPENDED' : 'ACTIVE'}</small></div><div className="cc-admin-controls"><select value={r} disabled={!admin || m.id === session.user.id} onChange={e => changeRole(m.id,e.target.value)}><option value="member">MEMBER</option><option value="moderator">MODERATOR</option><option value="admin">ADMIN</option></select>{banned.includes(m.id) ? <button disabled={!admin || m.id === session.user.id} onClick={() => banMember(m.id,false)}>UNBAN</button> : <button disabled={!admin || m.id === session.user.id} onClick={() => banMember(m.id,true)}><Ban size={13}/> BAN</button>}</div></article>})}</section>
         <section className="cc-admin-section"><h2>Official announcements</h2><p className="cc-muted">Administrators and moderators can publish an announcement from the Assembly composer by choosing ANNOUNCEMENT.</p></section>
       </>}
       <footer className="cc-main-footer">THE COMRADE COMMUNITY / SECTORX83 <span>OPEN DISCUSSION · MEMBER-LED · MODERATED</span></footer>
