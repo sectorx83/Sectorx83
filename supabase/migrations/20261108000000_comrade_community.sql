@@ -55,6 +55,13 @@ create table if not exists public.reports (
 create index if not exists posts_created_idx on public.posts(created_at desc);
 create index if not exists comments_post_idx on public.comments(post_id,created_at);
 create index if not exists reports_status_idx on public.reports(status,created_at desc);
+create index if not exists posts_author_idx on public.posts(author_id);
+create index if not exists comments_author_idx on public.comments(author_id);
+create index if not exists banned_members_banned_by_idx on public.banned_members(banned_by);
+create index if not exists reports_comment_idx on public.reports(comment_id);
+create index if not exists reports_post_idx on public.reports(post_id);
+create index if not exists reports_reporter_idx on public.reports(reporter_id);
+create index if not exists reports_reviewed_by_idx on public.reports(reviewed_by);
 
 alter table public.profiles enable row level security;
 alter table public.posts enable row level security;
