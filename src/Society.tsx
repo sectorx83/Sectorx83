@@ -251,7 +251,7 @@ export default function Society() {
       })
       .subscribe()
     return () => { active = false; void supabase!.removeChannel(channel) }
-  }, [session?.user?.id, tab])
+  }, [session?.user?.id, tab, activeDm?.id])
 
   const dmConversations = useMemo(() => {
     if (!session) return []
