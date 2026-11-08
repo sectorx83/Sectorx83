@@ -217,3 +217,12 @@
  .cc-emblem{margin-top:25px}
 }
 @media(prefers-reduced-motion:reduce){.cc-shell *,.cc-tour-scrim *{animation:none!important;transition:none!important}}
+
+.cc-welcome-strip{display:flex;justify-content:space-between;align-items:center;gap:20px;padding:17px 18px;margin:0 0 28px;border:1px solid rgba(176,138,69,.35);background:linear-gradient(100deg,rgba(159,29,45,.12),rgba(255,255,255,.015) 70%)}
+.cc-welcome-strip .cc-kicker{margin-bottom:8px}
+.cc-welcome-strip strong,.cc-welcome-strip span{display:block}
+.cc-welcome-strip strong{font:italic 17px Georgia,serif;color:var(--ivory)}
+.cc-welcome-strip span{margin-top:6px;color:var(--muted);font:9px/1.6 Manrope,sans-serif}
+.cc-welcome-strip button{display:flex;align-items:center;gap:8px;flex:none;padding:10px 12px;border:1px solid rgba(176,138,69,.45);background:transparent;color:var(--ivory);font:7px var(--mono);letter-spacing:.1em}
+.cc-welcome-strip button:hover{background:rgba(159,29,45,.2)}
+@media(max-width:760px){.cc-welcome-strip{align-items:flex-start;flex-direction:column;gap:13px;padding:14px}.cc-welcome-strip strong{font-size:15px}.cc-welcome-strip button{width:100%;justify-content:center}}
