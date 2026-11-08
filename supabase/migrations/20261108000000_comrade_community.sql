@@ -79,8 +79,8 @@ create policy "Members create discussions" on public.posts for insert to authent
  and (not is_announcement or (select private.is_moderator()))
 );
 create policy "Authors and moderators update posts" on public.posts for update to authenticated
-using ((author_id = (select auth.uid()) and not exists (select 1 from public.banned_members b where b.user_id = (select auth.uid()))) or (select private.is_moderator()))
-with check ((author_id = (select auth.uid()) and not exists (select 1 from public.banned_members b where b.user_id = (select auth.uid()))) or (select private.is_moderator()));
+using ((author_id = (select auth.uid()) and not is_announcement and not exists (select 1 from public.banned_members b where b.user_id = (select auth.uid()))) or (select private.is_moderator()))
+with check ((author_id = (select auth.uid()) and not is_announcement and not exists (select 1 from public.banned_members b where b.user_id = (select auth.uid()))) or (select private.is_moderator()));
 create policy "Authors and moderators delete posts" on public.posts for delete to authenticated
 using ((author_id = (select auth.uid()) and not exists (select 1 from public.banned_members b where b.user_id = (select auth.uid()))) or (select private.is_moderator()));
 
