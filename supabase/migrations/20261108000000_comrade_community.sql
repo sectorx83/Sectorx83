@@ -15,7 +15,6 @@ create table if not exists public.profiles (
  id uuid primary key references auth.users(id) on delete cascade,
  username text not null unique check (char_length(username) between 3 and 32),
  display_name text not null check (char_length(display_name) between 1 and 48),
- gender text check (gender in ('male','female')),
  bio text check (char_length(coalesce(bio,'')) <= 240),
  created_at timestamptz not null default now()
 );
@@ -63,7 +62,8 @@ alter table public.comments enable row level security;
 alter table public.banned_members enable row level security;
 alter table public.reports enable row level security;
 
-grant select,update on public.profiles to authenticated;
+grant select on public.profiles to authenticated;
+grant update(display_name,bio) on public.profiles to authenticated;
 grant select,insert,update,delete on public.posts to authenticated;
 grant select,insert,delete on public.comments to authenticated;
 grant select,insert,delete on public.banned_members to authenticated;
@@ -110,18 +110,16 @@ declare
  raw_name text;
  safe_name text;
  display text;
- gender_value text;
 begin
  raw_name := lower(regexp_replace(coalesce(new.raw_user_meta_data ->> 'username',''), '[^a-zA-Z0-9_]', '', 'g'));
  display := left(trim(coalesce(new.raw_user_meta_data ->> 'display_name','Community member')),48);
- gender_value := new.raw_user_meta_data ->> 'gender';
  if char_length(raw_name) < 3 then raw_name := 'member'; end if;
  safe_name := left(raw_name,24);
  if exists (select 1 from public.profiles p where p.username = safe_name) then
    safe_name := left(safe_name,24) || '_' || left(replace(new.id::text,'-',''),6);
  end if;
- insert into public.profiles(id,username,display_name,gender)
- values(new.id,safe_name,coalesce(nullif(display,''),'Community member'),case when gender_value in ('male','female') then gender_value else null end)
+ insert into public.profiles(id,username,display_name)
+ values(new.id,safe_name,coalesce(nullif(display,''),'Community member'))
  on conflict(id) do nothing;
  return new;
 end;
