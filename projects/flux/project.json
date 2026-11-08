@@ -1,0 +1,11 @@
+{
+  "name": "Flux Agent",
+  "slug": "flux",
+  "status": "Phase 3 in progress",
+  "completed": [
+    "Phase 1",
+    "Phase 2"
+  ],
+  "repository": "https://github.com/sectorx83/Flux-agent",
+  "category": "AI"
+}
