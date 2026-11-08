@@ -51,7 +51,7 @@ Test normal registration, sign-in, profile creation, posting, comments, reports,
 ## Member experience features
 
 - Members can maintain a public profile with an HTTPS avatar image, location, website, skills and interests. Skills and interests are comma-separated, with up to 12 entries each.
-- The member register searches profile text and skills, and supports sorting by newest or name. Dispatches support member reactions (support or insightful); members can only change their own reaction.
+- The member register searches profile text and skills, and supports sorting by newest or name. Dispatches support member reactions (support or insightful), author/moderator editing and local-device draft autosave; members can only change their own reaction.
 - Direct messages expose recipient-only read receipts. Opening a conversation marks incoming messages read.
 - The Notifications tab shows alerts for new direct messages and replies to a member's dispatches. Notification rows are visible only to their owner.
 - Moderators can publish upcoming events and add HTTPS references to the resource library. Members can read these resources; only moderators can manage them.
