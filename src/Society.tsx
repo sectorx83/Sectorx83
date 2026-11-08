@@ -196,9 +196,14 @@ export default function Society() {
 
   const toBase64 = (bytes: Uint8Array) => btoa(Array.from(bytes, value => String.fromCharCode(value)).join(''))
   const fromBase64 = (value: string) => Uint8Array.from(atob(value), char => char.charCodeAt(0))
+  const asArrayBuffer = (bytes: Uint8Array): ArrayBuffer => {
+    const copy = new Uint8Array(bytes.byteLength)
+    copy.set(bytes)
+    return copy.buffer
+  }
   async function deriveVaultKey(passphrase: string, salt: Uint8Array) {
-    const material = await crypto.subtle.importKey('raw', new TextEncoder().encode(passphrase), 'PBKDF2', false, ['deriveKey'])
-    return crypto.subtle.deriveKey({ name: 'PBKDF2', salt, iterations: 310000, hash: 'SHA-256' }, material, { name: 'AES-GCM', length: 256 }, false, ['encrypt', 'decrypt'])
+    const material = await crypto.subtle.importKey('raw', asArrayBuffer(new TextEncoder().encode(passphrase)), 'PBKDF2', false, ['deriveKey'])
+    return crypto.subtle.deriveKey({ name: 'PBKDF2', salt: asArrayBuffer(salt), iterations: 310000, hash: 'SHA-256' }, material, { name: 'AES-GCM', length: 256 }, false, ['encrypt', 'decrypt'])
   }
   async function sealCipherEntry(e: FormEvent) {
     e.preventDefault()
@@ -208,7 +213,7 @@ export default function Society() {
       const salt = crypto.getRandomValues(new Uint8Array(16))
       const iv = crypto.getRandomValues(new Uint8Array(12))
       const key = await deriveVaultKey(cipherPassphrase, salt)
-      const encrypted = await crypto.subtle.encrypt({ name: 'AES-GCM', iv }, key, new TextEncoder().encode(cipherText.trim()))
+      const encrypted = await crypto.subtle.encrypt({ name: 'AES-GCM', iv: asArrayBuffer(iv) }, key, asArrayBuffer(new TextEncoder().encode(cipherText.trim())))
       const { data, error: e1 } = await supabase.from('cipher_vault').insert({
         owner_id: session.user.id, label: cipherLabel.trim().slice(0,60) || 'Sealed note',
         ciphertext: toBase64(new Uint8Array(encrypted)), iv: toBase64(iv), salt: toBase64(salt),
@@ -223,7 +228,7 @@ export default function Society() {
     setError('')
     try {
       const key = await deriveVaultKey(cipherPassphrase, fromBase64(entry.salt))
-      const plaintext = await crypto.subtle.decrypt({ name: 'AES-GCM', iv: fromBase64(entry.iv) }, key, fromBase64(entry.ciphertext))
+      const plaintext = await crypto.subtle.decrypt({ name: 'AES-GCM', iv: asArrayBuffer(fromBase64(entry.iv)) }, key, asArrayBuffer(fromBase64(entry.ciphertext)))
       setDecryptedEntry({ id: entry.id, text: new TextDecoder().decode(plaintext) })
     } catch { setError('That passphrase did not unlock this entry. Nothing was changed.') }
   }
@@ -235,11 +240,11 @@ export default function Society() {
   }
 
   if (!ready) return <main className="cc-shell cc-loading"><Crest large/><span>INITIALIZING THE CHAMBER</span><i/></main>
-  if (!supabase) return <main className="cc-shell cc-entry"><header className="cc-header"><a className="cc-brand" href="/"><Crest/>THE COMRADE COMMUNITY</a><a href="/">SECTORX83 ↗</a></header><section className="cc-entry-hero"><Crest large/><p className="cc-kicker">COMMUNITY CONFIGURATION REQUIRED</p><h1>The assembly<br/><em>is not connected.</em></h1><p>Add the community Supabase URL and publishable key to Vercel. Setup instructions are included in the repository.</p><a href="https://github.com/sectorx83/Sectorx83/blob/main/COMRADE_SETUP.md">OPEN SETUP GUIDE ↗</a></section></main>
+  if (!supabase) return <main className="cc-shell cc-entry"><header className="cc-header"><a className="cc-brand" href="/"><Crest/>SECTORX83</a><a href="/">SECTORX83 ↗</a></header><section className="cc-entry-hero"><Crest large/><p className="cc-kicker">COMMUNITY CONFIGURATION REQUIRED</p><h1>The assembly<br/><em>is not connected.</em></h1><p>Add the community Supabase URL and publishable key to Vercel. Setup instructions are included in the repository.</p><a href="https://github.com/sectorx83/Sectorx83/blob/main/COMRADE_SETUP.md">OPEN SETUP GUIDE ↗</a></section></main>
 
   if (!session) return <main className="cc-shell cc-entry">
     <div className="cc-grid-bg"/>
-    <header className="cc-header"><a className="cc-brand" href="/"><Crest/><span>THE ORDER<small>SECTORX83 / MEMBERSHIP ACCESS</small></span></a><a className="cc-back" href="/">RETURN TO SECTORX83 ↗</a></header>
+    <header className="cc-header"><a className="cc-brand" href="/"><Crest/><span>SECTORX83<small>SECTORX83 / MEMBERSHIP ACCESS</small></span></a><a className="cc-back" href="/">RETURN TO SECTORX83 ↗</a></header>
     <section className="cc-entry-layout"><div className="cc-manifesto"><p className="cc-kicker">THE ORDER / 01</p><h1>Bound by<br/>purpose.<br/><em>Built on trust.</em></h1><p>A private circle for disciplined thought, shared principles, quiet collaboration and the exchange of ideas among its members.</p><div className="cc-manifesto-foot">MEMBERSHIP ACCESS <i/> PRIVATE CORRESPONDENCE</div><div className="cc-emblem"><Crest large/><span>UNITY · DUTY · SOLIDARITY</span></div></div>
       <section className="cc-auth-panel"><p className="cc-kicker">MEMBERSHIP / 00</p><h2>{mode === 'join' ? 'Enter the circle.' : 'Welcome back.'}</h2><p className="cc-subtitle">{mode === 'join' ? 'Create your membership record.' : 'Sign in to continue to the community.'}</p><div className="cc-mode"><button className={mode === 'join' ? 'active' : ''} onClick={() => { setMode('join'); setError(''); setNotice('') }}>CREATE ACCOUNT</button><button className={mode === 'signin' ? 'active' : ''} onClick={() => { setMode('signin'); setError(''); setNotice('') }}>SIGN IN</button></div>
       <form onSubmit={auth} className="cc-form">{mode === 'join' && <><label>DISPLAY NAME<input required maxLength={48} value={displayName} onChange={e => setDisplayName(e.target.value)} placeholder="How members will see you"/></label><label>USERNAME<input required minLength={3} maxLength={24} value={username} onChange={e => setUsername(e.target.value.replace(/[^a-zA-Z0-9_]/g,''))} placeholder="Choose a username"/></label></>}
@@ -270,7 +275,7 @@ export default function Society() {
         <section className="cc-admin-section"><h2>Security posture</h2><div className="cc-security-grid"><article><Lock size={18}/><strong>TLS in transit</strong><small>Connections are protected in transit.</small></article><article><ShieldCheck size={18}/><strong>Encrypted database</strong><small>Managed storage encryption at rest.</small></article><article><KeyRound size={18}/><strong>AES-256-GCM vault</strong><small>Private entries are encrypted in the browser before upload.</small></article></div><p className="cc-muted">The vault is client-side encrypted. Feed posts and comments are not end-to-end encrypted.</p></section>
       </>}
       {tab === 'cipher' && <><div className="cc-heading"><div><p className="cc-kicker">PRIVATE STORAGE / 04</p><h1>The <em>cipher vault.</em></h1><p>Seal personal dispatches in your browser before they reach the database.</p></div><Lock size={34}/></div><div className="cc-cipher-explainer"><Lock size={18}/><div><strong>AES-256-GCM · PBKDF2-SHA-256</strong><p>Each entry gets a fresh random salt and IV. Your passphrase is never stored. Losing it means the entry cannot be recovered. These entries are private to your account; this is not group end-to-end encryption.</p></div></div><form className="cc-composer cc-cipher-form" onSubmit={sealCipherEntry}><label>ENTRY LABEL<input value={cipherLabel} onChange={e => setCipherLabel(e.target.value)} maxLength={60} placeholder="A short label"/></label><label>PRIVATE CONTENT<textarea value={cipherText} onChange={e => setCipherText(e.target.value)} rows={5} maxLength={12000} required placeholder="Write a private note. It is encrypted before upload."/></label><label>VAULT PASSPHRASE<input type="password" minLength={12} value={cipherPassphrase} onChange={e => setCipherPassphrase(e.target.value)} required placeholder="At least 12 characters"/></label><button className="cc-primary" disabled={busy}>{busy ? 'SEALING…' : 'ENCRYPT & SEAL'} <Lock size={15}/></button></form><div className="cc-admin-section"><h2>Sealed entries</h2>{cipherEntries.length ? cipherEntries.map(entry => <article key={entry.id}><div><strong>{entry.label}</strong><small>SEALED · {dateLabel(entry.created_at)}</small></div><div><button onClick={() => openCipherEntry(entry)}><KeyRound size={13}/> UNSEAL</button><button onClick={() => deleteCipherEntry(entry.id)}><X size={13}/> DELETE</button></div></article>) : <p className="cc-muted">No encrypted entries yet.</p>}{decryptedEntry && <div className="cc-decrypted"><div><strong>UNSEALED CONTENT</strong><button onClick={() => setDecryptedEntry(null)}><X size={14}/></button></div><p>{decryptedEntry.text}</p></div>}</div></>}
-      <footer className="cc-main-footer">THE ORDER / SECTORX83 <span>DISCRETION · INTEGRITY · SOLIDARITY</span></footer>
+      <footer className="cc-main-footer">SECTORX83 / PRIVATE CIRCLE <span>DISCRETION · INTEGRITY · SOLIDARITY</span></footer>
     </section></div>
     {selected && <div className="cc-overlay" onClick={e => { if (e.target === e.currentTarget) setSelected(null) }}><section className="cc-thread"><header>CHAMBER THREAD <button onClick={() => setSelected(null)}><X size={17}/></button></header><h2>{selected.title}</h2><p>{selected.body}</p><h3>{comments.length} RESPONSES</h3>{comments.map(c => <article key={c.id}><strong>{c.author?.display_name || 'Member'} <small>@{c.author?.username}</small></strong><p>{c.body}</p><time>{dateLabel(c.created_at)}</time></article>)}{!suspended && <form onSubmit={addComment}><textarea value={comment} onChange={e => setComment(e.target.value)} placeholder="Add a thoughtful response…" rows={3} required/><button className="cc-primary">POST RESPONSE <MessageCircle size={14}/></button></form>}</section></div>}
     {reporting && <div className="cc-overlay" onClick={e => { if (e.target === e.currentTarget) setReporting(null) }}><section className="cc-thread"><header>ORDER SECURITY / REPORT <button onClick={() => setReporting(null)}><X size={17}/></button></header><h2>Report discussion</h2><p>{reporting.title}</p><textarea rows={4} value={reportReason} onChange={e => setReportReason(e.target.value)} placeholder="Explain what needs moderator attention."/><button className="cc-primary" onClick={submitReport}>SUBMIT REPORT <Flag size={14}/></button></section></div>}
