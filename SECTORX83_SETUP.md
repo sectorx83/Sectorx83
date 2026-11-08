@@ -6,7 +6,7 @@ Sectorx83 is served as the website root at https://sectorx83.vercel.app. There i
 
 Create a separate Supabase project for this community. Do not reuse the EDITH X1 database.
 
-Apply the core community migrations in order: `20261108000000_comrade_community.sql` and `20261108000003_order_classifications.sql`. They create member records, dispatches, comments, reports and suspensions with row-level security enabled.
+Apply the core community migrations in order: `20261108000000_comrade_community.sql`, `20261108000003_order_classifications.sql` and `20261108124357_community_chat.sql`. They create member records, dispatches, comments, reports, suspensions and the member chat with row-level security enabled.
 
 The legacy Cipher Vault database migration/table may remain in an existing Supabase project for historical data compatibility, but the feature has been removed from the website and is no longer queried by the application. Do not drop the table unless you have independently confirmed that no retained records are needed.
 
