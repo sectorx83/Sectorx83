@@ -15,18 +15,8 @@ const dateLabel = (value: string) => new Date(value).toLocaleString()
 const sections = ['ALL', 'GENERAL', 'DISCUSSION', 'DECLARATIONS', 'ANNOUNCEMENT']
 
 function Crest({ large = false }: { large?: boolean }) {
-  return <span className={large ? 'cc-crest cc-crest-large' : 'cc-crest'} aria-hidden="true">
-    <svg viewBox="0 0 120 120" fill="none">
-      <circle cx="60" cy="60" r="55" className="cc-frame"/>
-      <circle cx="60" cy="60" r="48" className="cc-inner"/>
-      <path className="cc-wreath" d="M31 92C13 74 14 43 31 25M89 92c18-18 17-49 0-67"/>
-      <path className="cc-wreath-detail" d="M27 82l-9-1 5-8m7 1-10-4 7-7m5-1-9-7 9-4m-1-6-7-9 10-1m-3-7-3-10 10 3M93 82l9-1-5-8m-7 1 10-4-7-7m-5-1 9-7-9-4m1-6 7-9-10-1m3-7 3-10-10 3"/>
-      <path className="cc-star" d="m60 13 5.2 10.7 11.8 1.7-8.5 8.3 2 11.7L60 39.9l-10.5 5.5 2-11.7-8.5-8.3 11.8-1.7L60 13Z"/>
-      <path className="cc-tools" d="M42 72 76 43M69 38l12 12M37 67l10 10"/>
-      <path className="cc-sickle" d="M72 57c9 8 11 20 4 28-7 8-19 8-27 1 10 3 19-1 21-9 2-6 0-12-5-16"/>
-      <path className="cc-ribbon" d="M35 91q25 10 50 0l-4 13-21-5-21 5-4-13Z"/>
-      <text className="cc-ribbon-type" x="60" y="99" textAnchor="middle">SX83</text>
-    </svg>
+  return <span className={large ? 'cc-crest cc-crest-large' : 'cc-crest'} role="img" aria-label="State emblem of the Soviet Union">
+    <img src="https://commons.wikimedia.org/wiki/Special:FilePath/Coat_of_arms_of_the_Soviet_Union.svg" alt="USSR state emblem" loading="eager" decoding="async"/>
   </span>
 }
 
@@ -41,52 +31,11 @@ function Themis({ large = false }: { large?: boolean }) {
           <stop offset="0" stopColor="#eee3c9"/><stop offset="1" stopColor="#9f9076"/>
         </linearGradient>
       </defs>
-      <circle className="themis-halo" cx="130" cy="143" r="119"/>
-      <path className="themis-ornament" d="M27 270V33h206v237M38 259V44h184v215M27 54h14M219 54h14M27 248h14M219 248h14"/>
-      <path className="themis-ornament" d="m130 10 5 10 11 2-8 8 2 11-10-5-10 5 2-11-8-8 11-2 5-10Z"/>
-      <path className="themis-hair" d="M105 73c-6-24 7-43 25-43 22 0 34 18 27 45l-7 28h-38l-7-30Z"/>
-      <path className="themis-skin" d="M110 61c0-17 8-26 20-26s20 9 20 26v21c0 17-9 28-20 28s-20-11-20-28V61Z"/>
-      <path className="themis-blindfold" d="M107 63c13 5 29 5 46 0l-2 10c-14 6-29 6-42 0l-2-10Z"/>
-      <path className="themis-hair" d="M111 49c-12 15-12 35-8 54l-12-12c-4-27 1-49 18-62M150 46c13 14 15 36 9 57l12-12c5-27-2-49-17-62"/>
-      <path className="themis-skin" d="M120 108h20v22h-20z"/>
-      <path className="themis-robe" d="m113 124 17 11 17-11 22 18 19 111-58 24-58-24 19-111 22-18Z"/>
-      <path className="themis-robe-fold" d="m113 129-17 43 22 25-22 67M147 129l17 43-22 25 22 67M130 136v137M75 153l55 34 55-34"/>
-      <path className="themis-arm" d="m111 133-42-23-12 7 8 12 47 24M149 133l42-23 12 7-8 12-47 24"/>
-      <path className="themis-gold-stroke" d="M130 105v28M51 112h158"/>
-      <g className="themis-scale-beam">
-        <path d="M51 108h158M130 92l-10 16h20l-10-16Z"/>
-        <circle cx="130" cy="108" r="4"/>
-      </g>
-      <g className="themis-scale-left">
-        <path d="m68 111-12 43m12-43 13 43M55 154h27"/>
-        <path d="M45 155q23 28 46 0M46 155h44"/>
-      </g>
-      <g className="themis-scale-right">
-        <path d="m192 111-12 43m12-43 13 43m-25 0h27"/>
-        <path d="M169 155q23 28 46 0M170 155h44"/>
-      </g>
-      <path className="themis-sword" d="m202 148 9 9-38 102-10 10 2-15 37-106Z"/>
-      <path className="themis-sword-hilt" d="m194 144 17 17m-24-11 17 17"/>
-      <path className="themis-base" d="M75 280h110M92 287h76M111 294h38"/>
-      <path className="themis-gold-stroke themis-highlight" d="M42 76h9M209 76h9M42 226h9M209 226h9"/>
-    </svg>
+      <cfunction Themis({ large = false }: { large?: boolean }) {
+  return <span className={large ? 'cc-themis cc-themis-large' : 'cc-themis'} role="img" aria-label="Themis, Greek goddess of justice">
+    <img src="https://commons.wikimedia.org/wiki/Special:FilePath/Themis_lady_of_Justice_statue_in_Amaliada_Greece_08.jpg?width=900" alt="Bronze statue of Themis, the Greek goddess of justice" loading={large ? 'eager' : 'lazy'} decoding="async"/>
   </span>
-}
-
-export default function Society() {
-  const [session, setSession] = useState<any>(null)
-  const [ready, setReady] = useState(false)
-  const [mode, setMode] = useState<'join' | 'signin'>('join')
-  const [email, setEmail] = useState('')
-  const [password, setPassword] = useState('')
-  const [username, setUsername] = useState('')
-  const [displayName, setDisplayName] = useState('')
-  const [profileBio, setProfileBio] = useState('')
-  const [profile, setProfile] = useState<Profile | null>(null)
-  const [posts, setPosts] = useState<Post[]>([])
-  const [members, setMembers] = useState<Profile[]>([])
-  const [comments, setComments] = useState<Comment[]>([])
-  const [chatMessages, setChatMessages] = useState<ChatMessage[]>([])
+}age[]>([])
   const [chatDraft, setChatDraft] = useState('')
   const [dmInbox, setDmInbox] = useState<DirectMessage[]>([])
   const [dmThread, setDmThread] = useState<DirectMessage[]>([])
@@ -471,7 +420,7 @@ export default function Society() {
   if (!session) return <main className="cc-shell cc-entry">
     <div className="cc-grid-bg"/>
     <header className="cc-header"><a className="cc-brand" href="/"><Crest/><span>SECTORX83<small>PRIVATE MEMBER NETWORK</small></span></a><a className="cc-back" href="/">RETURN TO SECTORX83 ↗</a></header>
-    <section className="cc-entry-layout"><div className="cc-manifesto"><p className="cc-kicker">SECTORX83 / THE DIRECTIVE</p><h1>Question deeply.<br/>Build together.<br/><em>Leave a mark.</em></h1><p>Sectorx83 is a member network for independent thinkers and builders. Share considered ideas in Dispatches, talk in the separate community room, meet other members and keep private notes in your own encrypted vault.</p><div className="cc-manifesto-foot">IDENTITY <i/> AUTHORITY <i/> ACCOUNTABILITY</div><div className="cc-emblem"><Themis large/><span>THEMIS / EQUITY · BALANCE · ACCOUNTABILITY</span></div></div>
+    <section className="cc-entry-layout"><div className="cc-manifesto"><p className="cc-kicker">SECTORX83 / THE DIRECTIVE</p><h1>Question deeply.<br/>Build together.<br/><em>Leave a mark.</em></h1><p>Sectorx83 is a member network for independent thinkers and builders. Share considered ideas in Dispatches, talk in the separate community room, meet other members and build a useful record together.</p><div className="cc-manifesto-foot">IDENTITY <i/> AUTHORITY <i/> ACCOUNTABILITY</div><div className="cc-emblem"><Themis large/><span>THEMIS / EQUITY · BALANCE · ACCOUNTABILITY</span></div></div>
       <section className="cc-auth-panel"><p className="cc-kicker">ACCESS CONTROL / 00</p><h2>{mode === 'join' ? 'Establish your record.' : 'Your presence is expected.'}</h2><p className="cc-subtitle">{mode === 'join' ? 'Register your identity. Your account remains subject to the rules of the network.' : 'Verify your identity. Proceed only with authorised credentials.'}</p><div className="cc-mode"><button className={mode === 'join' ? 'active' : ''} onClick={() => { setMode('join'); setError(''); setNotice('') }}>CREATE ACCOUNT</button><button className={mode === 'signin' ? 'active' : ''} onClick={() => { setMode('signin'); setEmail(''); setError(''); setNotice('') }}>SIGN IN</button></div>
       <form onSubmit={auth} className="cc-form">{mode === 'join' && <><label>DISPLAY NAME<input required maxLength={48} value={displayName} onChange={e => setDisplayName(e.target.value)} placeholder="Name displayed on the record"/></label><label>USERNAME<input required minLength={3} maxLength={24} value={username} onChange={e => setUsername(e.target.value.replace(/[^a-zA-Z0-9_]/g,''))} placeholder="Choose your public identifier"/></label></>}
       <label>EMAIL ADDRESS<input required type="email" value={email} onChange={e => setEmail(e.target.value)} placeholder="Registered email address"/></label><label>PASSWORD<input required minLength={8} type="password" value={password} onChange={e => setPassword(e.target.value)} placeholder="Enter your account password"/></label>
@@ -482,7 +431,7 @@ export default function Society() {
 
   return <main className="cc-shell cc-community">
     <header className="cc-header cc-header-inside"><a className="cc-brand" href="/sectorx83"><Crest/><span>SECTORX83<small>MEMBER NETWORK</small></span></a><div className="cc-header-actions"><div className="cc-user"><span>{profile?.display_name || session.user.email}<small>@{profile?.username || 'member'} · {role.toUpperCase()}</small></span><button onClick={() => { if (supabase) void supabase.auth.signOut() }} aria-label="Sign out"><LogOut size={16}/></button></div></div></header>
-    <div className="cc-layout"><aside className="cc-sidebar"><small>SECTORX83 / NAVIGATION</small>{nav.map(item => { const Icon = item.icon; return <button key={item.id} className={tab === item.id ? 'active' : ''} onClick={() => { setTab(item.id); setSelected(null); if (item.id !== 'messages') setActiveDm(null); setError(''); setNotice('') }}><Icon size={16}/>{item.label}</button> })}<div className="cc-principle"><Crest/><small>COMMUNITY PRINCIPLE</small><strong>Question every claim. Respect every person.</strong><p>Authority is accountable. Evidence outranks status. Disagreement is not disloyalty.</p></div><div className="cc-side-meta">ACCESS / {role.toUpperCase()}<br/>NETWORK / MEMBERS</div></aside>
+    <div className="cc-layout">
     <section className="cc-main"><div className="cc-crumb">SECTORX83 <b>/</b> {nav.find(x => x.id === tab)?.label.toUpperCase()}</div>
       {tab === 'feed' && <section className="cc-welcome-strip"><div><p className="cc-kicker">WELCOME TO THE NETWORK</p><strong>Ideas in the feed. Conversation in the chat. People at the centre.</strong><span>A focused member network for discussion, collaboration and accountable participation.</span></div></section>}
       {(error || notice) && <div className={error ? 'cc-alert is-error' : 'cc-alert'}>{error || notice}<button onClick={() => { setError(''); setNotice('') }}><X size={14}/></button></div>}
@@ -505,6 +454,7 @@ export default function Society() {
       </>}
       <footer className="cc-main-footer">SECTORX83 / VERIFIED NETWORK <span>QUESTION · PROVE · BUILD</span></footer>
     </section></div>
+    <nav className="cc-bottom-nav" aria-label="Main navigation">{nav.map(item => { const Icon = item.icon; return <button key={item.id} className={tab === item.id ? 'active' : ''} aria-current={tab === item.id ? 'page' : undefined} onClick={() => { setTab(item.id); setSelected(null); if (item.id !== 'messages') setActiveDm(null); setError(''); setNotice('') }}><Icon size={18}/><span>{item.id === 'messages' ? 'Inbox' : item.id === 'admin' ? 'Council' : item.id === 'profile' ? 'Profile' : item.id === 'members' ? 'Members' : item.id === 'chat' ? 'Chat' : 'Feed'}</span></button> })}</nav>
     {tourStep !== null && <div className="cc-tour-scrim"><section className="cc-tour-card" role="dialog" aria-modal="true" aria-labelledby="cc-tour-title"><div className="cc-tour-top"><span>SECTORX83 / FIRST VISIT</span><button onClick={finishTour} aria-label="Close tour"><X size={16}/></button></div><div className="cc-tour-progress">{tourSteps.map((_,i)=><i key={i} className={i <= tourStep ? 'is-active' : ''}/>)}</div><p className="cc-kicker">GUIDED INTRODUCTION · 0{tourStep + 1} / 0{tourSteps.length}</p><span className="cc-tour-target">{tourSteps[tourStep].target}</span><h2 id="cc-tour-title">{tourSteps[tourStep].title}</h2><p>{tourSteps[tourStep].body}</p><div className="cc-tour-actions"><button className="cc-tour-skip" onClick={finishTour}>SKIP TOUR</button><div>{tourStep > 0 && <button className="cc-tour-back" onClick={() => setTourStep(step => step === null ? null : Math.max(0,step-1))}><ChevronLeft size={14}/> BACK</button>}<button className="cc-primary" onClick={() => tourStep === tourSteps.length - 1 ? finishTour() : setTourStep(step => step === null ? null : Math.min(tourSteps.length-1,step+1))}>{tourStep === tourSteps.length - 1 ? 'FINISH' : 'NEXT'} <ChevronRight size={14}/></button></div></div></section></div>}
     {selected && <div className="cc-overlay" onClick={e => { if (e.target === e.currentTarget) setSelected(null) }}><section className="cc-thread"><header>DISPATCH RECORD <button onClick={() => setSelected(null)}><X size={17}/></button></header><h2>{selected.title}</h2><p>{selected.body}</p><h3>{comments.length} RESPONSES</h3>{comments.map(c => <article key={c.id}><strong>{c.author?.display_name || 'Member'} <small>@{c.author?.username}</small></strong><p>{c.body}</p><time>{dateLabel(c.created_at)}</time></article>)}{!suspended && <form onSubmit={addComment}><textarea value={comment} onChange={e => setComment(e.target.value)} placeholder="Add evidence. Challenge the argument. Keep it precise." rows={3} required/><button className="cc-primary">POST RESPONSE <MessageCircle size={14}/></button></form>}</section></div>}
     {reporting && <div className="cc-overlay" onClick={e => { if (e.target === e.currentTarget) setReporting(null) }}><section className="cc-thread"><header>NETWORK INTEGRITY / REPORT <button onClick={() => setReporting(null)}><X size={17}/></button></header><h2>Report discussion</h2><p>{reporting.title}</p><textarea rows={4} value={reportReason} onChange={e => setReportReason(e.target.value)} placeholder="Explain what needs moderator attention."/><button className="cc-primary" onClick={submitReport}>SUBMIT REPORT <Flag size={14}/></button></section></div>}
