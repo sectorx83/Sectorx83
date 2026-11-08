@@ -6,7 +6,7 @@ Sectorx83 is served as the website root at https://sectorx83.vercel.app. There i
 
 Create a separate Supabase project for this community. Do not reuse the EDITH X1 database.
 
-Apply the core community migrations in order: `20261108000000_comrade_community.sql`, `20261108000003_order_classifications.sql` and `20261108124357_community_chat.sql`. They create member records, dispatches, comments, reports, suspensions and the member chat with row-level security enabled.
+Apply the core community migrations in order: `20261108000000_comrade_community.sql`, `20261108000003_order_classifications.sql` and `20261108124357_community_chat.sql`. They create member records, dispatches, comments, reports, suspensions and the member chat with row-level security enabled. The `private_member_direct_messages` migration adds one-to-one member messaging. Direct-message rows are readable only by their sender and recipient; authenticated members can send messages, and suspended accounts cannot send them.
 
 The legacy Cipher Vault database migration/table may remain in an existing Supabase project for historical data compatibility, but the feature has been removed from the website and is no longer queried by the application. Do not drop the table unless you have independently confirmed that no retained records are needed.
 
@@ -45,4 +45,4 @@ Never use user-editable `user_metadata` for authorization. There is no shared ad
 
 Set the Supabase Site URL to https://sectorx83.vercel.app and allow the production and preview redirect URLs you use. Keep email/password authentication enabled.
 
-Test normal registration, sign-in, profile creation, posting, comments, reports, member directory access and community chat. Verify a normal member cannot publish announcements, ban users, review other members' reports or change roles. Test the administrator and moderator flows, then run Supabase Security and Performance Advisors before opening registration publicly.
+Test normal registration, sign-in, profile creation, posting, comments, reports, member directory access and community chat. For direct messaging, test with two ordinary member accounts: start a conversation from the member register, send messages in both directions, refresh the page and verify history persists. Confirm a third account cannot query either participant's messages, and confirm a suspended account cannot send a direct message. Verify a normal member cannot publish announcements, ban users, review other members' reports or change roles. Test the administrator and moderator flows, then run Supabase Security and Performance Advisors before opening registration publicly.
