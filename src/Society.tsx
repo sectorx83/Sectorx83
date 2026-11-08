@@ -1,129 +1,218 @@
 import { useEffect, useMemo, useState } from 'react'
-import { Activity, ArrowUpRight, BookOpen, ChevronRight, Database, FileSearch, LogOut, LockKeyhole, Network, Search, ShieldCheck, SlidersHorizontal } from 'lucide-react'
+import type { FormEvent } from 'react'
+import { Activity, AlertTriangle, ArrowUpRight, Ban, Check, Flag, LogOut, MessageCircle, Plus, Search, ShieldCheck, Users, X } from 'lucide-react'
+import { supabase } from './lib/supabase'
 
-type Source = { name: string; publisher: string; url: string; kind: string; note: string }
-type CaseFile = { id: string; title: string; area: string; status: string; summary: string; scope: string[]; sources: string[]; confidence: string }
+type Profile = { id: string; username: string; display_name: string; gender: string | null; bio: string | null; created_at: string }
+type Post = { id: string; author_id: string; title: string; body: string; category: string; is_announcement: boolean; created_at: string; author?: { username: string; display_name: string } | null }
+type Comment = { id: string; body: string; created_at: string; author?: { username: string; display_name: string } | null }
+type Report = { id: string; reason: string; status: string; created_at: string; reporter?: { username: string } | null; post?: { title: string } | null }
+type Role = { id: string; email: string | null; role: string }
+const dateLabel = (value: string) => new Date(value).toLocaleString()
+const sections = ['ALL', 'GENERAL', 'CURRENT AFFAIRS', 'DISCUSSION', 'ANNOUNCEMENT']
 
-const sources: Source[] = [
-  { name: 'The Rothschild Archive', publisher: 'The Rothschild Archive Trust', url: 'https://www.rothschildarchive.org/collections/', kind: 'Family & business archives', note: 'Archive catalogue describing historical banking records and family papers. The archive notes that access restrictions apply to some private collections.' },
-  { name: 'Rockefeller Archive Center', publisher: 'Rockefeller Archive Center', url: 'https://rockarch.org/resources/about-the-rockefellers/', kind: 'Family & institutional archives', note: 'Family tree and biographies for historical research. Use archival records and independent corroboration for claims about institutions and influence.' },
-  { name: 'Rockefeller Foundation governance', publisher: 'The Rockefeller Foundation', url: 'https://www.rockefellerfoundation.org/governance-reports/', kind: 'Financial & governance filings', note: 'Published financial statements, Form 990-PF filings and governance documents from the Foundation itself.' },
-  { name: 'Rockefeller Foundation history', publisher: 'The Rockefeller Foundation', url: 'https://www.rockefellerfoundation.org/about-us/our-history/', kind: 'Institutional history', note: 'The Foundation’s own published institutional history and programme timeline. Treat self-published claims as attributed institutional statements.' },
-  { name: 'SEC EDGAR', publisher: 'U.S. Securities and Exchange Commission', url: 'https://www.sec.gov/edgar/search/', kind: 'Regulatory filings', note: 'Company filings, ownership disclosures, annual reports and material events for SEC-reporting entities.' },
-  { name: 'Companies House', publisher: 'UK Government', url: 'https://find-and-update.company-information.service.gov.uk/', kind: 'Corporate registry', note: 'UK company records, officers, filing histories and accounts. Registry filings are not independently verified in every respect.' },
-  { name: 'OpenCorporates', publisher: 'OpenCorporates', url: 'https://opencorporates.com/', kind: 'Company data', note: 'Cross-jurisdiction company records sourced from official registers. Treat as an index and verify against the originating registry.' },
-  { name: 'FEC data', publisher: 'U.S. Federal Election Commission', url: 'https://www.fec.gov/data/', kind: 'Political finance', note: 'Federal campaign finance data, committees, receipts, disbursements and reported contributors.' },
-  { name: 'Lobbying Disclosure', publisher: 'U.S. Senate', url: 'https://lda.senate.gov/', kind: 'Lobbying records', note: 'Federal lobbying registrations and activity reports filed under U.S. disclosure law.' },
-  { name: 'USAspending.gov', publisher: 'U.S. Government', url: 'https://www.usaspending.gov/', kind: 'Public spending', note: 'Federal awards, contracts, grants, recipients and spending records.' },
-  { name: 'OCCRP Aleph', publisher: 'Organized Crime and Corruption Reporting Project', url: 'https://aleph.occrp.org/', kind: 'Investigative records', note: 'Searchable investigative datasets and documents. Some collections require an application or approved access.' },
-  { name: 'GIJN research guides', publisher: 'Global Investigative Journalism Network', url: 'https://gijn.org/resource/researching-corporations-and-their-owners/', kind: 'Research methodology', note: 'Practical guidance for researching corporate ownership, public records, litigation, lobbying and government contracts.' },
-  { name: 'World Bank StAR', publisher: 'World Bank / UNODC', url: 'https://star.worldbank.org/', kind: 'Beneficial ownership', note: 'Guidance and resources on asset recovery, beneficial ownership and financial transparency.' },
-  { name: 'RBI Database', publisher: 'Reserve Bank of India', url: 'https://data.rbi.org.in/', kind: 'Financial data', note: 'Official Indian banking, monetary and financial statistics.' },
-  { name: 'SEBI', publisher: 'Securities and Exchange Board of India', url: 'https://www.sebi.gov.in/', kind: 'Market regulation', note: 'Indian securities regulation, circulars, enforcement orders and market disclosures.' },
-  { name: 'CAG Reports', publisher: 'Comptroller and Auditor General of India', url: 'https://cag.gov.in/en/audit-report', kind: 'Public audit', note: 'Audit reports examining public expenditure, programmes and government entities in India.' },
-]
-
-const cases: CaseFile[] = [
-  { id: 'SX-001', title: 'Rothschild family: documented history and institutions', area: 'Historical finance', status: 'RESEARCH FRAMEWORK', summary: 'The Rothschild Archive describes its core holdings as business records of N M Rothschild & Sons in London and papers of the Paris banking house, alongside other historical family and business records. It says business records up to 1945 are generally available for public consultation, while some private papers are restricted. This is an archival starting point, not evidence of present-day family-wide control.', scope: ['Trace historical banking houses through dated archival and corporate records.', 'Separate branches, generations, trusts, foundations and independently managed entities.', 'Verify present-day roles through current filings and institutional disclosures.', 'Record disputed claims as claims, never as established facts without evidence.'], sources: ['The Rothschild Archive', 'GIJN research guides', 'OpenCorporates', 'Companies House', 'OCCRP Aleph'] , confidence: 'No substantive finding published yet' },
-  { id: 'SX-002', title: 'Rockefeller family: foundations, business history and public influence', area: 'Philanthropy & institutions', status: 'RESEARCH FRAMEWORK', summary: 'The Rockefeller Archive Center publishes family trees and biographies. The Rockefeller Foundation describes itself as founded in 1913 and legally independent, with its own resources, board and mission; its governance page publishes financial statements and 990-PF filings. These are useful primary starting points, with the Foundation’s own descriptions treated as attributed statements.', scope: ['Use foundation annual reports and official archive collections for historical claims.', 'Map grants and board roles only where published records support the connection.', 'Distinguish family members from organisations that have separate governance.', 'Include counter-evidence and the limits of available records.'], sources: ['Rockefeller Archive Center', 'Rockefeller Foundation governance', 'Rockefeller Foundation history', 'GIJN research guides', 'SEC EDGAR', 'OpenCorporates'] , confidence: 'No substantive finding published yet' },
-  { id: 'SX-003', title: 'Corporate ownership and beneficial control', area: 'Corporate power', status: 'OPEN RESEARCH TRACK', summary: 'A comparative research track for tracing companies, directors, shareholders and beneficial owners through registries and regulatory filings. Registry data can be incomplete or self-reported, so each important relationship requires corroboration.', scope: ['Identify the legal entity and jurisdiction before drawing connections.', 'Trace directors, shareholders and beneficial owners to original filings.', 'Record ownership percentages, dates and source limitations.', 'Do not treat shared addresses, names or indirect associations as proof of control.'], sources: ['SEC EDGAR', 'Companies House', 'OpenCorporates', 'World Bank StAR'], confidence: 'Method established; entity-specific findings require review' },
-  { id: 'SX-004', title: 'Political finance, lobbying and public procurement', area: 'Government influence', status: 'OPEN RESEARCH TRACK', summary: 'A records-based framework for examining disclosed political contributions, lobbying activity, public contracts and grants. The data is jurisdiction-specific and does not establish a quid pro quo on its own.', scope: ['Compare disclosures with the applicable reporting period and legal definitions.', 'Link awards and lobbying reports to the original filing or contract record.', 'Distinguish reported contributions from independent expenditures and other flows.', 'Require separate evidence before alleging a conflict, favour or causal influence.'], sources: ['FEC data', 'Lobbying Disclosure', 'USAspending.gov', 'CAG Reports'], confidence: 'Method established; jurisdiction-specific analysis pending' },
-  { id: 'SX-005', title: 'Financial institutions and systemic concentration', area: 'Financial systems', status: 'OPEN RESEARCH TRACK', summary: 'A framework for analysing market concentration, institutional interconnections, regulatory oversight and systemic risk using official statistical and regulatory publications.', scope: ['Use regulator and central-bank data with clear reporting dates.', 'Distinguish assets, market capitalisation, deposits, credit exposure and ownership.', 'Document the metric and denominator behind every comparison.', 'Avoid treating size or interconnectedness as proof of secret coordination.'], sources: ['RBI Database', 'SEBI', 'SEC EDGAR'], confidence: 'Method established; data collection required' },
-  { id: 'SX-006', title: 'Surveillance, privacy and information governance', area: 'Technology & rights', status: 'OPEN RESEARCH TRACK', summary: 'An examination of laws, oversight mechanisms, procurement, published technical capabilities and documented privacy impacts. Claims about specific surveillance activity require attributable evidence.', scope: ['Start with statutes, court judgments, oversight reports and procurement records.', 'Separate legal authority, technical capability and demonstrated deployment.', 'Record affected populations and jurisdictional limits carefully.', 'Do not publish private personal data or operationally sensitive details.'], sources: ['CAG Reports', 'GIJN research guides'], confidence: 'Method established; country-specific sources required' },
-]
-
-const tabs = [
-  { id: 'overview', label: 'Command overview', icon: Activity },
-  { id: 'files', label: 'Investigation files', icon: FileSearch },
-  { id: 'registry', label: 'Influence registry', icon: Network },
-  { id: 'sources', label: 'Source library', icon: Database },
-  { id: 'doctrine', label: 'Research doctrine', icon: ShieldCheck },
-] as const
-type Tab = typeof tabs[number]['id']
+function Crest({ large = false }: { large?: boolean }) {
+  return <span className={large ? 'cc-crest cc-crest-large' : 'cc-crest'} aria-hidden="true"><svg viewBox="0 0 100 100" fill="none"><path d="M50 5 91 28v44L50 95 9 72V28L50 5Z" className="cc-frame"/><path d="M50 16 81 33v34L50 84 19 67V33L50 16Z" className="cc-inner"/><path d="M50 25v42M29 35l42 30M71 35 29 65" className="cc-lines"/><path d="M50 19 53 27 62 27 55 33 58 42 50 36 42 42 45 33 38 27 47 27Z" className="cc-star"/><path d="m31 59 33-17m-27 23 33-17M33 36l34 29" className="cc-tools"/></svg></span>
+}
 
 export default function Society() {
-  const [authenticated, setAuthenticated] = useState(false)
+  const [session, setSession] = useState<any>(null)
+  const [ready, setReady] = useState(false)
+  const [mode, setMode] = useState<'join' | 'signin'>('join')
+  const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
+  const [username, setUsername] = useState('')
+  const [displayName, setDisplayName] = useState('')
+  const [gender, setGender] = useState('male')
+  const [profile, setProfile] = useState<Profile | null>(null)
+  const [posts, setPosts] = useState<Post[]>([])
+  const [members, setMembers] = useState<Profile[]>([])
+  const [comments, setComments] = useState<Comment[]>([])
+  const [reports, setReports] = useState<Report[]>([])
+  const [roles, setRoles] = useState<Role[]>([])
+  const [banned, setBanned] = useState<string[]>([])
+  const [tab, setTab] = useState('feed')
+  const [category, setCategory] = useState('ALL')
+  const [search, setSearch] = useState('')
+  const [selected, setSelected] = useState<Post | null>(null)
+  const [title, setTitle] = useState('')
+  const [body, setBody] = useState('')
+  const [postSection, setPostSection] = useState('GENERAL')
+  const [comment, setComment] = useState('')
+  const [reportReason, setReportReason] = useState('')
+  const [reporting, setReporting] = useState<Post | null>(null)
+  const [showComposer, setShowComposer] = useState(false)
   const [busy, setBusy] = useState(false)
   const [error, setError] = useState('')
-  const [tab, setTab] = useState<Tab>('overview')
-  const [query, setQuery] = useState('')
-  const [selected, setSelected] = useState(cases[0].id)
-  const [sourceFilter, setSourceFilter] = useState('ALL')
-  const [sessionReady, setSessionReady] = useState(false)
+  const [notice, setNotice] = useState('')
+
+  const role = session?.user?.app_metadata?.role || 'member'
+  const admin = role === 'admin'
+  const moderator = admin || role === 'moderator'
+  const suspended = !!session && banned.includes(session.user.id)
+  const nav = [{ id: 'feed', label: 'Assembly', icon: Activity }, { id: 'members', label: 'Comrades', icon: Users }, { id: 'profile', label: 'My profile', icon: ShieldCheck }, ...(moderator ? [{ id: 'admin', label: 'Administration', icon: Flag }] : [])]
 
   useEffect(() => {
-    fetch('/api/sectorx83').then(r => { if (r.ok) setAuthenticated(true) }).catch(() => {}).finally(() => setSessionReady(true))
+    if (!supabase) { setReady(true); return }
+    let active = true
+    supabase.auth.getSession().then(({ data }) => { if (active) { setSession(data.session); setReady(true) } })
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, next) => { if (active) { setSession(next); setError(''); setNotice('') } })
+    return () => { active = false; subscription.unsubscribe() }
   }, [])
 
-  async function login(e: React.FormEvent<HTMLFormElement>) {
-    e.preventDefault(); setBusy(true); setError('')
+  useEffect(() => {
+    if (!supabase || !session) { setProfile(null); setPosts([]); setMembers([]); setBanned([]); return }
+    let active = true
+    async function load() {
+      const [p, f, m, b] = await Promise.all([
+        supabase!.from('profiles').select('*').eq('id', session.user.id).maybeSingle(),
+        supabase!.from('posts').select('id,author_id,title,body,category,is_announcement,created_at,author:profiles!posts_author_id_fkey(username,display_name)').order('is_announcement', { ascending: false }).order('created_at', { ascending: false }).limit(100),
+        supabase!.from('profiles').select('*').order('created_at', { ascending: false }).limit(200),
+        supabase!.from('banned_members').select('user_id'),
+      ])
+      if (!active) return
+      if (p.data) setProfile(p.data as Profile)
+      if (f.data) setPosts(f.data as unknown as Post[])
+      if (m.data) setMembers(m.data as Profile[])
+      if (b.data) setBanned(b.data.map((x: any) => x.user_id))
+      if (moderator) {
+        const [r, a] = await Promise.all([
+          supabase!.from('reports').select('id,reason,status,created_at,reporter:profiles!reports_reporter_id_fkey(username),post:posts!reports_post_id_fkey(title)').order('created_at', { ascending: false }),
+          supabase!.functions.invoke('manage-member-role', { method: 'GET' }),
+        ])
+        if (!active) return
+        if (r.data) setReports(r.data as unknown as Report[])
+        if (a.data?.users) setRoles(a.data.users as Role[])
+      }
+    }
+    load().catch(e => { if (active) setError(e.message || 'Unable to load community data.') })
+    return () => { active = false }
+  }, [session?.user?.id, role])
+
+  useEffect(() => {
+    if (!supabase || !session || !selected) { setComments([]); return }
+    let active = true
+    supabase.from('comments').select('id,body,created_at,author:profiles!comments_author_id_fkey(username,display_name)').eq('post_id', selected.id).order('created_at')
+      .then(({ data }) => { if (active) setComments((data || []) as unknown as Comment[]) })
+    return () => { active = false }
+  }, [session?.user?.id, selected?.id])
+
+  const filtered = useMemo(() => posts.filter(p => (category === 'ALL' || (category === 'ANNOUNCEMENT' ? p.is_announcement : p.category === category)) && (p.title + p.body + (p.author?.username || '')).toLowerCase().includes(search.toLowerCase())), [posts, category, search])
+
+  async function auth(e: FormEvent) {
+    e.preventDefault(); if (!supabase) return
+    setBusy(true); setError(''); setNotice('')
     try {
-      const r = await fetch('/api/sectorx83', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ password }) })
-      if (!r.ok) throw new Error('Access denied')
-      setAuthenticated(true); setPassword('')
-    } catch { setError('ACCESS DENIED / CREDENTIAL NOT RECOGNISED') }
+      if (mode === 'join') {
+        const { data, error: e1 } = await supabase.auth.signUp({ email, password, options: { data: { username: username.trim().toLowerCase(), display_name: displayName.trim(), gender } } })
+        if (e1) throw e1
+        if (!data.session) setNotice('Registration received. Confirm your email, then sign in.')
+        else setNotice('Membership created. Welcome to the assembly.')
+      } else {
+        const { error: e1 } = await supabase.auth.signInWithPassword({ email, password })
+        if (e1) throw e1
+      }
+    } catch (e: any) { setError(e.message || 'Authentication failed.') }
     finally { setBusy(false) }
   }
-  async function logout() {
-    await fetch('/api/sectorx83', { method: 'DELETE' }).catch(() => {})
-    setAuthenticated(false); setTab('overview')
+
+  async function refreshPosts() {
+    if (!supabase) return
+    const { data } = await supabase.from('posts').select('id,author_id,title,body,category,is_announcement,created_at,author:profiles!posts_author_id_fkey(username,display_name)').order('is_announcement', { ascending: false }).order('created_at', { ascending: false }).limit(100)
+    if (data) setPosts(data as unknown as Post[])
   }
 
-  const filteredCases = useMemo(() => cases.filter(item => [item.id,item.title,item.area,item.summary].join(' ').toLowerCase().includes(query.toLowerCase())), [query])
-  const filteredSources = useMemo(() => sources.filter(item => (sourceFilter === 'ALL' || item.kind === sourceFilter) && [item.name,item.publisher,item.note,item.kind].join(' ').toLowerCase().includes(query.toLowerCase())), [query, sourceFilter])
-  const activeCase = cases.find(item => item.id === selected) || cases[0]
-  const categories = ['ALL', ...Array.from(new Set(sources.map(item => item.kind)))]
+  async function publish(e: FormEvent) {
+    e.preventDefault(); if (!supabase || !session || suspended) return
+    setBusy(true)
+    const announcement = postSection === 'ANNOUNCEMENT'
+    const { error: e1 } = await supabase.from('posts').insert({ author_id: session.user.id, title: title.trim(), body: body.trim(), category: announcement ? 'GENERAL' : postSection, is_announcement: announcement })
+    if (e1) setError(e1.message)
+    else { setTitle(''); setBody(''); setPostSection('GENERAL'); setShowComposer(false); await refreshPosts() }
+    setBusy(false)
+  }
 
-  if (!sessionReady) return <main className="sx-shell sx-loading"><span className="sx-kicker">SECTORX83 / SECURE RESEARCH WORKSPACE</span><div className="sx-loader-line"/></main>
-  if (!authenticated) return <main className="sx-shell sx-auth">
-    <div className="sx-auth-grid"/>
-    <header className="sx-topline"><a href="/">SECTORX83 <span>/ INDEPENDENT RESEARCH</span></a><span>PUBLIC SITE / PRIVATE WORKSPACE</span></header>
-    <section className="sx-auth-panel">
-      <div className="sx-insignia"><span>SX</span><b>83</b></div>
-      <p className="sx-kicker">RESTRICTED RESEARCH WORKSPACE</p>
-      <h1>POWER MUST<br/><i>REMAIN OPEN</i><br/>TO QUESTION.</h1>
-      <p className="sx-auth-copy">An independent research workspace examining institutions, concentrated power, financial systems and networks of influence through verifiable records.</p>
-      <form className="sx-login" onSubmit={login}>
-        <label htmlFor="sx-password">ACCESS CREDENTIAL</label>
-        <div><LockKeyhole size={16}/><input id="sx-password" type="password" autoComplete="current-password" value={password} onChange={e=>setPassword(e.target.value)} placeholder="Enter workspace credential" required/><button disabled={busy||!password}>{busy?'CHECKING':'AUTHENTICATE ↗'}</button></div>
-        {error && <p className="sx-error">{error}</p>}
-      </form>
-      <p className="sx-auth-foot">INDEPENDENT PROJECT · NOT A GOVERNMENT AGENCY · NO CLAIM OF CLASSIFIED ACCESS</p>
-    </section>
+  async function addComment(e: FormEvent) {
+    e.preventDefault(); if (!supabase || !session || !selected || suspended) return
+    const { error: e1 } = await supabase.from('comments').insert({ post_id: selected.id, author_id: session.user.id, body: comment.trim() })
+    if (e1) setError(e1.message)
+    else { setComment(''); const { data } = await supabase.from('comments').select('id,body,created_at,author:profiles!comments_author_id_fkey(username,display_name)').eq('post_id', selected.id).order('created_at'); setComments((data || []) as unknown as Comment[]) }
+  }
+
+  async function removePost(post: Post) {
+    if (!supabase || !confirm('Delete this community post?')) return
+    const { error: e1 } = await supabase.from('posts').delete().eq('id', post.id)
+    if (e1) setError(e1.message); else { setSelected(null); await refreshPosts() }
+  }
+
+  async function submitReport() {
+    if (!supabase || !session || !reporting || reportReason.trim().length < 5) return
+    const { error: e1 } = await supabase.from('reports').insert({ reporter_id: session.user.id, post_id: reporting.id, reason: reportReason.trim() })
+    if (e1) setError(e1.message); else { setReporting(null); setReportReason(''); setNotice('Report sent to the moderation team.') }
+  }
+
+  async function banMember(id: string, ban: boolean) {
+    if (!supabase || !session) return
+    const result = ban ? await supabase.from('banned_members').insert({ user_id: id, banned_by: session.user.id, reason: 'Community rules violation' }) : await supabase.from('banned_members').delete().eq('user_id', id)
+    if (result.error) setError(result.error.message); else setBanned(old => ban ? [...old, id] : old.filter(x => x !== id))
+  }
+
+  async function changeRole(id: string, next: string) {
+    if (!supabase) return
+    const { data, error: e1 } = await supabase.functions.invoke('manage-member-role', { body: { user_id: id, role: next } })
+    if (e1 || data?.error) setError(e1?.message || data.error)
+    else setRoles(old => old.map(x => x.id === id ? { ...x, role: next } : x))
+  }
+
+  async function reviewReport(id: string, status: string) {
+    if (!supabase) return
+    const { error: e1 } = await supabase.from('reports').update({ status, reviewed_by: session.user.id, reviewed_at: new Date().toISOString() }).eq('id', id)
+    if (e1) setError(e1.message); else setReports(old => old.map(x => x.id === id ? { ...x, status } : x))
+  }
+
+  async function saveProfile(e: FormEvent) {
+    e.preventDefault(); if (!supabase || !session) return
+    const { error: e1 } = await supabase.from('profiles').update({ display_name: displayName.trim(), bio: body.trim().slice(0,240) }).eq('id', session.user.id)
+    if (e1) setError(e1.message); else { setNotice('Profile updated.'); setProfile(old => old ? { ...old, display_name: displayName.trim(), bio: body.trim().slice(0,240) } : old) }
+  }
+
+  if (!ready) return <main className="cc-shell cc-loading"><Crest large/><span>INITIALIZING THE ASSEMBLY</span><i/></main>
+  if (!supabase) return <main className="cc-shell cc-entry"><header className="cc-header"><a className="cc-brand" href="/"><Crest/>THE COMRADE COMMUNITY</a><a href="/">SECTORX83 ↗</a></header><section className="cc-entry-hero"><Crest large/><p className="cc-kicker">COMMUNITY CONFIGURATION REQUIRED</p><h1>The assembly<br/><em>is not connected.</em></h1><p>Add the community Supabase URL and publishable key to Vercel. Setup instructions are included in the repository.</p><a href="https://github.com/sectorx83/Sectorx83/blob/main/COMRADE_SETUP.md">OPEN SETUP GUIDE ↗</a></section></main>
+
+  if (!session) return <main className="cc-shell cc-entry">
+    <div className="cc-grid-bg"/>
+    <header className="cc-header"><a className="cc-brand" href="/"><Crest/><span>THE COMRADE COMMUNITY<small>SECTORX83 / PUBLIC ASSEMBLY</small></span></a><a className="cc-back" href="/">RETURN TO SECTORX83 ↗</a></header>
+    <section className="cc-entry-layout"><div className="cc-manifesto"><p className="cc-kicker">AN OPEN COMMUNITY / 01</p><h1>Ideas are<br/>stronger when<br/><em>shared.</em></h1><p>A place to exchange ideas, examine current affairs, challenge arguments and build a community through open discussion.</p><div className="cc-manifesto-foot">OPEN REGISTRATION <i/> MEMBER-LED DISCUSSION</div><div className="cc-emblem"><Crest large/><span>UNITY · DISCUSSION · SOLIDARITY</span></div></div>
+      <section className="cc-auth-panel"><p className="cc-kicker">MEMBER ACCESS / 00</p><h2>{mode === 'join' ? 'Join the assembly.' : 'Welcome back.'}</h2><p className="cc-subtitle">{mode === 'join' ? 'Create a member account to participate.' : 'Sign in to continue to the community.'}</p><div className="cc-mode"><button className={mode === 'join' ? 'active' : ''} onClick={() => { setMode('join'); setError(''); setNotice('') }}>CREATE ACCOUNT</button><button className={mode === 'signin' ? 'active' : ''} onClick={() => { setMode('signin'); setError(''); setNotice('') }}>SIGN IN</button></div>
+      <form onSubmit={auth} className="cc-form">{mode === 'join' && <><label>DISPLAY NAME<input required maxLength={48} value={displayName} onChange={e => setDisplayName(e.target.value)} placeholder="How members will see you"/></label><label>USERNAME<input required minLength={3} maxLength={24} value={username} onChange={e => setUsername(e.target.value.replace(/[^a-zA-Z0-9_]/g,''))} placeholder="Choose a username"/></label><label>GENDER<select value={gender} onChange={e => setGender(e.target.value)}><option value="male">Male</option><option value="female">Female</option></select></label></>}
+      <label>EMAIL ADDRESS<input required type="email" value={email} onChange={e => setEmail(e.target.value)} placeholder="you@example.com"/></label><label>PASSWORD<input required minLength={8} type="password" value={password} onChange={e => setPassword(e.target.value)} placeholder="At least 8 characters"/></label>
+      {error && <p className="cc-error"><AlertTriangle size={14}/>{error}</p>}{notice && <p className="cc-notice"><Check size={14}/>{notice}</p>}
+      <button className="cc-primary" disabled={busy}>{busy ? 'PLEASE WAIT…' : mode === 'join' ? 'CREATE MEMBERSHIP' : 'ENTER COMMUNITY'} <ArrowUpRight size={16}/></button></form><small className="cc-auth-note">OPEN MEMBERSHIP · CONSTRUCTIVE DISCUSSION · MUTUAL RESPECT</small></section>
+    </section><footer className="cc-footer"><span>THE COMRADE COMMUNITY</span><span>PUBLIC ENTRY / AUTHENTICATED MEMBERSHIP</span><span>SECTORX83 © {new Date().getFullYear()}</span></footer>
   </main>
 
-  return <main className="sx-shell">
-    <div className="sx-grid-bg"/>
-    <header className="sx-header">
-      <a className="sx-brand" href="/"><span className="sx-brand-mark">SX<span>83</span></span><span>SECTORX83<small>INDEPENDENT RESEARCH DIRECTORATE</small></span></a>
-      <div className="sx-header-meta"><span><i/> WORKSPACE ACTIVE</span><span>OPEN-SOURCE RESEARCH / OSINT</span><button onClick={logout}><LogOut size={14}/> EXIT</button></div>
-    </header>
-    <div className="sx-layout">
-      <aside className="sx-sidebar">
-        <div className="sx-side-label">WORKSPACE NAVIGATION</div>
-        {tabs.map(item => { const Icon=item.icon; return <button key={item.id} className={tab===item.id?'sx-nav-item is-active':'sx-nav-item'} onClick={()=>{setTab(item.id);setQuery('')}}><Icon size={16}/><span>{item.label}</span><ChevronRight size={13}/></button> })}
-        <div className="sx-side-card"><span className="sx-side-label">RESEARCH STANDARD</span><strong>Evidence before inference.</strong><p>Every material claim must lead back to a traceable source.</p><span className="sx-side-status"><i/> SOURCE-LED WORKFLOW</span></div>
-        <div className="sx-side-bottom">NODE / WEB-01<br/>SESSION / PRIVATE<br/>CLASSIFICATION / PUBLIC RECORDS</div>
-      </aside>
-      <section className="sx-content">
-        <div className="sx-breadcrumb"><span>SECTORX83</span><b>/</b><strong>{tabs.find(t=>t.id===tab)?.label.toUpperCase()}</strong><span className="sx-breadcrumb-right">INDEPENDENT · NON-STATE · NON-PARTISAN</span></div>
-        {tab==='overview' && <>
-          <div className="sx-page-heading"><div><p className="sx-kicker">RESEARCH DIRECTORATE / 00</p><h1>Power, examined.</h1><p>Investigate institutions. Follow documented relationships. Preserve the record.</p></div><div className="sx-seal-large">SX<span>83</span><small>RESEARCH / VERIFY / ARCHIVE</small></div></div>
-          <div className="sx-principle-banner"><span>CORE DIRECTIVE</span><strong>POWER MUST REMAIN OPEN TO QUESTION.</strong><p>We investigate systems of influence using public records, primary documents and transparent methods. We do not invent access, facts or conclusions.</p></div>
-          <div className="sx-metric-grid"><article><span>RESEARCH FILES</span><strong>06</strong><small>Frameworks and open tracks</small></article><article><span>REFERENCE SOURCES</span><strong>12</strong><small>Official and specialist resources</small></article><article><span>METHOD</span><strong>OSINT</strong><small>Lawful open-source research</small></article><article><span>HEADQUARTERS</span><strong>UNDECLARED</strong><small>No physical facility claimed</small></article></div>
-          <div className="sx-section-head"><div><span className="sx-kicker">01 / PRIORITY INVESTIGATIONS</span><h2>Research tracks</h2></div><button onClick={()=>setTab('files')}>OPEN ALL FILES <ArrowUpRight size={14}/></button></div>
-          <div className="sx-feature-grid">{cases.slice(0,3).map(item=><button className="sx-feature" key={item.id} onClick={()=>{setSelected(item.id);setTab('files')}}><span>{item.id} / {item.area.toUpperCase()}</span><strong>{item.title}</strong><p>{item.summary}</p><em>{item.status} <ArrowUpRight size={13}/></em></button>)}</div>
-          <div className="sx-section-head"><div><span className="sx-kicker">02 / VERIFIED RESEARCH INFRASTRUCTURE</span><h2>Source network</h2></div><button onClick={()=>setTab('sources')}>BROWSE LIBRARY <ArrowUpRight size={14}/></button></div>
-          <div className="sx-source-strip">{sources.slice(0,6).map(s=><a key={s.name} href={s.url} target="_blank" rel="noreferrer"><span>{s.kind}</span><strong>{s.name}</strong><ArrowUpRight size={13}/></a>)}</div>
-          <div className="sx-notice"><ShieldCheck size={17}/><p><strong>Scope and integrity notice.</strong> SECTORX83 is an independent research project, not a registered intelligence service, government body or law-enforcement organisation. This workspace currently contains research frameworks and curated source links, not a claim of completed investigations or live intelligence feeds.</p></div>
-        </>}
-        {tab==='files' && <><div className="sx-page-heading sx-page-heading--compact"><div><p className="sx-kicker">RESEARCH DIVISION / 01</p><h1>Investigation files.</h1><p>Documented scope, research questions, evidence standards and open work.</p></div></div><div className="sx-workbench"><div className="sx-file-list"><div className="sx-search"><Search size={15}/><input value={query} onChange={e=>setQuery(e.target.value)} placeholder="Search case files..."/></div>{filteredCases.map(item=><button key={item.id} className={selected===item.id?'sx-file-row is-selected':'sx-file-row'} onClick={()=>setSelected(item.id)}><span>{item.id}</span><strong>{item.title}</strong><small>{item.area} · {item.status}</small><ChevronRight size={15}/></button>)}{filteredCases.length===0&&<p className="sx-empty">No files match this search.</p>}</div><article className="sx-case-detail"><div className="sx-case-top"><span>{activeCase.id} / CASE RECORD</span><span className="sx-status">{activeCase.status}</span></div><p className="sx-kicker">{activeCase.area.toUpperCase()}</p><h2>{activeCase.title}</h2><p className="sx-case-summary">{activeCase.summary}</p><h3>RESEARCH SCOPE</h3><ul>{activeCase.scope.map((s,i)=><li key={s}><span>0{i+1}</span>{s}</li>)}</ul><div className="sx-confidence"><span>ASSESSMENT</span><strong>{activeCase.confidence}</strong></div><h3>RELEVANT SOURCE REGISTRY</h3><div className="sx-case-sources">{activeCase.sources.map(name=>{const s=sources.find(x=>x.name===name);return s?<a key={name} href={s.url} target="_blank" rel="noreferrer">{name}<ArrowUpRight size={13}/></a>:null})}</div><p className="sx-case-foot">REVIEW STATE: FRAMEWORK ONLY · NO UNSOURCED FINDINGS PUBLISHED</p></article></div></>}
-        {tab==='registry' && <><div className="sx-page-heading sx-page-heading--compact"><div><p className="sx-kicker">ENTITY RESEARCH / 02</p><h1>Influence registry.</h1><p>A structured way to map institutions and relationships without implying guilt or coordination.</p></div></div><div className="sx-registry-intro"><Network size={22}/><div><strong>No fabricated connection graphs.</strong><p>Relationships are added only when a dated source supports the exact link. This registry currently defines the entity classes to research; it does not claim that any unverified links exist.</p></div></div><div className="sx-registry-grid">{[{n:'01',t:'Individuals & families',d:'Documented biographies, public roles, archival records, disclosed interests and sourced relationships.'},{n:'02',t:'Companies & ownership',d:'Legal entities, subsidiaries, directors, shareholders and beneficial ownership disclosures.'},{n:'03',t:'Government institutions',d:'Departments, regulators, public agencies, oversight bodies and published decisions.'},{n:'04',t:'Financial institutions',d:'Banks, asset managers, insurers, central banks and systemic-risk disclosures.'},{n:'05',t:'Foundations & NGOs',d:'Governance, annual reports, grants, board memberships and public filings.'},{n:'06',t:'Lobbying & procurement',d:'Disclosed lobbying, public contracts, grants, tenders and reported political finance.'}].map(x=><article key={x.n}><span>{x.n}</span><h3>{x.t}</h3><p>{x.d}</p><small>ENTITY CLASS / RESEARCH TEMPLATE</small></article>)}</div><div className="sx-notice"><ShieldCheck size={17}/><p><strong>Relationship rule.</strong> Shared names, family ties, board overlap, donations or business relationships do not independently prove control, collusion or wrongdoing. Each edge needs its own source, date and context.</p></div></>}
-        {tab==='sources' && <><div className="sx-page-heading sx-page-heading--compact"><div><p className="sx-kicker">REFERENCE ARCHIVE / 03</p><h1>Source library.</h1><p>Start with the original record. Secondary research is context, not a substitute.</p></div></div><div className="sx-search sx-source-search"><Search size={15}/><input value={query} onChange={e=>setQuery(e.target.value)} placeholder="Search publishers, records or topics..."/><SlidersHorizontal size={15}/></div><div className="sx-filter-row">{categories.map(c=><button key={c} className={sourceFilter===c?'is-active':''} onClick={()=>setSourceFilter(c)}>{c}</button>)}</div><div className="sx-source-list">{filteredSources.map((s,i)=><a key={s.name} className="sx-source-item" href={s.url} target="_blank" rel="noreferrer"><span className="sx-source-number">0{i+1}</span><span className="sx-source-main"><small>{s.publisher} · {s.kind}</small><strong>{s.name}</strong><em>{s.note}</em></span><ArrowUpRight size={16}/></a>)}{filteredSources.length===0&&<p className="sx-empty">No sources match this search.</p>}</div><p className="sx-source-disclaimer">External resources are operated by their respective publishers. Access, coverage, update frequency and licensing vary. Verify important records at the originating authority.</p></>}
-        {tab==='doctrine' && <><div className="sx-page-heading sx-page-heading--compact"><div><p className="sx-kicker">FOUNDATION / 04</p><h1>Research doctrine.</h1><p>Rules that govern what is collected, what is published and what is left unclaimed.</p></div></div><div className="sx-doctrine-list">{[{n:'01',t:'Primary sources first',d:'Prefer original filings, legislation, court judgments, official statistics, archives and first-party documents. Secondary reporting provides context and leads.'},{n:'02',t:'Evidence is not implication',d:'A connection is not proof of coordination. A donation is not proof of a favour. A family relationship is not proof of shared control.'},{n:'03',t:'Trace every material claim',d:'Record publisher, title, publication date, access date, exact URL, relevant passage and the specific proposition the source supports.'},{n:'04',t:'Separate fact from analysis',d:'Label verified facts, attributed claims, interpretation, uncertainty and unanswered questions distinctly.'},{n:'05',t:'Show limitations and conflicts',d:'Record missing records, self-reported data, incomplete coverage, contradictory evidence and alternative explanations.'},{n:'06',t:'Protect people and privacy',d:'Use lawful public-interest research. Do not publish private addresses, credentials, sensitive personal data or instructions that enable harm.'},{n:'07',t:'Correct the record',d:'Keep a revision history. Correct material errors transparently and preserve the original context where necessary.'}].map(x=><article key={x.n}><span>{x.n}</span><div><h3>{x.t}</h3><p>{x.d}</p></div><ShieldCheck size={17}/></article>)}</div><div className="sx-doctrine-footer"><BookOpen size={18}/><p>Methodology is informed by investigative research guidance from the Global Investigative Journalism Network and public-sector beneficial ownership guidance from the World Bank / UNODC StAR initiative.</p></div></>}
-        <footer className="sx-footer"><span>SECTORX83 / INDEPENDENT RESEARCH</span><span>PUBLIC RECORDS · OPEN SOURCES · TRACEABLE CLAIMS</span><span>© {new Date().getFullYear()}</span></footer>
-      </section>
-    </div>
+  return <main className="cc-shell cc-community">
+    <header className="cc-header cc-header-inside"><a className="cc-brand" href="/sectorx83"><Crest/><span>THE COMRADE COMMUNITY<small>PUBLIC ASSEMBLY / MEMBER NETWORK</small></span></a><div className="cc-user"><span>{profile?.display_name || session.user.email}<small>@{profile?.username || 'member'} · {role.toUpperCase()}</small></span><button onClick={() => supabase.auth.signOut()} aria-label="Sign out"><LogOut size={16}/></button></div></header>
+    <div className="cc-layout"><aside className="cc-sidebar"><small>ASSEMBLY / NAVIGATION</small>{nav.map(item => { const Icon = item.icon; return <button key={item.id} className={tab === item.id ? 'active' : ''} onClick={() => { setTab(item.id); setSelected(null); setError(''); setNotice('') }}><Icon size={16}/>{item.label}</button> })}<div className="cc-principle"><Crest/><small>COMMUNITY PRINCIPLE</small><strong>Disagreement is welcome. Disrespect is not.</strong><p>Challenge ideas with evidence. Treat members as people.</p></div><div className="cc-side-meta">ACCESS / {role.toUpperCase()}<br/>NETWORK / PUBLIC</div></aside>
+    <section className="cc-main"><div className="cc-crumb">THE COMRADE COMMUNITY <b>/</b> {nav.find(x => x.id === tab)?.label.toUpperCase()}</div>
+      {(error || notice) && <div className={error ? 'cc-alert is-error' : 'cc-alert'}>{error || notice}<button onClick={() => { setError(''); setNotice('') }}><X size={14}/></button></div>}
+      {suspended && <div className="cc-alert is-error">Your account is suspended from posting and commenting. Contact an administrator if this is a mistake.</div>}
+      {tab === 'feed' && <><div className="cc-heading"><div><p className="cc-kicker">ASSEMBLY FLOOR / 01</p><h1>Comrades, <em>in conversation.</em></h1><p>Share ideas, follow current affairs and take part in thoughtful discussion.</p></div><Crest large/></div>
+        <div className="cc-toolbar"><div className="cc-categories">{sections.map(s => <button key={s} className={category === s ? 'active' : ''} onClick={() => setCategory(s)}>{s}</button>)}</div><label className="cc-search"><Search size={14}/><input value={search} onChange={e => setSearch(e.target.value)} placeholder="Search discussions"/></label></div>
+        {!suspended && <div className="cc-compose-toggle"><span>Have something worth discussing?</span><button onClick={() => setShowComposer(!showComposer)}><Plus size={15}/> NEW DISCUSSION</button></div>}
+        {showComposer && <form className="cc-composer" onSubmit={publish}><label>SUBJECT<input value={title} onChange={e => setTitle(e.target.value)} maxLength={120} required/></label><label>SECTION<select value={postSection} onChange={e => setPostSection(e.target.value)}>{(moderator ? sections.slice(1) : sections.slice(1,4)).map(s => <option key={s}>{s}</option>)}</select></label><label>YOUR CONTRIBUTION<textarea value={body} onChange={e => setBody(e.target.value)} rows={5} maxLength={10000} required/></label><button className="cc-primary" disabled={busy}>PUBLISH TO ASSEMBLY <ArrowUpRight size={15}/></button></form>}
+        <div className="cc-posts">{filtered.map(post => <article className={post.is_announcement ? 'cc-post announcement' : 'cc-post'} key={post.id}><div className="cc-post-meta"><span>{post.is_announcement ? 'OFFICIAL ANNOUNCEMENT' : post.category}</span><time>{dateLabel(post.created_at)}</time></div><h2>{post.title}</h2><p>{post.body}</p><div className="cc-post-bottom"><span>{post.author?.display_name || 'Community member'} <small>@{post.author?.username || 'member'}</small></span><div><button onClick={() => setSelected(post)}><MessageCircle size={14}/> DISCUSS</button>{!post.is_announcement && <button onClick={() => setReporting(post)}><Flag size={13}/> REPORT</button>}{(moderator || post.author_id === session.user.id) && <button onClick={() => removePost(post)}><X size={14}/></button>}</div></div></article>)}{!filtered.length && <div className="cc-empty">No discussions found. Start the first conversation.</div>}</div>
+      </>}
+      {tab === 'members' && <><div className="cc-heading"><div><p className="cc-kicker">MEMBERSHIP REGISTER / 02</p><h1>The <em>comrades.</em></h1><p>People who make the community through participation and exchange.</p></div><strong className="cc-count">{members.length.toString().padStart(2,'0')}<small>MEMBERS</small></strong></div><label className="cc-search cc-member-search"><Search size={14}/><input value={search} onChange={e => setSearch(e.target.value)} placeholder="Find a member"/></label><div className="cc-members">{members.filter(m => (m.display_name + m.username).toLowerCase().includes(search.toLowerCase())).map(m => <article key={m.id}><i>{m.display_name.slice(0,1).toUpperCase()}</i><div><strong>{m.display_name}</strong><span>@{m.username}</span><small>{m.gender?.toUpperCase() || 'MEMBER'} · JOINED {new Date(m.created_at).toLocaleDateString()}</small>{m.bio && <p>{m.bio}</p>}</div></article>)}</div></>}
+      {tab === 'profile' && <><div className="cc-heading"><div><p className="cc-kicker">MEMBER RECORD / 03</p><h1>Your <em>profile.</em></h1><p>Keep your public member details current.</p></div></div><form className="cc-composer cc-profile" onSubmit={saveProfile}><label>DISPLAY NAME<input value={displayName} onChange={e => setDisplayName(e.target.value)} maxLength={48} required/></label><label>ABOUT YOU<textarea rows={4} maxLength={240} value={body} onChange={e => setBody(e.target.value)} placeholder={profile?.bio || 'A short introduction (optional)'}/></label><button className="cc-primary">SAVE PROFILE <Check size={15}/></button></form></>}
+      {tab === 'admin' && moderator && <><div className="cc-heading"><div><p className="cc-kicker">RESTRICTED ACCESS / 04</p><h1>Administration <em>desk.</em></h1><p>Moderate discussions, review reports and manage membership permissions.</p></div><ShieldCheck size={34}/></div><div className="cc-admin-stats"><div><strong>{members.length}</strong><small>MEMBERS</small></div><div><strong>{posts.length}</strong><small>POSTS</small></div><div><strong>{reports.filter(r => r.status === 'open').length}</strong><small>OPEN REPORTS</small></div><div><strong>{banned.length}</strong><small>SUSPENDED</small></div></div>
+        <section className="cc-admin-section"><h2>Reported content</h2>{reports.length ? reports.map(r => <article key={r.id}><div><small>{r.status.toUpperCase()} · @{r.reporter?.username || 'member'}</small><strong>{r.post?.title || 'Reported comment'}</strong><p>{r.reason}</p></div><div><button onClick={() => reviewReport(r.id,'reviewed')}>REVIEWED</button><button onClick={() => reviewReport(r.id,'resolved')}>RESOLVE</button></div></article>) : <p className="cc-muted">No reports are waiting for review.</p>}</section>
+        <section className="cc-admin-section"><h2>Member management</h2>{members.map(m => { const r = roles.find(x => x.id === m.id)?.role || 'member'; return <article key={m.id}><div><strong>{m.display_name}</strong><small>@{m.username} · {banned.includes(m.id) ? 'SUSPENDED' : 'ACTIVE'}</small></div><div className="cc-admin-controls"><select value={r} disabled={!admin || m.id === session.user.id} onChange={e => changeRole(m.id,e.target.value)}><option value="member">MEMBER</option><option value="moderator">MODERATOR</option><option value="admin">ADMIN</option></select>{banned.includes(m.id) ? <button onClick={() => banMember(m.id,false)}>UNBAN</button> : <button disabled={!admin || m.id === session.user.id} onClick={() => banMember(m.id,true)}><Ban size={13}/> BAN</button>}</div></article>})}</section>
+        <section className="cc-admin-section"><h2>Official announcements</h2><p className="cc-muted">Administrators and moderators can publish an announcement from the Assembly composer by choosing ANNOUNCEMENT.</p></section>
+      </>}
+      <footer className="cc-main-footer">THE COMRADE COMMUNITY / SECTORX83 <span>OPEN DISCUSSION · MEMBER-LED · MODERATED</span></footer>
+    </section></div>
+    {selected && <div className="cc-overlay" onClick={e => { if (e.target === e.currentTarget) setSelected(null) }}><section className="cc-thread"><header>DISCUSSION THREAD <button onClick={() => setSelected(null)}><X size={17}/></button></header><h2>{selected.title}</h2><p>{selected.body}</p><h3>{comments.length} RESPONSES</h3>{comments.map(c => <article key={c.id}><strong>{c.author?.display_name || 'Member'} <small>@{c.author?.username}</small></strong><p>{c.body}</p><time>{dateLabel(c.created_at)}</time></article>)}{!suspended && <form onSubmit={addComment}><textarea value={comment} onChange={e => setComment(e.target.value)} placeholder="Add a thoughtful response…" rows={3} required/><button className="cc-primary">POST RESPONSE <MessageCircle size={14}/></button></form>}</section></div>}
+    {reporting && <div className="cc-overlay" onClick={e => { if (e.target === e.currentTarget) setReporting(null) }}><section className="cc-thread"><header>COMMUNITY SAFETY / REPORT <button onClick={() => setReporting(null)}><X size={17}/></button></header><h2>Report discussion</h2><p>{reporting.title}</p><textarea rows={4} value={reportReason} onChange={e => setReportReason(e.target.value)} placeholder="Explain what needs moderator attention."/><button className="cc-primary" onClick={submitReport}>SUBMIT REPORT <Flag size={14}/></button></section></div>}
   </main>
 }
