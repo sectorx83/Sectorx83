@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react'
 import type { FormEvent } from 'react'
-import { Activity, AlertTriangle, ArrowUpRight, Ban, Check, ChevronLeft, ChevronRight, Compass, Flag, KeyRound, Lock, LogOut, MessageCircle, Plus, Search, Send, ShieldCheck, Users, X } from 'lucide-react'
+import { Activity, AlertTriangle, ArrowUpRight, Ban, Check, ChevronLeft, ChevronRight, Compass, Flag, Lock, LogOut, MessageCircle, Plus, Search, Send, ShieldCheck, Users, X } from 'lucide-react'
 import { supabase } from './lib/supabase'
 import './sectorx83.css'
 
@@ -10,7 +10,6 @@ type Comment = { id: string; body: string; created_at: string; author?: { userna
 type ChatMessage = { id: string; author_id: string; body: string; created_at: string; author?: { username: string; display_name: string } | null }
 type Report = { id: string; reason: string; status: string; created_at: string; reporter?: { username: string } | null; post?: { title: string } | null }
 type Role = { id: string; email: string | null; role: string }
-type CipherEntry = { id: string; label: string; ciphertext: string; iv: string; salt: string; created_at: string }
 const dateLabel = (value: string) => new Date(value).toLocaleString()
 const sections = ['ALL', 'GENERAL', 'DISCUSSION', 'DECLARATIONS', 'ANNOUNCEMENT']
 
@@ -109,17 +108,12 @@ export default function Society() {
   const [busy, setBusy] = useState(false)
   const [error, setError] = useState('')
   const [notice, setNotice] = useState('')
-  const [cipherEntries, setCipherEntries] = useState<CipherEntry[]>([])
-  const [cipherLabel, setCipherLabel] = useState('')
-  const [cipherText, setCipherText] = useState('')
-  const [cipherPassphrase, setCipherPassphrase] = useState('')
-  const [decryptedEntry, setDecryptedEntry] = useState<{ id: string; text: string } | null>(null)
 
   const role = session?.user?.app_metadata?.role || 'member'
   const admin = role === 'admin'
   const moderator = admin || role === 'moderator'
   const suspended = !!session && banned.includes(session.user.id)
-  const nav = [{ id: 'feed', label: 'Dispatches', icon: Activity }, { id: 'chat', label: 'Community Chat', icon: MessageCircle }, { id: 'members', label: 'Members', icon: Users }, { id: 'cipher', label: 'Cipher Vault', icon: Lock }, { id: 'profile', label: 'My Profile', icon: ShieldCheck }, ...(moderator ? [{ id: 'admin', label: 'Command Desk', icon: Flag }] : [])]
+  const nav = [{ id: 'feed', label: 'Dispatches', icon: Activity }, { id: 'chat', label: 'Community Chat', icon: MessageCircle }, { id: 'members', label: 'Members', icon: Users }, { id: 'profile', label: 'My Profile', icon: ShieldCheck }, ...(moderator ? [{ id: 'admin', label: 'Command Desk', icon: Flag }] : [])]
 
   useEffect(() => {
     if (!supabase) { setReady(true); return }
@@ -132,25 +126,23 @@ export default function Society() {
   }, [])
 
   useEffect(() => {
-    if (!supabase || !session) { setProfile(null); setPosts([]); setMembers([]); setBanned([]); setCipherEntries([]); setDecryptedEntry(null); return }
+    if (!supabase || !session) { setProfile(null); setPosts([]); setMembers([]); setBanned([]); return }
     let active = true
     async function load() {
-      const [p, f, m, b, v] = await Promise.all([
+      const [p, f, m, b] = await Promise.all([
         supabase!.from('profiles').select('*').eq('id', session.user.id).maybeSingle(),
         supabase!.from('posts').select('id,author_id,title,body,category,is_announcement,created_at,author:profiles!posts_author_id_fkey(username,display_name)').order('is_announcement', { ascending: false }).order('created_at', { ascending: false }).limit(100),
         supabase!.from('profiles').select('*').order('created_at', { ascending: false }).limit(200),
         supabase!.from('banned_members').select('user_id'),
-        supabase!.from('cipher_vault').select('id,label,ciphertext,iv,salt,created_at').eq('owner_id', session.user.id).order('created_at', { ascending: false }),
       ])
       if (!active) return
-      const loadError = [p.error, f.error, m.error, b.error, v.error].find(Boolean)
+      const loadError = [p.error, f.error, m.error, b.error].find(Boolean)
       if (loadError) throw new Error(loadError.message)
       if (!p.data) throw new Error('Your member profile is missing. Confirm your account and verify that the Sectorx83 database migrations have been applied.')
       setProfile(p.data as Profile); setDisplayName(p.data.display_name || ''); setProfileBio(p.data.bio || '')
       if (f.data) setPosts(f.data as unknown as Post[])
       if (m.data) setMembers(m.data as Profile[])
       if (b.data) setBanned(b.data.map((x: any) => x.user_id))
-      if (v.data) setCipherEntries(v.data as CipherEntry[]);
 
       if (moderator) {
         const { data: reportData, error: reportError } = await supabase!.from('reports').select('id,reason,status,created_at,reporter:profiles!reports_reporter_id_fkey(username),post:posts!reports_post_id_fkey(title)').order('created_at', { ascending: false })
@@ -229,7 +221,7 @@ export default function Society() {
     { title: 'Dispatches', body: 'Long-form posts and announcements live here. Use classifications to browse, publish a considered post and open a dispatch to discuss it.', target: 'Ideas and records' },
     { title: 'Community chat', body: 'A separate live room for short conversations. It is deliberately not mixed into the dispatch feed.', target: 'Real-time conversation' },
     { title: 'Members and identity', body: 'Browse the member register and keep your own public profile accurate. Treat other members with respect.', target: 'People first' },
-    { title: 'Private tools and governance', body: 'Cipher Vault stores notes encrypted in your browser. The Command Desk is restricted to authorised moderators and administrators.', target: 'Privacy and responsibility' },
+    { title: 'Governance and moderation', body: 'The Command Desk is restricted to authorised moderators and administrators. Member profiles and posts remain visible to signed-in members.', target: 'Privacy and responsibility' },
   ]
 
   function finishTour() {
@@ -363,52 +355,6 @@ export default function Society() {
     if (e1) setError(e1.message); else { setNotice('Profile updated.'); setProfile(old => old ? { ...old, display_name: displayName.trim(), bio: profileBio.trim().slice(0,240) } : old) }
   }
 
-  const toBase64 = (bytes: Uint8Array) => btoa(Array.from(bytes, value => String.fromCharCode(value)).join(''))
-  const fromBase64 = (value: string) => Uint8Array.from(atob(value), char => char.charCodeAt(0))
-  const asArrayBuffer = (bytes: Uint8Array): ArrayBuffer => {
-    const copy = new Uint8Array(bytes.byteLength)
-    copy.set(bytes)
-    return copy.buffer
-  }
-  async function deriveVaultKey(passphrase: string, salt: Uint8Array) {
-    const material = await crypto.subtle.importKey('raw', asArrayBuffer(new TextEncoder().encode(passphrase)), 'PBKDF2', false, ['deriveKey'])
-    return crypto.subtle.deriveKey({ name: 'PBKDF2', salt: asArrayBuffer(salt), iterations: 310000, hash: 'SHA-256' }, material, { name: 'AES-GCM', length: 256 }, false, ['encrypt', 'decrypt'])
-  }
-  async function sealCipherEntry(e: FormEvent) {
-    e.preventDefault()
-    if (!supabase || !session || !cipherText.trim() || cipherPassphrase.length < 12) { setError('Use a passphrase with at least 12 characters.'); return }
-    setBusy(true); setError('')
-    try {
-      const salt = crypto.getRandomValues(new Uint8Array(16))
-      const iv = crypto.getRandomValues(new Uint8Array(12))
-      const key = await deriveVaultKey(cipherPassphrase, salt)
-      const encrypted = await crypto.subtle.encrypt({ name: 'AES-GCM', iv: asArrayBuffer(iv) }, key, asArrayBuffer(new TextEncoder().encode(cipherText.trim())))
-      const { data, error: e1 } = await supabase.from('cipher_vault').insert({
-        owner_id: session.user.id, label: cipherLabel.trim().slice(0,60) || 'Sealed note',
-        ciphertext: toBase64(new Uint8Array(encrypted)), iv: toBase64(iv), salt: toBase64(salt),
-      }).select('id,label,ciphertext,iv,salt,created_at').single()
-      if (e1) throw e1
-      setCipherEntries(old => [data as CipherEntry, ...old]); setCipherLabel(''); setCipherText(''); setCipherPassphrase(''); setNotice('Encrypted entry sealed. Your passphrase was not saved.')
-    } catch (e: any) { setError(e.message || 'Unable to encrypt this entry.') }
-    finally { setBusy(false) }
-  }
-  async function openCipherEntry(entry: CipherEntry) {
-    if (cipherPassphrase.length < 12) { setError('Enter the passphrase used when this entry was sealed.'); return }
-    setError('')
-    try {
-      const key = await deriveVaultKey(cipherPassphrase, fromBase64(entry.salt))
-      const plaintext = await crypto.subtle.decrypt({ name: 'AES-GCM', iv: asArrayBuffer(fromBase64(entry.iv)) }, key, asArrayBuffer(fromBase64(entry.ciphertext)))
-      setDecryptedEntry({ id: entry.id, text: new TextDecoder().decode(plaintext) })
-      setCipherPassphrase('')
-    } catch { setError('That passphrase did not unlock this entry. Nothing was changed.') }
-  }
-  async function deleteCipherEntry(id: string) {
-    if (!supabase || !confirm('Permanently delete this encrypted entry?')) return
-    const { error: e1 } = await supabase.from('cipher_vault').delete().eq('id', id)
-    if (e1) setError(e1.message)
-    else { setCipherEntries(old => old.filter(entry => entry.id !== id)); if (decryptedEntry?.id === id) setDecryptedEntry(null) }
-  }
-
   if (!ready) return <main className="cc-shell cc-loading"><Crest large/><span>ESTABLISHING SECURE CHANNEL</span><i/></main>
   if (!supabase) return <main className="cc-shell cc-entry"><header className="cc-header"><a className="cc-brand" href="/"><Crest/>SECTORX83</a><a href="/">SECTORX83 ↗</a></header><section className="cc-entry-hero"><Crest large/><p className="cc-kicker">NETWORK CONFIGURATION REQUIRED</p><h1>The network<br/><em>is not connected.</em></h1><p>Add the Sectorx83 Supabase URL and publishable key to Vercel. Setup instructions are included in the repository.</p><a href="https://github.com/sectorx83/Sectorx83/blob/main/SECTORX83_SETUP.md">OPEN SECTORX83 SETUP GUIDE ↗</a></section></main>
 
@@ -444,9 +390,8 @@ export default function Society() {
       {tab === 'admin' && moderator && <><div className="cc-heading"><div><p className="cc-kicker">RESTRICTED ACCESS / 05</p><h1>The <em>council.</em></h1><p>Review violations. Govern access. Preserve the integrity of the network. Every exercise of authority must be justified.</p><p className="cc-admin-identity">AUTHENTICATED AS {session.user.email || 'VERIFIED ADMINISTRATOR'} · {role.toUpperCase()}</p></div><Themis large/></div><div className="cc-admin-toolbar"><span>COMMAND STATUS / {rolesLoading ? 'SYNCING DIRECTORY' : 'LIVE SESSION'}</span><button onClick={refreshAdminPanel} disabled={adminRefreshing}>{adminRefreshing ? 'REFRESHING…' : 'REFRESH COMMAND DATA'} <Activity size={14}/></button></div>{roleLoadError && <div className="cc-alert is-error">Role directory unavailable: {roleLoadError}</div>}{rolesLoading && <div className="cc-muted">Synchronising member privileges…</div>}<div className="cc-admin-stats"><div><strong>{members.length}</strong><small>MEMBERS</small></div><div><strong>{posts.length}</strong><small>POSTS</small></div><div><strong>{reports.filter(r => r.status === 'open').length}</strong><small>OPEN REPORTS</small></div><div><strong>{banned.length}</strong><small>SUSPENDED</small></div></div>
         <section className="cc-admin-section"><h2>Cases awaiting judgment</h2>{reports.length ? reports.map(r => <article key={r.id}><div><small>{r.status.toUpperCase()} · @{r.reporter?.username || 'member'}</small><strong>{r.post?.title || 'Reported comment'}</strong><p>{r.reason}</p></div><div><button onClick={() => reviewReport(r.id,'reviewed')}>REVIEWED</button><button onClick={() => reviewReport(r.id,'resolved')}>RESOLVE</button></div></article>) : <p className="cc-muted">No reports are waiting for review.</p>}</section>
         <section className="cc-admin-section"><h2>Access and rank</h2>{members.map(m => { const matchedRole = roles.find(x => x.id === m.id); const r = matchedRole?.role || 'member'; return <article key={m.id}><div><strong>{m.display_name}</strong><small>@{m.username} · {matchedRole?.email || 'EMAIL NOT RETURNED'} · {banned.includes(m.id) ? 'SUSPENDED' : 'ACTIVE'}</small></div><div className="cc-admin-controls"><select value={r} disabled={!admin || rolesLoading || !!roleLoadError || m.id === session.user.id} onChange={e => changeRole(m.id,e.target.value)}><option value="member">MEMBER</option><option value="moderator">MODERATOR</option><option value="admin">ADMIN</option></select>{banned.includes(m.id) ? <button disabled={!admin || m.id === session.user.id} onClick={() => banMember(m.id,false)}>UNBAN</button> : <button disabled={!admin || m.id === session.user.id} onClick={() => banMember(m.id,true)}><Ban size={13}/> BAN</button>}</div></article>})}</section>
-        <section className="cc-admin-section"><h2>Security status</h2><div className="cc-security-grid"><article><Lock size={18}/><strong>TLS in transit</strong><small>Connections are protected in transit.</small></article><article><ShieldCheck size={18}/><strong>Encrypted database</strong><small>Managed storage encryption at rest.</small></article><article><KeyRound size={18}/><strong>AES-256-GCM vault</strong><small>Private entries are encrypted in the browser before upload.</small></article></div><p className="cc-muted">The vault is client-side encrypted. Feed posts and comments are not end-to-end encrypted.</p></section>
+        <section className="cc-admin-section"><h2>Security status</h2><div className="cc-security-grid"><article><Lock size={18}/><strong>TLS in transit</strong><small>Connections are protected in transit.</small></article><article><ShieldCheck size={18}/><strong>Encrypted database</strong><small>Managed storage encryption at rest.</small></article></div></section>
       </>}
-      {tab === 'cipher' && <><div className="cc-heading"><div><p className="cc-kicker">CIPHER ARCHIVE / 04</p><h1>The <em>cipher archive.</em></h1><p>Private records are sealed in your browser before transmission. The key remains yours.</p></div><Lock size={34}/></div><div className="cc-cipher-explainer"><Lock size={18}/><div><strong>AES-256-GCM · PBKDF2-SHA-256</strong><p>Each entry gets a fresh random salt and IV. Your passphrase is never stored. Losing it means the entry cannot be recovered. These entries are private to your account; this is not group end-to-end encryption.</p></div></div><form className="cc-composer cc-cipher-form" onSubmit={sealCipherEntry}><label>ENTRY LABEL<input value={cipherLabel} onChange={e => setCipherLabel(e.target.value)} maxLength={60} placeholder="A short label"/></label><label>PRIVATE CONTENT<textarea value={cipherText} onChange={e => setCipherText(e.target.value)} rows={5} maxLength={12000} required placeholder="Write a private note. It is encrypted before upload."/></label><label>VAULT PASSPHRASE<input type="password" minLength={12} value={cipherPassphrase} onChange={e => setCipherPassphrase(e.target.value)} required placeholder="At least 12 characters"/></label><button className="cc-primary" disabled={busy}>{busy ? 'SEALING…' : 'ENCRYPT & SEAL'} <Lock size={15}/></button></form><div className="cc-admin-section"><h2>Sealed entries</h2>{cipherEntries.length ? cipherEntries.map(entry => <article key={entry.id}><div><strong>{entry.label}</strong><small>SEALED · {dateLabel(entry.created_at)}</small></div><div><button onClick={() => openCipherEntry(entry)}><KeyRound size={13}/> UNSEAL</button><button onClick={() => deleteCipherEntry(entry.id)}><X size={13}/> DELETE</button></div></article>) : <p className="cc-muted">No encrypted entries yet.</p>}{decryptedEntry && <div className="cc-decrypted"><div><strong>UNSEALED CONTENT</strong><button onClick={() => setDecryptedEntry(null)}><X size={14}/></button></div><p>{decryptedEntry.text}</p></div>}</div></>}
       <footer className="cc-main-footer">SECTORX83 / VERIFIED NETWORK <span>QUESTION · PROVE · BUILD</span></footer>
     </section></div>
     {tourStep !== null && <div className="cc-tour-scrim"><section className="cc-tour-card" role="dialog" aria-modal="true" aria-labelledby="cc-tour-title"><div className="cc-tour-top"><span>SECTORX83 / FIRST VISIT</span><button onClick={finishTour} aria-label="Close tour"><X size={16}/></button></div><div className="cc-tour-progress">{tourSteps.map((_,i)=><i key={i} className={i <= tourStep ? 'is-active' : ''}/>)}</div><p className="cc-kicker">GUIDED INTRODUCTION · 0{tourStep + 1} / 0{tourSteps.length}</p><span className="cc-tour-target">{tourSteps[tourStep].target}</span><h2 id="cc-tour-title">{tourSteps[tourStep].title}</h2><p>{tourSteps[tourStep].body}</p><div className="cc-tour-actions"><button className="cc-tour-skip" onClick={finishTour}>SKIP TOUR</button><div>{tourStep > 0 && <button className="cc-tour-back" onClick={() => setTourStep(step => step === null ? null : Math.max(0,step-1))}><ChevronLeft size={14}/> BACK</button>}<button className="cc-primary" onClick={() => tourStep === tourSteps.length - 1 ? finishTour() : setTourStep(step => step === null ? null : Math.min(tourSteps.length-1,step+1))}>{tourStep === tourSteps.length - 1 ? 'FINISH' : 'NEXT'} <ChevronRight size={14}/></button></div></div></section></div>}
