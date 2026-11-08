@@ -6,7 +6,7 @@ Sectorx83 is served as the website root at https://sectorx83.vercel.app. There i
 
 Create a separate Supabase project for this community. Do not reuse the EDITH X1 database.
 
-Apply the core community migrations in order: `20261108000000_comrade_community.sql`, `20261108000003_order_classifications.sql` and `20261108124357_community_chat.sql`. They create member records, dispatches, comments, reports, suspensions and the member chat with row-level security enabled. The `private_member_direct_messages` migration adds one-to-one member messaging. Direct-message rows are readable only by their sender and recipient; authenticated members can send messages, and suspended accounts cannot send them.
+Apply the core community migrations in order: `20261108000000_comrade_community.sql`, `20261108000003_order_classifications.sql`, `20261108124357_community_chat.sql`, the `private_member_direct_messages` migration, and `20261108132241_member_experience_upgrade.sql`. The member-experience migration adds profile metadata (avatar URL, location, website, skills and interests), recipient-only read receipts, private notifications for direct messages and dispatch responses, moderator-managed events and a resource library, plus a moderator-only audit trail for suspensions and report reviews. New tables have row-level security enabled; notification and audit rows are written by restricted database triggers rather than client-side inserts.
 
 The legacy Cipher Vault database migration/table may remain in an existing Supabase project for historical data compatibility, but the feature has been removed from the website and is no longer queried by the application. Do not drop the table unless you have independently confirmed that no retained records are needed.
 
@@ -46,3 +46,15 @@ Never use user-editable `user_metadata` for authorization. There is no shared ad
 Set the Supabase Site URL to https://sectorx83.vercel.app and allow the production and preview redirect URLs you use. Keep email/password authentication enabled.
 
 Test normal registration, sign-in, profile creation, posting, comments, reports, member directory access and community chat. For direct messaging, test with two ordinary member accounts: start a conversation from the member register, send messages in both directions, refresh the page and verify history persists. Confirm a third account cannot query either participant's messages, and confirm a suspended account cannot send a direct message. Verify a normal member cannot publish announcements, ban users, review other members' reports or change roles. Test the administrator and moderator flows, then run Supabase Security and Performance Advisors before opening registration publicly.
+
+
+## Member experience features
+
+- Members can maintain a public profile with an HTTPS avatar image, location, website, skills and interests. Skills and interests are comma-separated, with up to 12 entries each.
+- The member register searches profile text and skills, and supports sorting by newest or name.
+- Direct messages expose recipient-only read receipts. Opening a conversation marks incoming messages read.
+- The Notifications tab shows alerts for new direct messages and replies to a member's dispatches. Notification rows are visible only to their owner.
+- Moderators can publish upcoming events and add HTTPS references to the resource library. Members can read these resources; only moderators can manage them.
+- The Command Desk displays a database-generated audit trail for bans, unbans and report status changes. Audit records are readable only by moderators.
+
+After applying the member-experience migration, test profile edits, search by skill/location, direct-message read receipts with two accounts, notification ownership, moderator-only event/resource management, and audit visibility from both a moderator and an ordinary member account.
