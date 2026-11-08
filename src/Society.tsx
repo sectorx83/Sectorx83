@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react'
 import type { FormEvent } from 'react'
-import { Activity, AlertTriangle, ArrowUpRight, Ban, BookOpen, Check, ChevronLeft, ChevronRight, Compass, Flag, KeyRound, Lock, LogOut, MessageCircle, Plus, Search, Send, ShieldCheck, Users, X } from 'lucide-react'
+import { Activity, AlertTriangle, ArrowUpRight, Ban, Check, ChevronLeft, ChevronRight, Compass, Flag, KeyRound, Lock, LogOut, MessageCircle, Plus, Search, Send, ShieldCheck, Users, X } from 'lucide-react'
 import { supabase } from './lib/supabase'
 import './sectorx83.css'
 
@@ -119,7 +119,7 @@ export default function Society() {
   const admin = role === 'admin'
   const moderator = admin || role === 'moderator'
   const suspended = !!session && banned.includes(session.user.id)
-  const nav = [{ id: 'feed', label: 'Dispatches', icon: Activity }, { id: 'chat', label: 'Community Chat', icon: MessageCircle }, { id: 'members', label: 'Members', icon: Users }, { id: 'cipher', label: 'Cipher Vault', icon: Lock }, { id: 'profile', label: 'My Profile', icon: ShieldCheck }, { id: 'admin', label: 'Command Desk', icon: Flag }]
+  const nav = [{ id: 'feed', label: 'Dispatches', icon: Activity }, { id: 'chat', label: 'Community Chat', icon: MessageCircle }, { id: 'members', label: 'Members', icon: Users }, { id: 'cipher', label: 'Cipher Vault', icon: Lock }, { id: 'profile', label: 'My Profile', icon: ShieldCheck }, ...(moderator ? [{ id: 'admin', label: 'Command Desk', icon: Flag }] : [])]
 
   useEffect(() => {
     if (!supabase) { setReady(true); return }
@@ -246,7 +246,7 @@ export default function Society() {
       if (mode === 'join') {
         const { data, error: e1 } = await supabase.auth.signUp({ email, password, options: { data: { username: username.trim().toLowerCase(), display_name: displayName.trim() } } })
         if (e1) throw e1
-        if (!data.session) setNotice('Registration received. Confirm your email, then sign in.')
+        if (!data.session) setNotice('Registration received. Sign in once your account is ready.')
         else setNotice('Your Sectorx83 membership is ready.')
       } else {
         const { error: e1 } = await supabase.auth.signInWithPassword({ email, password })
@@ -415,7 +415,7 @@ export default function Society() {
   if (!session) return <main className="cc-shell cc-entry">
     <div className="cc-grid-bg"/>
     <header className="cc-header"><a className="cc-brand" href="/"><Crest/><span>SECTORX83<small>PRIVATE MEMBER NETWORK</small></span></a><a className="cc-back" href="/">RETURN TO SECTORX83 ↗</a></header>
-    <section className="cc-entry-layout"><div className="cc-manifesto"><p className="cc-kicker">SECTORX83 / THE DIRECTIVE</p><h1>No spectators.<br/>No empty words.<br/><em>Only the work.</em></h1><p>A private network for minds that question, builders who execute, and members who stand behind what they say. Access is earned. Trust is maintained. Every idea must withstand scrutiny.</p><div className="cc-manifesto-foot">IDENTITY <i/> AUTHORITY <i/> ACCOUNTABILITY</div><div className="cc-emblem"><Themis large/><span>THEMIS / EQUITY · BALANCE · ACCOUNTABILITY</span></div></div>
+    <section className="cc-entry-layout"><div className="cc-manifesto"><p className="cc-kicker">SECTORX83 / THE DIRECTIVE</p><h1>Question deeply.<br/>Build together.<br/><em>Leave a mark.</em></h1><p>Sectorx83 is a member network for independent thinkers and builders. Share considered ideas in Dispatches, talk in the separate community room, meet other members and keep private notes in your own encrypted vault.</p><div className="cc-manifesto-foot">IDENTITY <i/> AUTHORITY <i/> ACCOUNTABILITY</div><div className="cc-emblem"><Themis large/><span>THEMIS / EQUITY · BALANCE · ACCOUNTABILITY</span></div></div>
       <section className="cc-auth-panel"><p className="cc-kicker">ACCESS CONTROL / 00</p><h2>{mode === 'join' ? 'Establish your record.' : 'Your presence is expected.'}</h2><p className="cc-subtitle">{mode === 'join' ? 'Register your identity. Your account remains subject to the rules of the network.' : 'Verify your identity. Proceed only with authorised credentials.'}</p><div className="cc-mode"><button className={mode === 'join' ? 'active' : ''} onClick={() => { setMode('join'); setError(''); setNotice('') }}>CREATE ACCOUNT</button><button className={mode === 'signin' ? 'active' : ''} onClick={() => { setMode('signin'); setEmail(''); setError(''); setNotice('') }}>SIGN IN</button></div>
       <form onSubmit={auth} className="cc-form">{mode === 'join' && <><label>DISPLAY NAME<input required maxLength={48} value={displayName} onChange={e => setDisplayName(e.target.value)} placeholder="Name displayed on the record"/></label><label>USERNAME<input required minLength={3} maxLength={24} value={username} onChange={e => setUsername(e.target.value.replace(/[^a-zA-Z0-9_]/g,''))} placeholder="Choose your public identifier"/></label></>}
       <label>EMAIL ADDRESS<input required type="email" value={email} onChange={e => setEmail(e.target.value)} placeholder="Registered email address"/></label><label>PASSWORD<input required minLength={8} type="password" value={password} onChange={e => setPassword(e.target.value)} placeholder="Enter your account password"/></label>
@@ -428,6 +428,7 @@ export default function Society() {
     <header className="cc-header cc-header-inside"><a className="cc-brand" href="/sectorx83"><Crest/><span>SECTORX83<small>MEMBER NETWORK</small></span></a><div className="cc-header-actions"><button className="cc-tour-trigger" onClick={() => setTourStep(0)}><Compass size={15}/> TAKE THE TOUR</button><div className="cc-user"><span>{profile?.display_name || session.user.email}<small>@{profile?.username || 'member'} · {role.toUpperCase()}</small></span><button onClick={() => { if (supabase) void supabase.auth.signOut() }} aria-label="Sign out"><LogOut size={16}/></button></div></div></header>
     <div className="cc-layout"><aside className="cc-sidebar"><small>SECTORX83 / NAVIGATION</small>{nav.map(item => { const Icon = item.icon; return <button key={item.id} className={tab === item.id ? 'active' : ''} onClick={() => { setTab(item.id); setSelected(null); setError(''); setNotice('') }}><Icon size={16}/>{item.label}</button> })}<div className="cc-principle"><Crest/><small>COMMUNITY PRINCIPLE</small><strong>Question every claim. Respect every person.</strong><p>Authority is accountable. Evidence outranks status. Disagreement is not disloyalty.</p></div><div className="cc-side-meta">ACCESS / {role.toUpperCase()}<br/>NETWORK / MEMBERS</div></aside>
     <section className="cc-main"><div className="cc-crumb">SECTORX83 <b>/</b> {nav.find(x => x.id === tab)?.label.toUpperCase()}</div>
+      {tab === 'feed' && <section className="cc-welcome-strip"><div><p className="cc-kicker">WELCOME TO THE NETWORK</p><strong>Ideas in the feed. Conversation in the chat. People at the centre.</strong><span>Use the guided tour to see how each part works.</span></div><button onClick={() => setTourStep(0)}><Compass size={15}/> EXPLORE THE NETWORK</button></section>}
       {(error || notice) && <div className={error ? 'cc-alert is-error' : 'cc-alert'}>{error || notice}<button onClick={() => { setError(''); setNotice('') }}><X size={14}/></button></div>}
       {suspended && <div className="cc-alert is-error">Your account is suspended from posting and commenting. Contact an administrator if this is a mistake.</div>}
       {tab === 'feed' && <><div className="cc-heading"><div><p className="cc-kicker">THE DISPATCH / 01</p><h1>Words carry <em>weight.</em></h1><p>No noise. No spectacle. Ideas recorded, challenged and put to work.</p></div><Crest large/></div>
