@@ -1,0 +1,12 @@
+{
+  "name": "Cathedral",
+  "slug": "cathedral",
+  "status": "Phase 4 in progress",
+  "completed": [
+    "Phase 1",
+    "Phase 2",
+    "Phase 3"
+  ],
+  "repository": "https://github.com/sectorx83/Cathedral",
+  "category": "Infrastructure"
+}
