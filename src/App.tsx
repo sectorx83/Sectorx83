@@ -133,18 +133,15 @@ function App() {
           <div className="hero-actions"><a className="button button-primary" href="#work">Explore my work <ArrowDownRight size={17}/></a><a className="button button-quiet" href={github} target="_blank" rel="noreferrer"><Github size={17}/> GitHub profile <ArrowUpRight size={15}/></a></div>
           <div className="hero-meta"><span><span className="pulse-dot"/> Building & experimenting</span><span className="meta-divider">/</span><span>Open-source focused</span></div>
         </div>
-        <div className="hero-visual hero-entry hero-entry-delay" aria-label="Developer terminal illustration">
-          <div className="orbit orbit-a"/><div className="orbit orbit-b"/><div className="core-grid"/>
-          <div className="terminal-card">
-            <div className="terminal-top"><div className="window-dots"><i/><i/><i/></div><span>tyler@workspace ~</span><span className="terminal-lock">●</span></div>
-            <div className="terminal-body">
-              <div className="terminal-line"><span className="terminal-muted">01</span><span className="terminal-prompt">$</span><span>whoami</span></div><div className="terminal-output">developer & builder</div>
-              <div className="terminal-line"><span className="terminal-muted">02</span><span className="terminal-prompt">$</span><span>cat interests.txt</span></div><div className="terminal-output terminal-list">systems programming<br/>AI agents & tooling<br/>developer infrastructure</div>
-              <div className="terminal-line"><span className="terminal-muted">03</span><span className="terminal-prompt">$</span><span>ls projects/</span></div><div className="terminal-output terminal-files">D3X8&nbsp;&nbsp; Flux&nbsp;&nbsp; Cathedral<br/>Gravity&nbsp;&nbsp; EDITH-X1</div>
-              <div className="terminal-line terminal-last"><span className="terminal-muted">04</span><span className="terminal-prompt">$</span><span className="cursor-block"/></div>
-            </div>
+        <div className="hero-visual hero-entry hero-entry-delay" aria-label="Portfolio identity graphic">
+          <div className="hero-poster">
+            <div className="poster-top"><span>INDEPENDENT / 2026</span><span>IND — 001</span></div>
+            <div className="poster-dots" aria-hidden="true"/>
+            <div className="poster-symbol">S<span>.</span></div>
+            <div className="poster-bottom"><strong>MAKE<br/>IT WORK.</strong><div><span>CODE / SYSTEMS / IDEAS</span><b>SECTORX83</b></div></div>
+            <div className="poster-red-mark"/>
           </div>
-          <div className="floating-chip chip-top"><Cpu size={14}/> LOW-LEVEL SYSTEMS</div><div className="floating-chip chip-bottom"><Bot size={14}/> APPLIED AI</div><div className="hero-index">001 <span>—</span> 005</div>
+          <div className="poster-caption"><span>FIG. 01</span><span>BUILDING IN PUBLIC</span><span>↘</span></div>
         </div>
         <a className="scroll-cue" href="#work"><span/> SCROLL TO EXPLORE</a>
       </section>
