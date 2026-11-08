@@ -24,9 +24,9 @@ Deploy supabase/functions/manage-member-role/index.ts as manage-member-role with
 - SUPABASE_URL
 - SUPABASE_PUBLISHABLE_KEY
 - SUPABASE_SERVICE_ROLE_KEY
-- APP_ORIGIN=https://sectorx83.vercel.app
+- APP_ORIGIN=https://sectorx83.vercel.app (comma-separated if additional trusted preview origins are needed)
 
-Only a caller whose trusted Auth app_metadata role is admin can list accounts or change roles. The service-role key stays inside the Edge Function.
+Only a caller whose trusted Auth app_metadata role is admin can list accounts or change roles. The service-role key stays inside the Edge Function. Keep APP_ORIGIN restricted to exact trusted origins; do not use a wildcard.
 
 ## First administrator
 
@@ -46,4 +46,4 @@ Never use user-editable user_metadata for authorization.
 
 Set the Supabase Site URL to https://sectorx83.vercel.app and allow the production and preview redirect URLs you use. Keep email/password authentication enabled.
 
-Test normal registration, email confirmation, sign-in, profile creation, posting, comments, reports and member directory access. Then verify a normal member cannot publish announcements, ban users, review other members' reports or change roles. Test the administrator and moderator flows, then run Supabase Security and Performance Advisors before opening registration publicly.
+Test normal registration, email confirmation, sign-in, profile creation, posting, comments, reports and member directory access. Membership does not collect gender or use gender as an eligibility rule. Then verify a normal member cannot publish announcements, ban users, review other members' reports or change roles. Test the administrator and moderator flows, then run Supabase Security and Performance Advisors before opening registration publicly.
