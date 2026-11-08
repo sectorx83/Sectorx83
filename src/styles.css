@@ -297,3 +297,69 @@ button{font:inherit}
  .reveal{opacity:1!important;transform:none!important;filter:none!important;transition:none!important}
  .project-card:hover,.contact-link:hover,.footer-socials a:hover,.button:hover{transform:none!important}
 }
+/* Layout re-composition: poster hero + indexed project ledger */
+.hero{grid-template-columns:1.12fr .88fr;min-height:700px;gap:40px}
+.hero h1{max-width:740px}
+.hero-visual{height:500px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px}
+.hero-poster{width:min(390px,88%);height:430px;position:relative;overflow:hidden;border:1px solid #171717;background:#fdfdfa;box-shadow:14px 14px 0 #e2e2dc;display:flex;flex-direction:column;justify-content:space-between;padding:20px 22px;transform:rotate(2deg);transition:transform .5s cubic-bezier(.2,.7,.2,1),box-shadow .5s}
+.hero-poster:hover{transform:rotate(0deg) translateY(-5px);box-shadow:18px 18px 0 rgba(229,36,42,.16)}
+.poster-top,.poster-bottom{position:relative;z-index:2;display:flex;justify-content:space-between;align-items:flex-start;font:9px var(--mono);letter-spacing:.12em;color:#777}
+.poster-dots{position:absolute;inset:60px 22px 70px;background-image:radial-gradient(#bcbcb6 .85px,transparent .85px);background-size:10px 10px;mask-image:radial-gradient(circle at 50% 50%,black 15%,transparent 73%);opacity:.9}
+.poster-symbol{position:absolute;inset:0;display:grid;place-items:center;font:700 245px/.8 var(--display);letter-spacing:-.13em;color:#111;transform:translateX(-8px)}
+.poster-symbol span{color:var(--red)}
+.poster-bottom{align-items:flex-end;color:#111}
+.poster-bottom strong{font:700 30px/.85 var(--display);letter-spacing:-.07em}
+.poster-bottom div{display:flex;flex-direction:column;align-items:flex-end;gap:7px}
+.poster-bottom div span{font:8px var(--mono);color:#777;letter-spacing:.08em}
+.poster-bottom div b{font:500 10px var(--mono);letter-spacing:.12em}
+.poster-red-mark{position:absolute;right:22px;top:55px;width:11px;height:11px;border-radius:50%;background:var(--red);box-shadow:0 0 0 6px rgba(229,36,42,.1)}
+.poster-caption{width:min(390px,88%);display:flex;justify-content:space-between;font:8px var(--mono);letter-spacing:.12em;color:#777}
+.hero-visual .orbit,.hero-visual .core-grid,.hero-visual .terminal-card,.hero-visual .floating-chip,.hero-visual .hero-index{display:none}
+.project-grid{display:flex;flex-direction:column;gap:0;border-top:1px solid #bdbdb7}
+.project-card{display:grid;grid-template-columns:54px 180px minmax(180px,1fr) minmax(150px,220px);grid-template-areas:"top top top top" "icon title desc desc" "icon meta tags footer";column-gap:20px;align-items:center;min-height:188px;padding:20px 16px;border:0;border-bottom:1px solid #bdbdb7;background:rgba(255,255,255,.28);transition:background .25s,transform .25s,padding .25s}
+.project-card:hover{transform:none;background:#fff;box-shadow:inset 4px 0 0 var(--red);padding-left:22px}
+.project-card:before,.project-card:after{display:none}
+.project-card-top{grid-area:top;align-self:start;margin-bottom:10px}
+.project-icon{grid-area:icon;margin:0;width:42px;height:42px;border:1px solid #d1d1cb;border-radius:50%;display:grid;place-items:center}
+.project-title-row{grid-area:title;display:block}
+.project-title-row h3{font-size:22px}
+.project-arrow{display:none}
+.project-description{grid-area:desc;min-height:0;margin:0 0 10px;max-width:530px}
+.project-details{grid-area:meta;margin:0;font-size:8px;line-height:1.7}
+.tag-row{grid-area:tags}
+.project-card-footer{grid-area:footer;display:flex;flex-direction:column;align-items:flex-start;gap:9px;border:0;border-left:1px solid #ddd;margin:0;padding:0 0 0 15px}
+.project-card-footer a{font-size:8px}
+.project-card-footer a:first-child{color:var(--red)}
+.work-toolbar{margin-top:36px}
+.section-heading h2,.about-label h2{letter-spacing:-.085em}
+.about-section{position:relative}
+.about-label{position:relative}
+.about-label:after{content:"03";display:block;margin-top:46px;font:500 clamp(90px,14vw,170px)/.8 var(--display);letter-spacing:-.1em;color:#e4e4de}
+.contact-panel{box-shadow:8px 8px 0 #e2e2dc}
+.contact-panel:hover{box-shadow:12px 12px 0 rgba(229,36,42,.15)}
+.stack-group{position:relative}
+.stack-group:after{content:"";position:absolute;right:16px;top:17px;width:5px;height:5px;border-radius:50%;background:var(--red)}
+@media(max-width:850px){
+ .hero{grid-template-columns:1fr;gap:18px}
+ .hero-visual{height:460px;margin-top:12px}
+ .project-card{grid-template-columns:48px 150px minmax(0,1fr);grid-template-areas:"top top top" "icon title desc" "icon meta tags" "icon footer footer";gap:12px 15px}
+ .project-card-footer{flex-direction:row;flex-wrap:wrap;border-left:0;border-top:1px solid #ddd;padding:12px 0 0}
+ .about-label:after{margin-top:22px}
+}
+@media(max-width:600px){
+ .hero-visual{height:390px;margin-top:15px}
+ .hero-poster{height:340px;width:min(330px,88%);padding:16px}
+ .poster-symbol{font-size:200px}
+ .poster-bottom strong{font-size:25px}
+ .project-grid{display:flex}
+ .project-card{display:grid;grid-template-columns:38px 1fr;grid-template-areas:"top top" "icon title" "desc desc" "meta meta" "tags tags" "footer footer";gap:12px;padding:19px 12px;min-height:0}
+ .project-card:hover{padding-left:16px}
+ .project-card-top{margin-bottom:2px}
+ .project-icon{width:34px;height:34px}
+ .project-icon svg{width:18px;height:18px}
+ .project-title-row h3{font-size:21px}
+ .project-description{margin:0;font-size:11px}
+ .project-details{font-size:8px}
+ .project-card-footer{gap:15px}
+ .about-label:after{font-size:110px}
+}
