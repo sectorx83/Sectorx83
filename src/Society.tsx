@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react'
 import type { FormEvent } from 'react'
-import { Activity, AlertTriangle, ArrowUpRight, Ban, Check, ChevronLeft, ChevronRight, Compass, Flag, Lock, LogOut, MessageCircle, Plus, Search, Send, ShieldCheck, Users, X } from 'lucide-react'
+import { Activity, AlertTriangle, ArrowUpRight, Ban, Check, ChevronLeft, ChevronRight, Flag, Lock, LogOut, MessageCircle, Plus, Search, Send, ShieldCheck, Users, X } from 'lucide-react'
 import { supabase } from './lib/supabase'
 import './sectorx83.css'
 
@@ -286,7 +286,15 @@ export default function Society() {
   const activeDmMessages = dmThread
 
   useEffect(() => {
-    if (profile && !localStorage.getItem('sectorx83-tour-v1')) setTourStep(0)
+    if (!profile) return
+    const tourKey = `sectorx83-tour-v2:${profile.id}`
+    if (localStorage.getItem(tourKey)) return
+    // Preserve completion from the previous browser-wide tour setting.
+    if (localStorage.getItem('sectorx83-tour-v1') === 'complete') {
+      localStorage.setItem(tourKey, 'complete')
+      return
+    }
+    setTourStep(0)
   }, [profile?.id])
 
   const tourSteps = [
@@ -298,6 +306,7 @@ export default function Society() {
   ]
 
   function finishTour() {
+    if (profile) localStorage.setItem(`sectorx83-tour-v2:${profile.id}`, 'complete')
     localStorage.setItem('sectorx83-tour-v1', 'complete')
     setTourStep(null)
   }
@@ -472,10 +481,10 @@ export default function Society() {
   </main>
 
   return <main className="cc-shell cc-community">
-    <header className="cc-header cc-header-inside"><a className="cc-brand" href="/sectorx83"><Crest/><span>SECTORX83<small>MEMBER NETWORK</small></span></a><div className="cc-header-actions"><button className="cc-tour-trigger" onClick={() => setTourStep(0)}><Compass size={15}/> TAKE THE TOUR</button><div className="cc-user"><span>{profile?.display_name || session.user.email}<small>@{profile?.username || 'member'} · {role.toUpperCase()}</small></span><button onClick={() => { if (supabase) void supabase.auth.signOut() }} aria-label="Sign out"><LogOut size={16}/></button></div></div></header>
+    <header className="cc-header cc-header-inside"><a className="cc-brand" href="/sectorx83"><Crest/><span>SECTORX83<small>MEMBER NETWORK</small></span></a><div className="cc-header-actions"><div className="cc-user"><span>{profile?.display_name || session.user.email}<small>@{profile?.username || 'member'} · {role.toUpperCase()}</small></span><button onClick={() => { if (supabase) void supabase.auth.signOut() }} aria-label="Sign out"><LogOut size={16}/></button></div></div></header>
     <div className="cc-layout"><aside className="cc-sidebar"><small>SECTORX83 / NAVIGATION</small>{nav.map(item => { const Icon = item.icon; return <button key={item.id} className={tab === item.id ? 'active' : ''} onClick={() => { setTab(item.id); setSelected(null); if (item.id !== 'messages') setActiveDm(null); setError(''); setNotice('') }}><Icon size={16}/>{item.label}</button> })}<div className="cc-principle"><Crest/><small>COMMUNITY PRINCIPLE</small><strong>Question every claim. Respect every person.</strong><p>Authority is accountable. Evidence outranks status. Disagreement is not disloyalty.</p></div><div className="cc-side-meta">ACCESS / {role.toUpperCase()}<br/>NETWORK / MEMBERS</div></aside>
     <section className="cc-main"><div className="cc-crumb">SECTORX83 <b>/</b> {nav.find(x => x.id === tab)?.label.toUpperCase()}</div>
-      {tab === 'feed' && <section className="cc-welcome-strip"><div><p className="cc-kicker">WELCOME TO THE NETWORK</p><strong>Ideas in the feed. Conversation in the chat. People at the centre.</strong><span>Use the guided tour to see how each part works.</span></div><button onClick={() => setTourStep(0)}><Compass size={15}/> EXPLORE THE NETWORK</button></section>}
+      {tab === 'feed' && <section className="cc-welcome-strip"><div><p className="cc-kicker">WELCOME TO THE NETWORK</p><strong>Ideas in the feed. Conversation in the chat. People at the centre.</strong><span>A focused member network for discussion, collaboration and accountable participation.</span></div></section>}
       {(error || notice) && <div className={error ? 'cc-alert is-error' : 'cc-alert'}>{error || notice}<button onClick={() => { setError(''); setNotice('') }}><X size={14}/></button></div>}
       {suspended && <div className="cc-alert is-error">Your account is suspended from posting and commenting. Contact an administrator if this is a mistake.</div>}
       {tab === 'feed' && <><div className="cc-heading"><div><p className="cc-kicker">THE DISPATCH / 01</p><h1>Words carry <em>weight.</em></h1><p>No noise. No spectacle. Ideas recorded, challenged and put to work.</p></div><Crest large/></div>
