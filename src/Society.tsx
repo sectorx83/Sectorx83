@@ -79,7 +79,7 @@ export default function Society() {
       if (moderator) {
         const [r, a] = await Promise.all([
           supabase!.from('reports').select('id,reason,status,created_at,reporter:profiles!reports_reporter_id_fkey(username),post:posts!reports_post_id_fkey(title)').order('created_at', { ascending: false }),
-          supabase!.functions.invoke('manage-member-role', { method: 'GET' }),
+          supabase!.functions.invoke('manage-member-role', { body: { action: 'list' } }),
         ])
         if (!active) return
         if (r.data) setReports(r.data as unknown as Report[])
