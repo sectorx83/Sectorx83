@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from 'react'
 import type { FormEvent } from 'react'
 import { Activity, AlertTriangle, ArrowUpRight, Ban, Check, Flag, LogOut, MessageCircle, Plus, Search, ShieldCheck, Users, X } from 'lucide-react'
 import { supabase } from './lib/supabase'
+import './comrade.css'
 
 type Profile = { id: string; username: string; display_name: string; gender: string | null; bio: string | null; created_at: string }
 type Post = { id: string; author_id: string; title: string; body: string; category: string; is_announcement: boolean; created_at: string; author?: { username: string; display_name: string } | null }
@@ -23,6 +24,7 @@ export default function Society() {
   const [password, setPassword] = useState('')
   const [username, setUsername] = useState('')
   const [displayName, setDisplayName] = useState('')
+  const [profileBio, setProfileBio] = useState('')
   const [gender, setGender] = useState('male')
   const [profile, setProfile] = useState<Profile | null>(null)
   const [posts, setPosts] = useState<Post[]>([])
@@ -71,7 +73,7 @@ export default function Society() {
         supabase!.from('banned_members').select('user_id'),
       ])
       if (!active) return
-      if (p.data) setProfile(p.data as Profile)
+      if (p.data) { setProfile(p.data as Profile); setDisplayName(p.data.display_name || ''); setProfileBio(p.data.bio || '') }
       if (f.data) setPosts(f.data as unknown as Post[])
       if (m.data) setMembers(m.data as Profile[])
       if (b.data) setBanned(b.data.map((x: any) => x.user_id))
@@ -172,8 +174,8 @@ export default function Society() {
 
   async function saveProfile(e: FormEvent) {
     e.preventDefault(); if (!supabase || !session) return
-    const { error: e1 } = await supabase.from('profiles').update({ display_name: displayName.trim(), bio: body.trim().slice(0,240) }).eq('id', session.user.id)
-    if (e1) setError(e1.message); else { setNotice('Profile updated.'); setProfile(old => old ? { ...old, display_name: displayName.trim(), bio: body.trim().slice(0,240) } : old) }
+    const { error: e1 } = await supabase.from('profiles').update({ display_name: displayName.trim(), bio: profileBio.trim().slice(0,240) }).eq('id', session.user.id)
+    if (e1) setError(e1.message); else { setNotice('Profile updated.'); setProfile(old => old ? { ...old, display_name: displayName.trim(), bio: profileBio.trim().slice(0,240) } : old) }
   }
 
   if (!ready) return <main className="cc-shell cc-loading"><Crest large/><span>INITIALIZING THE ASSEMBLY</span><i/></main>
@@ -204,7 +206,7 @@ export default function Society() {
         <div className="cc-posts">{filtered.map(post => <article className={post.is_announcement ? 'cc-post announcement' : 'cc-post'} key={post.id}><div className="cc-post-meta"><span>{post.is_announcement ? 'OFFICIAL ANNOUNCEMENT' : post.category}</span><time>{dateLabel(post.created_at)}</time></div><h2>{post.title}</h2><p>{post.body}</p><div className="cc-post-bottom"><span>{post.author?.display_name || 'Community member'} <small>@{post.author?.username || 'member'}</small></span><div><button onClick={() => setSelected(post)}><MessageCircle size={14}/> DISCUSS</button>{!post.is_announcement && <button onClick={() => setReporting(post)}><Flag size={13}/> REPORT</button>}{(moderator || post.author_id === session.user.id) && <button onClick={() => removePost(post)}><X size={14}/></button>}</div></div></article>)}{!filtered.length && <div className="cc-empty">No discussions found. Start the first conversation.</div>}</div>
       </>}
       {tab === 'members' && <><div className="cc-heading"><div><p className="cc-kicker">MEMBERSHIP REGISTER / 02</p><h1>The <em>comrades.</em></h1><p>People who make the community through participation and exchange.</p></div><strong className="cc-count">{members.length.toString().padStart(2,'0')}<small>MEMBERS</small></strong></div><label className="cc-search cc-member-search"><Search size={14}/><input value={search} onChange={e => setSearch(e.target.value)} placeholder="Find a member"/></label><div className="cc-members">{members.filter(m => (m.display_name + m.username).toLowerCase().includes(search.toLowerCase())).map(m => <article key={m.id}><i>{m.display_name.slice(0,1).toUpperCase()}</i><div><strong>{m.display_name}</strong><span>@{m.username}</span><small>{m.gender?.toUpperCase() || 'MEMBER'} · JOINED {new Date(m.created_at).toLocaleDateString()}</small>{m.bio && <p>{m.bio}</p>}</div></article>)}</div></>}
-      {tab === 'profile' && <><div className="cc-heading"><div><p className="cc-kicker">MEMBER RECORD / 03</p><h1>Your <em>profile.</em></h1><p>Keep your public member details current.</p></div></div><form className="cc-composer cc-profile" onSubmit={saveProfile}><label>DISPLAY NAME<input value={displayName} onChange={e => setDisplayName(e.target.value)} maxLength={48} required/></label><label>ABOUT YOU<textarea rows={4} maxLength={240} value={body} onChange={e => setBody(e.target.value)} placeholder={profile?.bio || 'A short introduction (optional)'}/></label><button className="cc-primary">SAVE PROFILE <Check size={15}/></button></form></>}
+      {tab === 'profile' && <><div className="cc-heading"><div><p className="cc-kicker">MEMBER RECORD / 03</p><h1>Your <em>profile.</em></h1><p>Keep your public member details current.</p></div></div><form className="cc-composer cc-profile" onSubmit={saveProfile}><label>DISPLAY NAME<input value={displayName} onChange={e => setDisplayName(e.target.value)} maxLength={48} required/></label><label>ABOUT YOU<textarea rows={4} maxLength={240} value={profileBio} onChange={e => setProfileBio(e.target.value)} placeholder="A short introduction (optional)"/></label><button className="cc-primary">SAVE PROFILE <Check size={15}/></button></form></>}
       {tab === 'admin' && moderator && <><div className="cc-heading"><div><p className="cc-kicker">RESTRICTED ACCESS / 04</p><h1>Administration <em>desk.</em></h1><p>Moderate discussions, review reports and manage membership permissions.</p></div><ShieldCheck size={34}/></div><div className="cc-admin-stats"><div><strong>{members.length}</strong><small>MEMBERS</small></div><div><strong>{posts.length}</strong><small>POSTS</small></div><div><strong>{reports.filter(r => r.status === 'open').length}</strong><small>OPEN REPORTS</small></div><div><strong>{banned.length}</strong><small>SUSPENDED</small></div></div>
         <section className="cc-admin-section"><h2>Reported content</h2>{reports.length ? reports.map(r => <article key={r.id}><div><small>{r.status.toUpperCase()} · @{r.reporter?.username || 'member'}</small><strong>{r.post?.title || 'Reported comment'}</strong><p>{r.reason}</p></div><div><button onClick={() => reviewReport(r.id,'reviewed')}>REVIEWED</button><button onClick={() => reviewReport(r.id,'resolved')}>RESOLVE</button></div></article>) : <p className="cc-muted">No reports are waiting for review.</p>}</section>
         <section className="cc-admin-section"><h2>Member management</h2>{members.map(m => { const r = roles.find(x => x.id === m.id)?.role || 'member'; return <article key={m.id}><div><strong>{m.display_name}</strong><small>@{m.username} · {banned.includes(m.id) ? 'SUSPENDED' : 'ACTIVE'}</small></div><div className="cc-admin-controls"><select value={r} disabled={!admin || m.id === session.user.id} onChange={e => changeRole(m.id,e.target.value)}><option value="member">MEMBER</option><option value="moderator">MODERATOR</option><option value="admin">ADMIN</option></select>{banned.includes(m.id) ? <button onClick={() => banMember(m.id,false)}>UNBAN</button> : <button disabled={!admin || m.id === session.user.id} onClick={() => banMember(m.id,true)}><Ban size={13}/> BAN</button>}</div></article>})}</section>
