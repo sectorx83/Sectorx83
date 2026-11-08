@@ -78,6 +78,10 @@ function ProjectDetail({id}:{id:string}) {
         <section className="detail-block"><div className="eyebrow"><span className="eyebrow-dot"/> DEVELOPMENT LOG</div><h2>Project status<span className="heading-period">.</span></h2><div className="milestone-list">{page.milestones.map((item,i)=><div className="milestone" key={item.label}><span className={'milestone-dot milestone-'+item.state}/><div><small>0{i+1} / {item.state==='done'?'COMPLETE':item.state==='active'?'IN PROGRESS':'UP NEXT'}</small><p>{item.label}</p></div></div>)}</div></section>
       </div>
       <section className="detail-note"><span>ENGINEERING NOTE</span><p>{page.limitations}</p></section>
+      <section className="detail-files">
+        <div><div className="eyebrow"><span className="eyebrow-dot"/> PROJECT DIRECTORY</div><h2>Files & documentation<span className="heading-period">.</span></h2><p>Browse the project notes and structured metadata stored in this portfolio repository, or open the full implementation in its original repository.</p></div>
+        <div className="detail-file-actions"><a href={'https://github.com/sectorx83/Sectorx83/tree/main/projects/' + project.id} target="_blank" rel="noreferrer"><Layers3 size={16}/> Browse portfolio files <ArrowUpRight size={14}/></a><a href={project.href} target="_blank" rel="noreferrer"><Github size={16}/> Browse full source <ArrowUpRight size={14}/></a></div>
+      </section>
       <footer className="detail-footer"><a href="/#work">← All projects</a><a href={github} target="_blank" rel="noreferrer">More work on GitHub <ArrowUpRight size={14}/></a></footer>
     </main>
   </div>
