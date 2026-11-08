@@ -1,12 +1,12 @@
 import { useEffect, useMemo, useState } from 'react'
 import type { FormEvent } from 'react'
-import { Activity, AlertTriangle, ArrowUpRight, Ban, Check, Flag, KeyRound, Lock, LogOut, MessageCircle, Plus, Search, ShieldCheck, Users, X } from 'lucide-react'
+import { Activity, AlertTriangle, ArrowUpRight, Ban, BookOpen, Check, ChevronLeft, ChevronRight, Compass, Flag, KeyRound, Lock, LogOut, MessageCircle, Plus, Search, Send, ShieldCheck, Users, X } from 'lucide-react'
 import { supabase } from './lib/supabase'
 import './sectorx83.css'
 
 type Profile = { id: string; username: string; display_name: string; bio: string | null; created_at: string }
 type Post = { id: string; author_id: string; title: string; body: string; category: string; is_announcement: boolean; created_at: string; author?: { username: string; display_name: string } | null }
-type Comment = { id: string; body: string; created_at: string; author?: { username: string; display_name: string } | null }
+type Comment = { id: string; body: string; created_at: string; author?: { username: string; display_name: string } | null }\ntype ChatMessage = { id: string; author_id: string; body: string; created_at: string; author?: { username: string; display_name: string } | null }
 type Report = { id: string; reason: string; status: string; created_at: string; reporter?: { username: string } | null; post?: { title: string } | null }
 type Role = { id: string; email: string | null; role: string }
 type CipherEntry = { id: string; label: string; ciphertext: string; iv: string; salt: string; created_at: string }
@@ -14,55 +14,60 @@ const dateLabel = (value: string) => new Date(value).toLocaleString()
 const sections = ['ALL', 'GENERAL', 'DISCUSSION', 'DECLARATIONS', 'ANNOUNCEMENT']
 
 function Crest({ large = false }: { large?: boolean }) {
-  return <span className={large ? 'cc-crest cc-crest-large' : 'cc-crest'} aria-hidden="true"><svg viewBox="0 0 100 100" fill="none">
-    <path className="cc-frame" d="M50 5 88 27v46L50 95 12 73V27L50 5Z"/>
-    <path className="cc-inner" d="M50 15 78 31v38L50 85 22 69V31L50 15Z"/>
-    <path className="cc-star" d="m50 20 4.4 9 9.9 1.4-7.2 7 1.7 9.8-8.8-4.7-8.8 4.7 1.7-9.8-7.2-7 9.9-1.4L50 20Z"/>
-    <path className="cc-tools" d="M34 68 65 42M59 37l11 11M30 63l8 8M39 76c-8-8-8-20 0-28 7-7 18-9 27-4-11-1-19 4-21 12-2 7 1 13 7 18-4 5-8 7-13 8Z"/>
-  </svg></span>
+  return <span className={large ? 'cc-crest cc-crest-large' : 'cc-crest'} aria-hidden="true">
+    <svg viewBox="0 0 120 120" fill="none">
+      <circle cx="60" cy="60" r="55" className="cc-frame"/>
+      <circle cx="60" cy="60" r="48" className="cc-inner"/>
+      <path className="cc-wreath" d="M31 92C13 74 14 43 31 25M89 92c18-18 17-49 0-67"/>
+      <path className="cc-wreath-detail" d="M27 82l-9-1 5-8m7 1-10-4 7-7m5-1-9-7 9-4m-1-6-7-9 10-1m-3-7-3-10 10 3M93 82l9-1-5-8m-7 1 10-4-7-7m-5-1 9-7-9-4m1-6 7-9-10-1m3-7 3-10-10 3"/>
+      <path className="cc-star" d="m60 13 5.2 10.7 11.8 1.7-8.5 8.3 2 11.7L60 39.9l-10.5 5.5 2-11.7-8.5-8.3 11.8-1.7L60 13Z"/>
+      <path className="cc-tools" d="M42 72 76 43M69 38l12 12M37 67l10 10"/>
+      <path className="cc-sickle" d="M72 57c9 8 11 20 4 28-7 8-19 8-27 1 10 3 19-1 21-9 2-6 0-12-5-16"/>
+      <path className="cc-ribbon" d="M35 91q25 10 50 0l-4 13-21-5-21 5-4-13Z"/>
+      <text className="cc-ribbon-type" x="60" y="99" textAnchor="middle">SX83</text>
+    </svg>
+  </span>
 }
 
 function Themis({ large = false }: { large?: boolean }) {
-  return <span className={large ? 'cc-themis cc-themis-large' : 'cc-themis'} role="img" aria-label="Themis, Lady Justice, holding balanced scales">
-    <svg viewBox="0 0 240 280" fill="none" aria-hidden="true">
+  return <span className={large ? 'cc-themis cc-themis-large' : 'cc-themis'} role="img" aria-label="Themis, Lady Justice, with balanced scales and a sword">
+    <svg viewBox="0 0 260 300" fill="none" aria-hidden="true">
       <defs>
         <linearGradient id="themis-gold" x1="0" y1="0" x2="1" y2="1">
-          <stop offset="0" stopColor="#f2dfaa"/><stop offset=".48" stopColor="#b08a45"/><stop offset="1" stopColor="#725326"/>
+          <stop offset="0" stopColor="#e8c985"/><stop offset=".52" stopColor="#a97937"/><stop offset="1" stopColor="#65451f"/>
         </linearGradient>
         <linearGradient id="themis-ivory" x1="0" y1="0" x2="1" y2="1">
-          <stop offset="0" stopColor="#f0e7d2"/><stop offset="1" stopColor="#a99a7d"/>
+          <stop offset="0" stopColor="#eee3c9"/><stop offset="1" stopColor="#9f9076"/>
         </linearGradient>
       </defs>
-      <circle className="themis-halo" cx="120" cy="128" r="105"/>
-      <path className="themis-ornament" d="M29 242V38h182v204M39 232V48h162v184M29 57h12M199 57h12M29 223h12M199 223h12"/>
-      <path className="themis-ornament" d="m120 12 5 10 11 2-8 8 2 11-10-5-10 5 2-11-8-8 11-2 5-10Z"/>
-      <path className="themis-hair" d="M96 61c-4-23 8-38 25-38 21 0 31 17 25 41l-8 26H99l-3-29Z"/>
-      <path className="themis-skin" d="M104 51c0-15 7-23 17-23s18 8 18 23v19c0 15-9 25-18 25s-17-10-17-25V51Z"/>
-      <path className="themis-blindfold" d="M101 53c11 4 27 4 42 0l-2 9c-13 5-26 5-38 0l-2-9Z"/>
-      <path className="themis-hair" d="M103 40c-8 13-8 32-4 47l-9-9c-5-24-1-47 14-57M137 37c11 13 12 32 7 51l9-10c5-23-2-44-15-55"/>
-      <path className="themis-skin" d="M112 92h18v19h-18z"/>
-      <path className="themis-robe" d="m108 105 12 9 12-9 17 14 15 86-44 24-44-24 15-86 17-14Z"/>
-      <path className="themis-robe-fold" d="m108 109-12 38 17 24-19 58M132 109l12 38-17 24 19 58M120 114v113M89 128l31 26 31-26"/>
-      <path className="themis-arm" d="m108 112-37-21-11 5 6 10 47 22M132 112l37-21 11 5-6 10-47 22"/>
-      <path className="themis-gold-stroke" d="M120 84v27M57 95h126"/>
+      <circle className="themis-halo" cx="130" cy="143" r="119"/>
+      <path className="themis-ornament" d="M27 270V33h206v237M38 259V44h184v215M27 54h14M219 54h14M27 248h14M219 248h14"/>
+      <path className="themis-ornament" d="m130 10 5 10 11 2-8 8 2 11-10-5-10 5 2-11-8-8 11-2 5-10Z"/>
+      <path className="themis-hair" d="M105 73c-6-24 7-43 25-43 22 0 34 18 27 45l-7 28h-38l-7-30Z"/>
+      <path className="themis-skin" d="M110 61c0-17 8-26 20-26s20 9 20 26v21c0 17-9 28-20 28s-20-11-20-28V61Z"/>
+      <path className="themis-blindfold" d="M107 63c13 5 29 5 46 0l-2 10c-14 6-29 6-42 0l-2-10Z"/>
+      <path className="themis-hair" d="M111 49c-12 15-12 35-8 54l-12-12c-4-27 1-49 18-62M150 46c13 14 15 36 9 57l12-12c5-27-2-49-17-62"/>
+      <path className="themis-skin" d="M120 108h20v22h-20z"/>
+      <path className="themis-robe" d="m113 124 17 11 17-11 22 18 19 111-58 24-58-24 19-111 22-18Z"/>
+      <path className="themis-robe-fold" d="m113 129-17 43 22 25-22 67M147 129l17 43-22 25 22 67M130 136v137M75 153l55 34 55-34"/>
+      <path className="themis-arm" d="m111 133-42-23-12 7 8 12 47 24M149 133l42-23 12 7-8 12-47 24"/>
+      <path className="themis-gold-stroke" d="M130 105v28M51 112h158"/>
       <g className="themis-scale-beam">
-        <path d="M59 91h122M120 78l-8 13h16l-8-13Z"/>
-        <circle cx="120" cy="91" r="4"/>
+        <path d="M51 108h158M130 92l-10 16h20l-10-16Z"/>
+        <circle cx="130" cy="108" r="4"/>
       </g>
       <g className="themis-scale-left">
-        <path d="M68 94 58 135M68 94l12 41M58 135h22"/>
-        <path d="M48 136q22 25 44 0" />
-        <path d="M49 136h42"/>
+        <path d="m68 111-12 43m12-43 13 43M55 154h27"/>
+        <path d="M45 155q23 28 46 0M46 155h44"/>
       </g>
       <g className="themis-scale-right">
-        <path d="M172 94 162 135M172 94l12 41M162 135h22"/>
-        <path d="M152 136q22 25 44 0"/>
-        <path d="M153 136h42"/>
+        <path d="m192 111-12 43m12-43 13 43m-25 0h27"/>
+        <path d="M169 155q23 28 46 0M170 155h44"/>
       </g>
-      <path className="themis-sword" d="m184 119 8 8-33 91-8 8 1-12 32-95Z"/>
-      <path className="themis-sword-hilt" d="m176 116 13 13M170 121l13 13"/>
-      <path className="themis-base" d="M74 246h92M88 253h64M101 260h38"/>
-      <path className="themis-gold-stroke themis-highlight" d="M42 70h8M190 70h8M42 205h8M190 205h8"/>
+      <path className="themis-sword" d="m202 148 9 9-38 102-10 10 2-15 37-106Z"/>
+      <path className="themis-sword-hilt" d="m194 144 17 17m-24-11 17 17"/>
+      <path className="themis-base" d="M75 280h110M92 287h76M111 294h38"/>
+      <path className="themis-gold-stroke themis-highlight" d="M42 76h9M209 76h9M42 226h9M209 226h9"/>
     </svg>
   </span>
 }
@@ -80,6 +85,9 @@ export default function Society() {
   const [posts, setPosts] = useState<Post[]>([])
   const [members, setMembers] = useState<Profile[]>([])
   const [comments, setComments] = useState<Comment[]>([])
+  const [chatMessages, setChatMessages] = useState<ChatMessage[]>([])
+  const [chatDraft, setChatDraft] = useState('')
+  const [tourStep, setTourStep] = useState<number | null>(null)
   const [reports, setReports] = useState<Report[]>([])
   const [roles, setRoles] = useState<Role[]>([])
   const [rolesLoading, setRolesLoading] = useState(false)
@@ -110,7 +118,7 @@ export default function Society() {
   const admin = role === 'admin'
   const moderator = admin || role === 'moderator'
   const suspended = !!session && banned.includes(session.user.id)
-  const nav = [{ id: 'feed', label: 'The Dispatches', icon: Activity }, { id: 'members', label: 'The Register', icon: Users }, { id: 'cipher', label: 'Cipher Vault', icon: Lock }, { id: 'profile', label: 'Identity Record', icon: ShieldCheck }, { id: 'admin', label: 'Command Desk', icon: Flag }]
+  const nav = [{ id: 'feed', label: 'Dispatches', icon: Activity }, { id: 'chat', label: 'Community Chat', icon: MessageCircle }, { id: 'members', label: 'Members', icon: Users }, { id: 'cipher', label: 'Cipher Vault', icon: Lock }, { id: 'profile', label: 'My Profile', icon: ShieldCheck }, { id: 'admin', label: 'Command Desk', icon: Flag }]
 
   useEffect(() => {
     if (!supabase) { setReady(true); return }
@@ -179,6 +187,55 @@ export default function Society() {
     return () => { active = false }
   }, [session?.user?.id, selected?.id])
 
+  useEffect(() => {
+    if (!supabase || !session || tab !== 'chat') return
+    let active = true
+    const loadMessages = async () => {
+      const { data, error: chatError } = await supabase!
+        .from('community_messages')
+        .select('id,author_id,body,created_at,author:profiles!community_messages_author_id_fkey(username,display_name)')
+        .order('created_at', { ascending: false })
+        .limit(150)
+      if (!active) return
+      if (chatError) { setError(chatError.message); return }
+      setChatMessages(((data || []) as unknown as ChatMessage[]).reverse())
+    }
+    void loadMessages()
+    const channel = supabase.channel('sectorx83-community-chat')
+      .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'community_messages' }, payload => {
+        if (!active) return
+        const row = payload.new as ChatMessage
+        const knownMember = members.find(member => member.id === row.author_id)
+        const author = knownMember
+          ? { username: knownMember.username, display_name: knownMember.display_name }
+          : row.author_id === session.user.id && profile
+            ? { username: profile.username, display_name: profile.display_name }
+            : null
+        setChatMessages(current => current.some(message => message.id === row.id)
+          ? current
+          : [...current, { ...row, author }].slice(-150))
+      })
+      .subscribe()
+    return () => { active = false; void supabase!.removeChannel(channel) }
+  }, [session?.user?.id, tab, members, profile?.id])
+
+  useEffect(() => {
+    if (profile && !localStorage.getItem('sectorx83-tour-v1')) setTourStep(0)
+  }, [profile?.id])
+
+  const tourSteps = [
+    { title: 'Welcome to Sectorx83', body: 'This is a member space for thoughtful discussion, independent work and accountable participation. Start here, then explore at your own pace.', target: 'The network' },
+    { title: 'Dispatches', body: 'Long-form posts and announcements live here. Use classifications to browse, publish a considered post and open a dispatch to discuss it.', target: 'Ideas and records' },
+    { title: 'Community chat', body: 'A separate live room for short conversations. It is deliberately not mixed into the dispatch feed.', target: 'Real-time conversation' },
+    { title: 'Members and identity', body: 'Browse the member register and keep your own public profile accurate. Treat other members with respect.', target: 'People first' },
+    { title: 'Private tools and governance', body: 'Cipher Vault stores notes encrypted in your browser. The Command Desk is restricted to authorised moderators and administrators.', target: 'Privacy and responsibility' },
+  ]
+
+  function finishTour() {
+    localStorage.setItem('sectorx83-tour-v1', 'complete')
+    setTourStep(null)
+  }
+
   const filtered = useMemo(() => posts.filter(p => (category === 'ALL' || (category === 'ANNOUNCEMENT' ? p.is_announcement : p.category === category)) && (p.title + p.body + (p.author?.username || '')).toLowerCase().includes(search.toLowerCase())), [posts, category, search])
 
   async function auth(e: FormEvent) {
@@ -196,6 +253,20 @@ export default function Society() {
       }
     } catch (e: any) { setError(e.message || 'Authentication failed.') }
     finally { setBusy(false) }
+  }
+
+  async function sendChat(e: FormEvent) {
+    e.preventDefault()
+    if (!supabase || !session || suspended || !chatDraft.trim()) return
+    setBusy(true)
+    setError('')
+    const { error: sendError } = await supabase.from('community_messages').insert({
+      author_id: session.user.id,
+      body: chatDraft.trim(),
+    })
+    if (sendError) setError(sendError.message)
+    else setChatDraft('')
+    setBusy(false)
   }
 
   async function refreshPosts() {
@@ -353,7 +424,7 @@ export default function Society() {
   </main>
 
   return <main className="cc-shell cc-community">
-    <header className="cc-header cc-header-inside"><a className="cc-brand" href="/sectorx83"><Crest/><span>SECTORX83<small>PRIVATE MEMBER NETWORK</small></span></a><div className="cc-user"><span>{profile?.display_name || session.user.email}<small>@{profile?.username || 'member'} · {role.toUpperCase()}</small></span><button onClick={() => { if (supabase) void supabase.auth.signOut() }} aria-label="Sign out"><LogOut size={16}/></button></div></header>
+    <header className="cc-header cc-header-inside"><a className="cc-brand" href="/sectorx83"><Crest/><span>SECTORX83<small>MEMBER NETWORK</small></span></a><div className="cc-header-actions"><button className="cc-tour-trigger" onClick={() => setTourStep(0)}><Compass size={15}/> TAKE THE TOUR</button><div className="cc-user"><span>{profile?.display_name || session.user.email}<small>@{profile?.username || 'member'} · {role.toUpperCase()}</small></span><button onClick={() => { if (supabase) void supabase.auth.signOut() }} aria-label="Sign out"><LogOut size={16}/></button></div></div></header>
     <div className="cc-layout"><aside className="cc-sidebar"><small>SECTORX83 / NAVIGATION</small>{nav.map(item => { const Icon = item.icon; return <button key={item.id} className={tab === item.id ? 'active' : ''} onClick={() => { setTab(item.id); setSelected(null); setError(''); setNotice('') }}><Icon size={16}/>{item.label}</button> })}<div className="cc-principle"><Crest/><small>COMMUNITY PRINCIPLE</small><strong>Question every claim. Respect every person.</strong><p>Authority is accountable. Evidence outranks status. Disagreement is not disloyalty.</p></div><div className="cc-side-meta">ACCESS / {role.toUpperCase()}<br/>NETWORK / MEMBERS</div></aside>
     <section className="cc-main"><div className="cc-crumb">SECTORX83 <b>/</b> {nav.find(x => x.id === tab)?.label.toUpperCase()}</div>
       {(error || notice) && <div className={error ? 'cc-alert is-error' : 'cc-alert'}>{error || notice}<button onClick={() => { setError(''); setNotice('') }}><X size={14}/></button></div>}
@@ -364,6 +435,7 @@ export default function Society() {
         {showComposer && <form className="cc-composer" onSubmit={publish}><label>SUBJECT<input value={title} onChange={e => setTitle(e.target.value)} maxLength={120} required/></label><label>CLASSIFICATION<select value={postSection} onChange={e => setPostSection(e.target.value)}>{(moderator ? sections.slice(1) : sections.slice(1,4)).map(s => <option key={s}>{s}</option>)}</select></label><label>YOUR CONTRIBUTION<textarea value={body} onChange={e => setBody(e.target.value)} rows={5} maxLength={10000} required/></label><button className="cc-primary" disabled={busy}>SEAL DISPATCH <ArrowUpRight size={15}/></button></form>}
         <div className="cc-posts">{filtered.map(post => <article className={post.is_announcement ? 'cc-post announcement' : 'cc-post'} key={post.id}><div className="cc-post-meta"><span>{post.is_announcement ? 'OFFICIAL DIRECTIVE' : post.category}</span><time>{dateLabel(post.created_at)}</time></div><h2>{post.title}</h2><p>{post.body}</p><div className="cc-post-bottom"><span>{post.author?.display_name || 'Network member'} <small>@{post.author?.username || 'member'}</small></span><div><button onClick={() => setSelected(post)}><MessageCircle size={14}/> DISCUSS</button>{!post.is_announcement && <button onClick={() => setReporting(post)}><Flag size={13}/> REPORT</button>}{(moderator || post.author_id === session.user.id) && <button onClick={() => removePost(post)}><X size={14}/></button>}</div></div></article>)}{!filtered.length && <div className="cc-empty">The record is empty. Make the first statement.</div>}</div>
       </>}
+      {tab === 'chat' && <><div className="cc-heading cc-chat-heading"><div><p className="cc-kicker">COMMUNITY CHAT / LIVE ROOM</p><h1>Talk <em>together.</em></h1><p>Short conversations belong here. Dispatches remain separate and searchable.</p></div><div className="cc-chat-live"><i/> MEMBER ROOM</div></div><div className="cc-chat-context"><MessageCircle size={17}/><span><strong>One shared room.</strong> Keep it useful, respectful and on-topic. No private messages or direct-message claims.</span></div><section className="cc-chat-panel"><div className="cc-chat-top"><span>SECTORX83 / COMMUNITY CHANNEL</span><span>{chatMessages.length} RECENT MESSAGES</span></div><div className="cc-chat-messages" aria-live="polite">{chatMessages.map(message => <article className={message.author_id === session.user.id ? 'cc-chat-message is-own' : 'cc-chat-message'} key={message.id}><span className="cc-chat-avatar">{(message.author?.display_name || 'M').slice(0,1).toUpperCase()}</span><div><header><strong>{message.author?.display_name || 'Member'}</strong><small>@{message.author?.username || 'member'} · {dateLabel(message.created_at)}</small></header><p>{message.body}</p></div></article>)}{!chatMessages.length && <div className="cc-chat-empty"><MessageCircle size={24}/><strong>The room is quiet.</strong><span>Start the first conversation.</span></div>}</div>{suspended ? <p className="cc-chat-locked">Posting is disabled while your account is suspended.</p> : <form className="cc-chat-compose" onSubmit={sendChat}><textarea value={chatDraft} onChange={e => setChatDraft(e.target.value)} rows={2} maxLength={2000} placeholder="Write a message to the room…" required/><div><small>{chatDraft.length}/2000 · Messages are visible to signed-in members.</small><button className="cc-primary" disabled={busy || !chatDraft.trim()}>{busy ? 'SENDING…' : 'SEND MESSAGE'} <Send size={14}/></button></div></form>}</section></>}
       {tab === 'members' && <><div className="cc-heading"><div><p className="cc-kicker">THE REGISTER / 02</p><h1>The <em>register.</em></h1><p>Every identity is recorded. Every member is accountable for their conduct.</p></div><strong className="cc-count">{members.length.toString().padStart(2,'0')}<small>MEMBERS</small></strong></div><label className="cc-search cc-member-search"><Search size={14}/><input value={search} onChange={e => setSearch(e.target.value)} placeholder="Search the register"/></label><div className="cc-members">{members.filter(m => (m.display_name + m.username).toLowerCase().includes(search.toLowerCase())).map(m => <article key={m.id}><i>{m.display_name.slice(0,1).toUpperCase()}</i><div><strong>{m.display_name}</strong><span>@{m.username}</span><small>MEMBER · JOINED {new Date(m.created_at).toLocaleDateString()}</small>{m.bio && <p>{m.bio}</p>}</div></article>)}</div></>}
       {tab === 'profile' && <><div className="cc-heading"><div><p className="cc-kicker">IDENTITY RECORD / 03</p><h1>Your <em>record.</em></h1><p>Keep your public identity accurate. Your actions remain your responsibility.</p></div></div><form className="cc-composer cc-profile" onSubmit={saveProfile}><label>DISPLAY NAME<input value={displayName} onChange={e => setDisplayName(e.target.value)} maxLength={48} required/></label><label>ABOUT YOU<textarea rows={4} maxLength={240} value={profileBio} onChange={e => setProfileBio(e.target.value)} placeholder="A short introduction (optional)"/></label><button className="cc-primary">SAVE PROFILE <Check size={15}/></button></form></>}
       {tab === 'admin' && !moderator && <div className="cc-heading"><div><p className="cc-kicker">RESTRICTED ACCESS / 05</p><h1>Command <em>desk.</em></h1><p>Restricted authority. Your verified role does not grant permission to enter this command level.</p></div><Lock size={34}/></div>}
@@ -375,6 +447,7 @@ export default function Society() {
       {tab === 'cipher' && <><div className="cc-heading"><div><p className="cc-kicker">CIPHER ARCHIVE / 04</p><h1>The <em>cipher archive.</em></h1><p>Private records are sealed in your browser before transmission. The key remains yours.</p></div><Lock size={34}/></div><div className="cc-cipher-explainer"><Lock size={18}/><div><strong>AES-256-GCM · PBKDF2-SHA-256</strong><p>Each entry gets a fresh random salt and IV. Your passphrase is never stored. Losing it means the entry cannot be recovered. These entries are private to your account; this is not group end-to-end encryption.</p></div></div><form className="cc-composer cc-cipher-form" onSubmit={sealCipherEntry}><label>ENTRY LABEL<input value={cipherLabel} onChange={e => setCipherLabel(e.target.value)} maxLength={60} placeholder="A short label"/></label><label>PRIVATE CONTENT<textarea value={cipherText} onChange={e => setCipherText(e.target.value)} rows={5} maxLength={12000} required placeholder="Write a private note. It is encrypted before upload."/></label><label>VAULT PASSPHRASE<input type="password" minLength={12} value={cipherPassphrase} onChange={e => setCipherPassphrase(e.target.value)} required placeholder="At least 12 characters"/></label><button className="cc-primary" disabled={busy}>{busy ? 'SEALING…' : 'ENCRYPT & SEAL'} <Lock size={15}/></button></form><div className="cc-admin-section"><h2>Sealed entries</h2>{cipherEntries.length ? cipherEntries.map(entry => <article key={entry.id}><div><strong>{entry.label}</strong><small>SEALED · {dateLabel(entry.created_at)}</small></div><div><button onClick={() => openCipherEntry(entry)}><KeyRound size={13}/> UNSEAL</button><button onClick={() => deleteCipherEntry(entry.id)}><X size={13}/> DELETE</button></div></article>) : <p className="cc-muted">No encrypted entries yet.</p>}{decryptedEntry && <div className="cc-decrypted"><div><strong>UNSEALED CONTENT</strong><button onClick={() => setDecryptedEntry(null)}><X size={14}/></button></div><p>{decryptedEntry.text}</p></div>}</div></>}
       <footer className="cc-main-footer">SECTORX83 / VERIFIED NETWORK <span>QUESTION · PROVE · BUILD</span></footer>
     </section></div>
+    {tourStep !== null && <div className="cc-tour-scrim"><section className="cc-tour-card" role="dialog" aria-modal="true" aria-labelledby="cc-tour-title"><div className="cc-tour-top"><span>SECTORX83 / FIRST VISIT</span><button onClick={finishTour} aria-label="Close tour"><X size={16}/></button></div><div className="cc-tour-progress">{tourSteps.map((_,i)=><i key={i} className={i <= tourStep ? 'is-active' : ''}/>)}</div><p className="cc-kicker">GUIDED INTRODUCTION · 0{tourStep + 1} / 0{tourSteps.length}</p><span className="cc-tour-target">{tourSteps[tourStep].target}</span><h2 id="cc-tour-title">{tourSteps[tourStep].title}</h2><p>{tourSteps[tourStep].body}</p><div className="cc-tour-actions"><button className="cc-tour-skip" onClick={finishTour}>SKIP TOUR</button><div>{tourStep > 0 && <button className="cc-tour-back" onClick={() => setTourStep(step => step === null ? null : Math.max(0,step-1))}><ChevronLeft size={14}/> BACK</button>}<button className="cc-primary" onClick={() => tourStep === tourSteps.length - 1 ? finishTour() : setTourStep(step => step === null ? null : Math.min(tourSteps.length-1,step+1))}>{tourStep === tourSteps.length - 1 ? 'FINISH' : 'NEXT'} <ChevronRight size={14}/></button></div></div></section></div>}
     {selected && <div className="cc-overlay" onClick={e => { if (e.target === e.currentTarget) setSelected(null) }}><section className="cc-thread"><header>DISPATCH RECORD <button onClick={() => setSelected(null)}><X size={17}/></button></header><h2>{selected.title}</h2><p>{selected.body}</p><h3>{comments.length} RESPONSES</h3>{comments.map(c => <article key={c.id}><strong>{c.author?.display_name || 'Member'} <small>@{c.author?.username}</small></strong><p>{c.body}</p><time>{dateLabel(c.created_at)}</time></article>)}{!suspended && <form onSubmit={addComment}><textarea value={comment} onChange={e => setComment(e.target.value)} placeholder="Add evidence. Challenge the argument. Keep it precise." rows={3} required/><button className="cc-primary">POST RESPONSE <MessageCircle size={14}/></button></form>}</section></div>}
     {reporting && <div className="cc-overlay" onClick={e => { if (e.target === e.currentTarget) setReporting(null) }}><section className="cc-thread"><header>NETWORK INTEGRITY / REPORT <button onClick={() => setReporting(null)}><X size={17}/></button></header><h2>Report discussion</h2><p>{reporting.title}</p><textarea rows={4} value={reportReason} onChange={e => setReportReason(e.target.value)} placeholder="Explain what needs moderator attention."/><button className="cc-primary" onClick={submitReport}>SUBMIT REPORT <Flag size={14}/></button></section></div>}
   </main>
