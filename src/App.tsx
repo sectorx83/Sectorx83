@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import type { ReactNode } from 'react'
 import Society from './Society'
 import { ArrowDown, ArrowLeft, ArrowRight, ArrowUpRight, Github, Instagram, Mail, Menu, Moon, Sun, X, ExternalLink, Layers3, Cpu } from 'lucide-react'
@@ -93,14 +93,31 @@ function ScrollGlyph() {
   </svg>
 }
 function Label({ children }: { children: ReactNode }) { return <span className="eyebrow"><span className="eyebrow-dot" />{children}</span> }
-function Brand({ closeMenu }: { closeMenu?: () => void }) {
-  return <a className="brand" href="/" onClick={closeMenu} aria-label="Sectorx83 home"><Mark small /><span>SECTORX83<span className="brand-period">.</span></span></a>
+function Brand({ closeMenu, onSecretTap }: { closeMenu?: () => void; onSecretTap?: () => void }) {
+  return <a className="brand" href="/" onClick={event => { closeMenu?.(); if (onSecretTap) { event.preventDefault(); onSecretTap() } }} aria-label="Sectorx83 home"><Mark small /><span>SECTORX83<span className="brand-period">.</span></span></a>
 }
 function Header({ dark, setDark }: { dark: boolean; setDark: (value: (current: boolean) => boolean) => void }) {
   const [menuOpen, setMenuOpen] = useState(false)
+  const tapState = useRef<{ count: number; timer: number | null }>({ count: 0, timer: null })
   const closeMenu = () => setMenuOpen(false)
+  const handleBrandTap = () => {
+    const state = tapState.current
+    if (state.timer !== null) window.clearTimeout(state.timer)
+    state.count += 1
+    if (state.count >= 7) {
+      state.count = 0
+      state.timer = null
+      window.location.assign('/sectorx83')
+      return
+    }
+    state.timer = window.setTimeout(() => {
+      state.count = 0
+      state.timer = null
+      window.location.assign('/')
+    }, 650)
+  }
   return <header className="topbar">
-    <Brand closeMenu={closeMenu} />
+    <Brand closeMenu={closeMenu} onSecretTap={handleBrandTap} />
     <nav className={menuOpen ? 'nav nav--open' : 'nav'} aria-label="Main navigation">
       <a href="/#about" onClick={closeMenu}>About <span>01</span></a><a href="/#work" onClick={closeMenu}>Work <span>02</span></a><a href="/#building" onClick={closeMenu}>Building <span>03</span></a><a href="/#toolkit" onClick={closeMenu}>Toolkit <span>04</span></a><a href="/#contact" onClick={closeMenu}>Contact <span>05</span></a>
     </nav>
