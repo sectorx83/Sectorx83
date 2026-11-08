@@ -10,7 +10,7 @@ Personal portfolio for **Tyler (@sectorx83)**, built with React, TypeScript, and
 - **Gravity** — adaptive computational runtime exploring live topology evolution.
 - **EDITH X1** — multi-user AI assistant platform with voice and execution tooling.
 
-Project descriptions and status labels are based on the public repository documentation.
+Project descriptions and status labels are based on the public repository documentation. Each featured project has its own detail page under `/projects/<project>/` and a matching documentation directory under `projects/`.
 
 ## Development
 
