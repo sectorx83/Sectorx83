@@ -267,7 +267,7 @@ function App() {
     nodes.forEach((node) => observer.observe(node))
     return () => observer.disconnect()
   }, [path])
-  useEffect(() => { document.title = secretPath ? 'The Comrade Community — Sectorx83' : project ? `${project.name} — Sectorx83` : 'Sectorx83 — Independent developer' }, [project, secretPath])
+  useEffect(() => { document.title = secretPath ? 'Sectorx83 Community' : project ? `${project.name} — Sectorx83` : 'Sectorx83 — Independent developer' }, [project, secretPath])
   return <>
     {loading && <div className="site-loader" role="status" aria-label="Loading Sectorx83">
       <div className="loader-mark"><span>SX</span><i>83</i><b>®</b></div>

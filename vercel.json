@@ -7,6 +7,10 @@
     {
       "source": "/sectorx83",
       "destination": "/index.html"
+    },
+    {
+      "source": "/sectorx83/:path*",
+      "destination": "/index.html"
     }
   ]
 }

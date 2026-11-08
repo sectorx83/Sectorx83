@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState } from 'react'
 import type { FormEvent } from 'react'
 import { Activity, AlertTriangle, ArrowUpRight, Ban, Check, Flag, KeyRound, Lock, LogOut, MessageCircle, Plus, Search, ShieldCheck, Users, X } from 'lucide-react'
 import { supabase } from './lib/supabase'
-import './comrade.css'
+import './sectorx83.css'
 
 type Profile = { id: string; username: string; display_name: string; bio: string | null; created_at: string }
 type Post = { id: string; author_id: string; title: string; body: string; category: string; is_announcement: boolean; created_at: string; author?: { username: string; display_name: string } | null }
@@ -15,13 +15,11 @@ const sections = ['ALL', 'GENERAL', 'DISCUSSION', 'DECLARATIONS', 'ANNOUNCEMENT'
 
 function Crest({ large = false }: { large?: boolean }) {
   return <span className={large ? 'cc-crest cc-crest-large' : 'cc-crest'} aria-hidden="true"><svg viewBox="0 0 100 100" fill="none">
-    <path className="cc-wreath" d="M28 84C12 70 8 48 18 28M72 84c16-14 20-36 10-56M18 28l-8-4m11 16-9-2m10 14-9 1m12 13-8 4m15 9-6 7M82 28l8-4M79 42l9-2m-10 16 9 1M76 70l8 4m-15 9 6 7"/>
-    <path className="cc-star" d="m50 5 3.5 9.5 10 .4-7.8 6.3 2.7 9.7-8.4-5.6-8.4 5.6 2.7-9.7-7.8-6.3 10-.4L50 5Z"/>
-    <circle className="cc-globe" cx="50" cy="55" r="24"/>
-    <path className="cc-globe-lines" d="M26 55h48M50 31c-9 9-9 39 0 48M50 31c9 9 9 39 0 48M32 42c11 6 25 6 36 0M32 68c11-6 25-6 36 0"/>
-    <path className="cc-hammer" d="m36 45 7-7 8 8-7 7-8-8Zm12 5 18 18-4 4-18-18"/>
-    <path className="cc-sickle" d="M57 39c13 2 18 12 15 23-2 7-8 12-16 13 6-4 9-9 9-15 0-8-3-14-8-21Z"/>
-    <path className="cc-ribbon" d="M29 82c12 7 30 7 42 0l-4 10-11-4-6 7-6-7-11 4-4-10Z"/>
+    <path className="cc-frame" d="M50 7 87 28v44L50 93 13 72V28L50 7Z"/>
+    <path className="cc-inner" d="M50 18 76 33v34L50 82 24 67V33L50 18Z"/>
+    <path className="cc-lines" d="M50 26v48M28 50h44"/>
+    <circle className="cc-star" cx="50" cy="50" r="7"/>
+    <path className="cc-tools" d="M35 37h30M35 63h30"/>
   </svg></span>
 }
 
@@ -70,7 +68,9 @@ export default function Society() {
   useEffect(() => {
     if (!supabase) { setReady(true); return }
     let active = true
-    supabase.auth.getSession().then(({ data }) => { if (active) { setSession(data.session); setReady(true) } })
+    supabase.auth.getSession()
+      .then(({ data }) => { if (active) { setSession(data.session); setReady(true) } })
+      .catch((e: any) => { if (active) { setError(e?.message || 'Unable to restore your session.'); setReady(true) } })
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, next) => { if (active) { setSession(next); setError(''); setNotice('') } })
     return () => { active = false; subscription.unsubscribe() }
   }, [])
@@ -87,20 +87,26 @@ export default function Society() {
         supabase!.from('cipher_vault').select('id,label,ciphertext,iv,salt,created_at').eq('owner_id', session.user.id).order('created_at', { ascending: false }),
       ])
       if (!active) return
-      if (p.data) { setProfile(p.data as Profile); setDisplayName(p.data.display_name || ''); setProfileBio(p.data.bio || '') }
+      const loadError = [p.error, f.error, m.error, b.error, v.error].find(Boolean)
+      if (loadError) throw new Error(loadError.message)
+      if (!p.data) throw new Error('Your member profile is missing. Confirm your account and verify that the Sectorx83 database migrations have been applied.')
+      setProfile(p.data as Profile); setDisplayName(p.data.display_name || ''); setProfileBio(p.data.bio || '')
       if (f.data) setPosts(f.data as unknown as Post[])
       if (m.data) setMembers(m.data as Profile[])
       if (b.data) setBanned(b.data.map((x: any) => x.user_id))
       if (v.data) setCipherEntries(v.data as CipherEntry[]);
 
       if (moderator) {
-        const [r, a] = await Promise.all([
-          supabase!.from('reports').select('id,reason,status,created_at,reporter:profiles!reports_reporter_id_fkey(username),post:posts!reports_post_id_fkey(title)').order('created_at', { ascending: false }),
-          supabase!.functions.invoke('manage-member-role', { body: { action: 'list' } }),
-        ])
+        const { data: reportData, error: reportError } = await supabase!.from('reports').select('id,reason,status,created_at,reporter:profiles!reports_reporter_id_fkey(username),post:posts!reports_post_id_fkey(title)').order('created_at', { ascending: false })
         if (!active) return
-        if (r.data) setReports(r.data as unknown as Report[])
-        if (a.data?.users) setRoles(a.data.users as Role[])
+        if (reportError) throw reportError
+        if (reportData) setReports(reportData as unknown as Report[])
+        if (admin) {
+          const { data: roleData, error: roleError } = await supabase!.functions.invoke('manage-member-role', { body: { action: 'list' } })
+          if (!active) return
+          if (roleError || roleData?.error) throw new Error(roleError?.message || roleData.error)
+          if (roleData?.users) setRoles(roleData.users as Role[])
+        }
       }
     }
     load().catch(e => { if (active) setError(e.message || 'Unable to load community data.') })
@@ -125,7 +131,7 @@ export default function Society() {
         const { data, error: e1 } = await supabase.auth.signUp({ email, password, options: { data: { username: username.trim().toLowerCase(), display_name: displayName.trim() } } })
         if (e1) throw e1
         if (!data.session) setNotice('Registration received. Confirm your email, then sign in.')
-        else setNotice('Membership created. Welcome to the assembly.')
+        else setNotice('Your Sectorx83 membership is ready.')
       } else {
         const { error: e1 } = await supabase.auth.signInWithPassword({ email, password })
         if (e1) throw e1
@@ -136,7 +142,8 @@ export default function Society() {
 
   async function refreshPosts() {
     if (!supabase) return
-    const { data } = await supabase.from('posts').select('id,author_id,title,body,category,is_announcement,created_at,author:profiles!posts_author_id_fkey(username,display_name)').order('is_announcement', { ascending: false }).order('created_at', { ascending: false }).limit(100)
+    const { data, error: refreshError } = await supabase.from('posts').select('id,author_id,title,body,category,is_announcement,created_at,author:profiles!posts_author_id_fkey(username,display_name)').order('is_announcement', { ascending: false }).order('created_at', { ascending: false }).limit(100)
+    if (refreshError) { setError(refreshError.message); return }
     if (data) setPosts(data as unknown as Post[])
   }
 
@@ -219,7 +226,7 @@ export default function Society() {
         ciphertext: toBase64(new Uint8Array(encrypted)), iv: toBase64(iv), salt: toBase64(salt),
       }).select('id,label,ciphertext,iv,salt,created_at').single()
       if (e1) throw e1
-      setCipherEntries(old => [data as CipherEntry, ...old]); setCipherLabel(''); setCipherText(''); setNotice('Encrypted entry sealed. Your passphrase was not saved.')
+      setCipherEntries(old => [data as CipherEntry, ...old]); setCipherLabel(''); setCipherText(''); setCipherPassphrase(''); setNotice('Encrypted entry sealed. Your passphrase was not saved.')
     } catch (e: any) { setError(e.message || 'Unable to encrypt this entry.') }
     finally { setBusy(false) }
   }
@@ -230,6 +237,7 @@ export default function Society() {
       const key = await deriveVaultKey(cipherPassphrase, fromBase64(entry.salt))
       const plaintext = await crypto.subtle.decrypt({ name: 'AES-GCM', iv: asArrayBuffer(fromBase64(entry.iv)) }, key, asArrayBuffer(fromBase64(entry.ciphertext)))
       setDecryptedEntry({ id: entry.id, text: new TextDecoder().decode(plaintext) })
+      setCipherPassphrase('')
     } catch { setError('That passphrase did not unlock this entry. Nothing was changed.') }
   }
   async function deleteCipherEntry(id: string) {
@@ -240,24 +248,24 @@ export default function Society() {
   }
 
   if (!ready) return <main className="cc-shell cc-loading"><Crest large/><span>INITIALIZING THE CHAMBER</span><i/></main>
-  if (!supabase) return <main className="cc-shell cc-entry"><header className="cc-header"><a className="cc-brand" href="/"><Crest/>SECTORX83</a><a href="/">SECTORX83 ↗</a></header><section className="cc-entry-hero"><Crest large/><p className="cc-kicker">COMMUNITY CONFIGURATION REQUIRED</p><h1>The assembly<br/><em>is not connected.</em></h1><p>Add the community Supabase URL and publishable key to Vercel. Setup instructions are included in the repository.</p><a href="https://github.com/sectorx83/Sectorx83/blob/main/COMRADE_SETUP.md">OPEN SETUP GUIDE ↗</a></section></main>
+  if (!supabase) return <main className="cc-shell cc-entry"><header className="cc-header"><a className="cc-brand" href="/"><Crest/>SECTORX83</a><a href="/">SECTORX83 ↗</a></header><section className="cc-entry-hero"><Crest large/><p className="cc-kicker">NETWORK CONFIGURATION REQUIRED</p><h1>The network<br/><em>is not connected.</em></h1><p>Add the Sectorx83 Supabase URL and publishable key to Vercel. Setup instructions are included in the repository.</p><a href="https://github.com/sectorx83/Sectorx83/blob/main/SECTORX83_SETUP.md">OPEN SECTORX83 SETUP GUIDE ↗</a></section></main>
 
   if (!session) return <main className="cc-shell cc-entry">
     <div className="cc-grid-bg"/>
-    <header className="cc-header"><a className="cc-brand" href="/"><Crest/><span>SECTORX83<small>SECTORX83 / MEMBERSHIP ACCESS</small></span></a><a className="cc-back" href="/">RETURN TO SECTORX83 ↗</a></header>
-    <section className="cc-entry-layout"><div className="cc-manifesto"><p className="cc-kicker">THE ORDER / 01</p><h1>Bound by<br/>purpose.<br/><em>Built on trust.</em></h1><p>A private circle for disciplined thought, shared principles, quiet collaboration and the exchange of ideas among its members.</p><div className="cc-manifesto-foot">MEMBERSHIP ACCESS <i/> PRIVATE CORRESPONDENCE</div><div className="cc-emblem"><Crest large/><span>UNITY · DUTY · SOLIDARITY</span></div></div>
+    <header className="cc-header"><a className="cc-brand" href="/"><Crest/><span>SECTORX83<small>PRIVATE MEMBER NETWORK</small></span></a><a className="cc-back" href="/">RETURN TO SECTORX83 ↗</a></header>
+    <section className="cc-entry-layout"><div className="cc-manifesto"><p className="cc-kicker">SECTORX83 / 01</p><h1>Bound by<br/>purpose.<br/><em>Built on trust.</em></h1><p>A private member network for thoughtful discussion, shared work, quiet collaboration and the exchange of ideas.</p><div className="cc-manifesto-foot">MEMBER ACCESS <i/> COMMUNITY DISCUSSIONS</div><div className="cc-emblem"><Crest large/><span>BUILD · SHARE · IMPROVE</span></div></div>
       <section className="cc-auth-panel"><p className="cc-kicker">MEMBERSHIP / 00</p><h2>{mode === 'join' ? 'Enter the circle.' : 'Welcome back.'}</h2><p className="cc-subtitle">{mode === 'join' ? 'Create your membership record.' : 'Sign in to continue to the community.'}</p><div className="cc-mode"><button className={mode === 'join' ? 'active' : ''} onClick={() => { setMode('join'); setError(''); setNotice('') }}>CREATE ACCOUNT</button><button className={mode === 'signin' ? 'active' : ''} onClick={() => { setMode('signin'); setError(''); setNotice('') }}>SIGN IN</button></div>
       <form onSubmit={auth} className="cc-form">{mode === 'join' && <><label>DISPLAY NAME<input required maxLength={48} value={displayName} onChange={e => setDisplayName(e.target.value)} placeholder="How members will see you"/></label><label>USERNAME<input required minLength={3} maxLength={24} value={username} onChange={e => setUsername(e.target.value.replace(/[^a-zA-Z0-9_]/g,''))} placeholder="Choose a username"/></label></>}
       <label>EMAIL ADDRESS<input required type="email" value={email} onChange={e => setEmail(e.target.value)} placeholder="you@example.com"/></label><label>PASSWORD<input required minLength={8} type="password" value={password} onChange={e => setPassword(e.target.value)} placeholder="At least 8 characters"/></label>
       {error && <p className="cc-error"><AlertTriangle size={14}/>{error}</p>}{notice && <p className="cc-notice"><Check size={14}/>{notice}</p>}
-      <button className="cc-primary" disabled={busy}>{busy ? 'PLEASE WAIT…' : mode === 'join' ? 'REQUEST MEMBERSHIP' : 'ENTER COMMUNITY'} <ArrowUpRight size={16}/></button></form><small className="cc-auth-note">DISCRETION · INTEGRITY · SOLIDARITY</small></section>
-    </section><footer className="cc-footer"><span>THE ORDER</span><span>MEMBERSHIP / AUTHENTICATED ACCESS</span><span>SECTORX83 © {new Date().getFullYear()}</span></footer>
+      <button className="cc-primary" disabled={busy}>{busy ? 'PLEASE WAIT…' : mode === 'join' ? 'REQUEST MEMBERSHIP' : 'ENTER COMMUNITY'} <ArrowUpRight size={16}/></button></form><small className="cc-auth-note">CURIOSITY · TRUST · BUILDING</small></section>
+    </section><footer className="cc-footer"><span>SECTORX83</span><span>MEMBERSHIP / AUTHENTICATED ACCESS</span><span>SECTORX83 © {new Date().getFullYear()}</span></footer>
   </main>
 
   return <main className="cc-shell cc-community">
-    <header className="cc-header cc-header-inside"><a className="cc-brand" href="/sectorx83"><Crest/><span>THE ORDER<small>PRIVATE CIRCLE / MEMBER NETWORK</small></span></a><div className="cc-user"><span>{profile?.display_name || session.user.email}<small>@{profile?.username || 'member'} · {role.toUpperCase()}</small></span><button onClick={() => { if (supabase) void supabase.auth.signOut() }} aria-label="Sign out"><LogOut size={16}/></button></div></header>
-    <div className="cc-layout"><aside className="cc-sidebar"><small>THE ORDER / NAVIGATION</small>{nav.map(item => { const Icon = item.icon; return <button key={item.id} className={tab === item.id ? 'active' : ''} onClick={() => { setTab(item.id); setSelected(null); setError(''); setNotice('') }}><Icon size={16}/>{item.label}</button> })}<div className="cc-principle"><Crest/><small>COMMUNITY PRINCIPLE</small><strong>Disagreement is welcome. Disrespect is not.</strong><p>Challenge ideas with evidence. Treat members as people.</p></div><div className="cc-side-meta">ACCESS / {role.toUpperCase()}<br/>NETWORK / PUBLIC</div></aside>
-    <section className="cc-main"><div className="cc-crumb">THE ORDER <b>/</b> {nav.find(x => x.id === tab)?.label.toUpperCase()}</div>
+    <header className="cc-header cc-header-inside"><a className="cc-brand" href="/sectorx83"><Crest/><span>SECTORX83<small>PRIVATE MEMBER NETWORK</small></span></a><div className="cc-user"><span>{profile?.display_name || session.user.email}<small>@{profile?.username || 'member'} · {role.toUpperCase()}</small></span><button onClick={() => { if (supabase) void supabase.auth.signOut() }} aria-label="Sign out"><LogOut size={16}/></button></div></header>
+    <div className="cc-layout"><aside className="cc-sidebar"><small>SECTORX83 / NAVIGATION</small>{nav.map(item => { const Icon = item.icon; return <button key={item.id} className={tab === item.id ? 'active' : ''} onClick={() => { setTab(item.id); setSelected(null); setError(''); setNotice('') }}><Icon size={16}/>{item.label}</button> })}<div className="cc-principle"><Crest/><small>COMMUNITY PRINCIPLE</small><strong>Disagreement is welcome. Disrespect is not.</strong><p>Challenge ideas with evidence. Treat members as people.</p></div><div className="cc-side-meta">ACCESS / {role.toUpperCase()}<br/>NETWORK / MEMBERS</div></aside>
+    <section className="cc-main"><div className="cc-crumb">SECTORX83 <b>/</b> {nav.find(x => x.id === tab)?.label.toUpperCase()}</div>
       {(error || notice) && <div className={error ? 'cc-alert is-error' : 'cc-alert'}>{error || notice}<button onClick={() => { setError(''); setNotice('') }}><X size={14}/></button></div>}
       {suspended && <div className="cc-alert is-error">Your account is suspended from posting and commenting. Contact an administrator if this is a mistake.</div>}
       {tab === 'feed' && <><div className="cc-heading"><div><p className="cc-kicker">THE CHAMBER / 01</p><h1>A circle <em>of purpose.</em></h1><p>Private correspondence, shared principles and the work entrusted to the circle.</p></div><Crest large/></div>
@@ -275,9 +283,9 @@ export default function Society() {
         <section className="cc-admin-section"><h2>Security posture</h2><div className="cc-security-grid"><article><Lock size={18}/><strong>TLS in transit</strong><small>Connections are protected in transit.</small></article><article><ShieldCheck size={18}/><strong>Encrypted database</strong><small>Managed storage encryption at rest.</small></article><article><KeyRound size={18}/><strong>AES-256-GCM vault</strong><small>Private entries are encrypted in the browser before upload.</small></article></div><p className="cc-muted">The vault is client-side encrypted. Feed posts and comments are not end-to-end encrypted.</p></section>
       </>}
       {tab === 'cipher' && <><div className="cc-heading"><div><p className="cc-kicker">PRIVATE STORAGE / 04</p><h1>The <em>cipher vault.</em></h1><p>Seal personal dispatches in your browser before they reach the database.</p></div><Lock size={34}/></div><div className="cc-cipher-explainer"><Lock size={18}/><div><strong>AES-256-GCM · PBKDF2-SHA-256</strong><p>Each entry gets a fresh random salt and IV. Your passphrase is never stored. Losing it means the entry cannot be recovered. These entries are private to your account; this is not group end-to-end encryption.</p></div></div><form className="cc-composer cc-cipher-form" onSubmit={sealCipherEntry}><label>ENTRY LABEL<input value={cipherLabel} onChange={e => setCipherLabel(e.target.value)} maxLength={60} placeholder="A short label"/></label><label>PRIVATE CONTENT<textarea value={cipherText} onChange={e => setCipherText(e.target.value)} rows={5} maxLength={12000} required placeholder="Write a private note. It is encrypted before upload."/></label><label>VAULT PASSPHRASE<input type="password" minLength={12} value={cipherPassphrase} onChange={e => setCipherPassphrase(e.target.value)} required placeholder="At least 12 characters"/></label><button className="cc-primary" disabled={busy}>{busy ? 'SEALING…' : 'ENCRYPT & SEAL'} <Lock size={15}/></button></form><div className="cc-admin-section"><h2>Sealed entries</h2>{cipherEntries.length ? cipherEntries.map(entry => <article key={entry.id}><div><strong>{entry.label}</strong><small>SEALED · {dateLabel(entry.created_at)}</small></div><div><button onClick={() => openCipherEntry(entry)}><KeyRound size={13}/> UNSEAL</button><button onClick={() => deleteCipherEntry(entry.id)}><X size={13}/> DELETE</button></div></article>) : <p className="cc-muted">No encrypted entries yet.</p>}{decryptedEntry && <div className="cc-decrypted"><div><strong>UNSEALED CONTENT</strong><button onClick={() => setDecryptedEntry(null)}><X size={14}/></button></div><p>{decryptedEntry.text}</p></div>}</div></>}
-      <footer className="cc-main-footer">SECTORX83 / PRIVATE CIRCLE <span>DISCRETION · INTEGRITY · SOLIDARITY</span></footer>
+      <footer className="cc-main-footer">SECTORX83 / MEMBER NETWORK <span>CURIOSITY · TRUST · BUILDING</span></footer>
     </section></div>
     {selected && <div className="cc-overlay" onClick={e => { if (e.target === e.currentTarget) setSelected(null) }}><section className="cc-thread"><header>CHAMBER THREAD <button onClick={() => setSelected(null)}><X size={17}/></button></header><h2>{selected.title}</h2><p>{selected.body}</p><h3>{comments.length} RESPONSES</h3>{comments.map(c => <article key={c.id}><strong>{c.author?.display_name || 'Member'} <small>@{c.author?.username}</small></strong><p>{c.body}</p><time>{dateLabel(c.created_at)}</time></article>)}{!suspended && <form onSubmit={addComment}><textarea value={comment} onChange={e => setComment(e.target.value)} placeholder="Add a thoughtful response…" rows={3} required/><button className="cc-primary">POST RESPONSE <MessageCircle size={14}/></button></form>}</section></div>}
-    {reporting && <div className="cc-overlay" onClick={e => { if (e.target === e.currentTarget) setReporting(null) }}><section className="cc-thread"><header>ORDER SECURITY / REPORT <button onClick={() => setReporting(null)}><X size={17}/></button></header><h2>Report discussion</h2><p>{reporting.title}</p><textarea rows={4} value={reportReason} onChange={e => setReportReason(e.target.value)} placeholder="Explain what needs moderator attention."/><button className="cc-primary" onClick={submitReport}>SUBMIT REPORT <Flag size={14}/></button></section></div>}
+    {reporting && <div className="cc-overlay" onClick={e => { if (e.target === e.currentTarget) setReporting(null) }}><section className="cc-thread"><header>COMMUNITY SAFETY / REPORT <button onClick={() => setReporting(null)}><X size={17}/></button></header><h2>Report discussion</h2><p>{reporting.title}</p><textarea rows={4} value={reportReason} onChange={e => setReportReason(e.target.value)} placeholder="Explain what needs moderator attention."/><button className="cc-primary" onClick={submitReport}>SUBMIT REPORT <Flag size={14}/></button></section></div>}
   </main>
 }

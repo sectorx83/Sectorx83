@@ -53,3 +53,7 @@ Create a production build with npm run build. The generated output is in the dis
 - Uses responsive layouts and a reduced 3D canvas pixel ratio.
 - The WebGL scene is decorative and does not block navigation or content.
 - No remote video is required for the hero experience.
+
+## Sectorx83 community
+
+The private member network is available at [sectorx83.vercel.app/sectorx83](https://sectorx83.vercel.app/sectorx83). It runs as a separate application route inside this Vercel project and uses its own Supabase backend, separate from EDITH X1. See [SECTORX83_SETUP.md](./SECTORX83_SETUP.md) for database migrations, authentication, administrator setup and security checks.
