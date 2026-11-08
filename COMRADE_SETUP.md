@@ -22,7 +22,7 @@ Use the community project's URL and publishable key. Never expose a service-role
 Deploy supabase/functions/manage-member-role/index.ts as manage-member-role with JWT verification enabled. Set these function secrets:
 
 - SUPABASE_URL
-- SUPABASE_ANON_KEY
+- SUPABASE_PUBLISHABLE_KEY
 - SUPABASE_SERVICE_ROLE_KEY
 - APP_ORIGIN=https://sectorx83.vercel.app
 
