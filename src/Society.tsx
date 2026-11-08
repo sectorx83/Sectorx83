@@ -22,6 +22,51 @@ function Crest({ large = false }: { large?: boolean }) {
   </svg></span>
 }
 
+function Themis({ large = false }: { large?: boolean }) {
+  return <span className={large ? 'cc-themis cc-themis-large' : 'cc-themis'} role="img" aria-label="Themis, Lady Justice, holding balanced scales">
+    <svg viewBox="0 0 240 280" fill="none" aria-hidden="true">
+      <defs>
+        <linearGradient id="themis-gold" x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0" stopColor="#f2dfaa"/><stop offset=".48" stopColor="#b08a45"/><stop offset="1" stopColor="#725326"/>
+        </linearGradient>
+        <linearGradient id="themis-ivory" x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0" stopColor="#f0e7d2"/><stop offset="1" stopColor="#a99a7d"/>
+        </linearGradient>
+      </defs>
+      <circle className="themis-halo" cx="120" cy="128" r="105"/>
+      <path className="themis-ornament" d="M29 242V38h182v204M39 232V48h162v184M29 57h12M199 57h12M29 223h12M199 223h12"/>
+      <path className="themis-ornament" d="m120 12 5 10 11 2-8 8 2 11-10-5-10 5 2-11-8-8 11-2 5-10Z"/>
+      <path className="themis-hair" d="M96 61c-4-23 8-38 25-38 21 0 31 17 25 41l-8 26H99l-3-29Z"/>
+      <path className="themis-skin" d="M104 51c0-15 7-23 17-23s18 8 18 23v19c0 15-9 25-18 25s-17-10-17-25V51Z"/>
+      <path className="themis-blindfold" d="M101 53c11 4 27 4 42 0l-2 9c-13 5-26 5-38 0l-2-9Z"/>
+      <path className="themis-hair" d="M103 40c-8 13-8 32-4 47l-9-9c-5-24-1-47 14-57M137 37c11 13 12 32 7 51l9-10c5-23-2-44-15-55"/>
+      <path className="themis-skin" d="M112 92h18v19h-18z"/>
+      <path className="themis-robe" d="m108 105 12 9 12-9 17 14 15 86-44 24-44-24 15-86 17-14Z"/>
+      <path className="themis-robe-fold" d="m108 109-12 38 17 24-19 58M132 109l12 38-17 24 19 58M120 114v113M89 128l31 26 31-26"/>
+      <path className="themis-arm" d="m108 112-37-21-11 5 6 10 47 22M132 112l37-21 11 5-6 10-47 22"/>
+      <path className="themis-gold-stroke" d="M120 84v27M57 95h126"/>
+      <g className="themis-scale-beam">
+        <path d="M59 91h122M120 78l-8 13h16l-8-13Z"/>
+        <circle cx="120" cy="91" r="4"/>
+      </g>
+      <g className="themis-scale-left">
+        <path d="M68 94 58 135M68 94l12 41M58 135h22"/>
+        <path d="M48 136q22 25 44 0" />
+        <path d="M49 136h42"/>
+      </g>
+      <g className="themis-scale-right">
+        <path d="M172 94 162 135M172 94l12 41M162 135h22"/>
+        <path d="M152 136q22 25 44 0"/>
+        <path d="M153 136h42"/>
+      </g>
+      <path className="themis-sword" d="m184 119 8 8-33 91-8 8 1-12 32-95Z"/>
+      <path className="themis-sword-hilt" d="m176 116 13 13M170 121l13 13"/>
+      <path className="themis-base" d="M74 246h92M88 253h64M101 260h38"/>
+      <path className="themis-gold-stroke themis-highlight" d="M42 70h8M190 70h8M42 205h8M190 205h8"/>
+    </svg>
+  </span>
+}
+
 export default function Society() {
   const [session, setSession] = useState<any>(null)
   const [ready, setReady] = useState(false)
@@ -37,6 +82,9 @@ export default function Society() {
   const [comments, setComments] = useState<Comment[]>([])
   const [reports, setReports] = useState<Report[]>([])
   const [roles, setRoles] = useState<Role[]>([])
+  const [rolesLoading, setRolesLoading] = useState(false)
+  const [adminRefreshing, setAdminRefreshing] = useState(false)
+  const [roleLoadError, setRoleLoadError] = useState('')
   const [banned, setBanned] = useState<string[]>([])
   const [tab, setTab] = useState('feed')
   const [category, setCategory] = useState('ALL')
@@ -101,10 +149,21 @@ export default function Society() {
         if (reportError) throw reportError
         if (reportData) setReports(reportData as unknown as Report[])
         if (admin) {
+          setRolesLoading(true)
           const { data: roleData, error: roleError } = await supabase!.functions.invoke('manage-member-role', { body: { action: 'list' } })
           if (!active) return
-          if (roleError || roleData?.error) throw new Error(roleError?.message || roleData.error)
-          if (roleData?.users) setRoles(roleData.users as Role[])
+          if (roleError || roleData?.error) {
+            setRoleLoadError(roleError?.message || roleData.error)
+          } else {
+            const normalizedRoles = (roleData?.users || []).map((user: any) => ({
+              id: user.id || user.user_id,
+              email: user.email ?? null,
+              role: user.role || user.app_metadata?.role || 'member',
+            })).filter((user: Role) => !!user.id)
+            setRoles(normalizedRoles)
+            setRoleLoadError('')
+          }
+          setRolesLoading(false)
         }
       }
     }
@@ -188,6 +247,38 @@ export default function Society() {
     else setRoles(old => old.map(x => x.id === id ? { ...x, role: next } : x))
   }
 
+  async function refreshAdminPanel() {
+    if (!supabase || !session || !moderator) return
+    setAdminRefreshing(true); setError(''); setRoleLoadError('')
+    try {
+      const [memberResult, postResult, banResult, reportResult] = await Promise.all([
+        supabase.from('profiles').select('*').order('created_at', { ascending: false }).limit(200),
+        supabase.from('posts').select('id,author_id,title,body,category,is_announcement,created_at,author:profiles!posts_author_id_fkey(username,display_name)').order('is_announcement', { ascending: false }).order('created_at', { ascending: false }).limit(100),
+        supabase.from('banned_members').select('user_id'),
+        supabase.from('reports').select('id,reason,status,created_at,reporter:profiles!reports_reporter_id_fkey(username),post:posts!reports_post_id_fkey(title)').order('created_at', { ascending: false }),
+      ])
+      const firstError = [memberResult.error, postResult.error, banResult.error, reportResult.error].find(Boolean)
+      if (firstError) throw firstError
+      setMembers((memberResult.data || []) as Profile[])
+      setPosts((postResult.data || []) as unknown as Post[])
+      setBanned((banResult.data || []).map((row: any) => row.user_id))
+      setReports((reportResult.data || []) as unknown as Report[])
+      if (admin) {
+        setRolesLoading(true)
+        const { data, error: fnError } = await supabase.functions.invoke('manage-member-role', { body: { action: 'list' } })
+        if (fnError || data?.error) throw new Error(fnError?.message || data.error)
+        setRoles((data?.users || []).map((user: any) => ({
+          id: user.id || user.user_id, email: user.email ?? null,
+          role: user.role || user.app_metadata?.role || 'member',
+        })).filter((user: Role) => !!user.id))
+      }
+      setNotice('Command Desk data refreshed.')
+    } catch (e: any) {
+      setError(e.message || 'Unable to refresh Command Desk data.')
+      if (admin) setRoleLoadError(e.message || 'Role directory unavailable.')
+    } finally { setRolesLoading(false); setAdminRefreshing(false) }
+  }
+
   async function reviewReport(id: string, status: string) {
     if (!supabase || !moderator) return
     const { error: e1 } = await supabase.from('reports').update({ status, reviewed_by: session.user.id, reviewed_at: new Date().toISOString() }).eq('id', id)
@@ -252,7 +343,7 @@ export default function Society() {
   if (!session) return <main className="cc-shell cc-entry">
     <div className="cc-grid-bg"/>
     <header className="cc-header"><a className="cc-brand" href="/"><Crest/><span>SECTORX83<small>PRIVATE MEMBER NETWORK</small></span></a><a className="cc-back" href="/">RETURN TO SECTORX83 ↗</a></header>
-    <section className="cc-entry-layout"><div className="cc-manifesto"><p className="cc-kicker">SECTORX83 / THE DIRECTIVE</p><h1>No spectators.<br/>No empty words.<br/><em>Only the work.</em></h1><p>A private network for minds that question, builders who execute, and members who stand behind what they say. Access is earned. Trust is maintained. Every idea must withstand scrutiny.</p><div className="cc-manifesto-foot">IDENTITY <i/> AUTHORITY <i/> ACCOUNTABILITY</div><div className="cc-emblem"><Crest large/><span>QUESTION · PROVE · BUILD</span></div></div>
+    <section className="cc-entry-layout"><div className="cc-manifesto"><p className="cc-kicker">SECTORX83 / THE DIRECTIVE</p><h1>No spectators.<br/>No empty words.<br/><em>Only the work.</em></h1><p>A private network for minds that question, builders who execute, and members who stand behind what they say. Access is earned. Trust is maintained. Every idea must withstand scrutiny.</p><div className="cc-manifesto-foot">IDENTITY <i/> AUTHORITY <i/> ACCOUNTABILITY</div><div className="cc-emblem"><Themis large/><span>THEMIS / EQUITY · BALANCE · ACCOUNTABILITY</span></div></div>
       <section className="cc-auth-panel"><p className="cc-kicker">ACCESS CONTROL / 00</p><h2>{mode === 'join' ? 'Establish your record.' : 'Your presence is expected.'}</h2><p className="cc-subtitle">{mode === 'join' ? 'Register your identity. Your account remains subject to the rules of the network.' : 'Verify your identity. Proceed only with authorised credentials.'}</p><div className="cc-mode"><button className={mode === 'join' ? 'active' : ''} onClick={() => { setMode('join'); setError(''); setNotice('') }}>CREATE ACCOUNT</button><button className={mode === 'signin' ? 'active' : ''} onClick={() => { setMode('signin'); setEmail('9562230818@gmail.com'); setError(''); setNotice('') }}>SIGN IN</button></div>
       <form onSubmit={auth} className="cc-form">{mode === 'join' && <><label>DISPLAY NAME<input required maxLength={48} value={displayName} onChange={e => setDisplayName(e.target.value)} placeholder="Name displayed on the record"/></label><label>USERNAME<input required minLength={3} maxLength={24} value={username} onChange={e => setUsername(e.target.value.replace(/[^a-zA-Z0-9_]/g,''))} placeholder="Choose your public identifier"/></label></>}
       <label>EMAIL ADDRESS<input required type="email" value={email} onChange={e => setEmail(e.target.value)} placeholder="Registered email address"/></label><label>PASSWORD<input required minLength={8} type="password" value={password} onChange={e => setPassword(e.target.value)} placeholder="Enter your account password"/></label>
@@ -276,9 +367,9 @@ export default function Society() {
       {tab === 'members' && <><div className="cc-heading"><div><p className="cc-kicker">THE REGISTER / 02</p><h1>The <em>register.</em></h1><p>Every identity is recorded. Every member is accountable for their conduct.</p></div><strong className="cc-count">{members.length.toString().padStart(2,'0')}<small>MEMBERS</small></strong></div><label className="cc-search cc-member-search"><Search size={14}/><input value={search} onChange={e => setSearch(e.target.value)} placeholder="Search the register"/></label><div className="cc-members">{members.filter(m => (m.display_name + m.username).toLowerCase().includes(search.toLowerCase())).map(m => <article key={m.id}><i>{m.display_name.slice(0,1).toUpperCase()}</i><div><strong>{m.display_name}</strong><span>@{m.username}</span><small>MEMBER · JOINED {new Date(m.created_at).toLocaleDateString()}</small>{m.bio && <p>{m.bio}</p>}</div></article>)}</div></>}
       {tab === 'profile' && <><div className="cc-heading"><div><p className="cc-kicker">IDENTITY RECORD / 03</p><h1>Your <em>record.</em></h1><p>Keep your public identity accurate. Your actions remain your responsibility.</p></div></div><form className="cc-composer cc-profile" onSubmit={saveProfile}><label>DISPLAY NAME<input value={displayName} onChange={e => setDisplayName(e.target.value)} maxLength={48} required/></label><label>ABOUT YOU<textarea rows={4} maxLength={240} value={profileBio} onChange={e => setProfileBio(e.target.value)} placeholder="A short introduction (optional)"/></label><button className="cc-primary">SAVE PROFILE <Check size={15}/></button></form></>}
       {tab === 'admin' && !moderator && <div className="cc-heading"><div><p className="cc-kicker">RESTRICTED ACCESS / 05</p><h1>Command <em>desk.</em></h1><p>Restricted authority. Your verified role does not grant permission to enter this command level.</p></div><Lock size={34}/></div>}
-      {tab === 'admin' && moderator && <><div className="cc-heading"><div><p className="cc-kicker">RESTRICTED ACCESS / 05</p><h1>The <em>council.</em></h1><p>Review violations. Govern access. Preserve the integrity of the network. Every exercise of authority must be justified.</p></div><ShieldCheck size={34}/></div><div className="cc-admin-stats"><div><strong>{members.length}</strong><small>MEMBERS</small></div><div><strong>{posts.length}</strong><small>POSTS</small></div><div><strong>{reports.filter(r => r.status === 'open').length}</strong><small>OPEN REPORTS</small></div><div><strong>{banned.length}</strong><small>SUSPENDED</small></div></div>
+      {tab === 'admin' && moderator && <><div className="cc-heading"><div><p className="cc-kicker">RESTRICTED ACCESS / 05</p><h1>The <em>council.</em></h1><p>Review violations. Govern access. Preserve the integrity of the network. Every exercise of authority must be justified.</p><p className="cc-admin-identity">AUTHENTICATED AS {session.user.email || 'VERIFIED ADMINISTRATOR'} · {role.toUpperCase()}</p></div><Themis large/></div><div className="cc-admin-toolbar"><span>COMMAND STATUS / {rolesLoading ? 'SYNCING DIRECTORY' : 'LIVE SESSION'}</span><button onClick={refreshAdminPanel} disabled={adminRefreshing}>{adminRefreshing ? 'REFRESHING…' : 'REFRESH COMMAND DATA'} <Activity size={14}/></button></div>{roleLoadError && <div className="cc-alert is-error">Role directory unavailable: {roleLoadError}</div>}{rolesLoading && <div className="cc-muted">Synchronising member privileges…</div>}<div className="cc-admin-stats"><div><strong>{members.length}</strong><small>MEMBERS</small></div><div><strong>{posts.length}</strong><small>POSTS</small></div><div><strong>{reports.filter(r => r.status === 'open').length}</strong><small>OPEN REPORTS</small></div><div><strong>{banned.length}</strong><small>SUSPENDED</small></div></div>
         <section className="cc-admin-section"><h2>Cases awaiting judgment</h2>{reports.length ? reports.map(r => <article key={r.id}><div><small>{r.status.toUpperCase()} · @{r.reporter?.username || 'member'}</small><strong>{r.post?.title || 'Reported comment'}</strong><p>{r.reason}</p></div><div><button onClick={() => reviewReport(r.id,'reviewed')}>REVIEWED</button><button onClick={() => reviewReport(r.id,'resolved')}>RESOLVE</button></div></article>) : <p className="cc-muted">No reports are waiting for review.</p>}</section>
-        <section className="cc-admin-section"><h2>Access and rank</h2>{members.map(m => { const r = roles.find(x => x.id === m.id)?.role || 'member'; return <article key={m.id}><div><strong>{m.display_name}</strong><small>@{m.username} · {banned.includes(m.id) ? 'SUSPENDED' : 'ACTIVE'}</small></div><div className="cc-admin-controls"><select value={r} disabled={!admin || m.id === session.user.id} onChange={e => changeRole(m.id,e.target.value)}><option value="member">MEMBER</option><option value="moderator">MODERATOR</option><option value="admin">ADMIN</option></select>{banned.includes(m.id) ? <button disabled={!admin || m.id === session.user.id} onClick={() => banMember(m.id,false)}>UNBAN</button> : <button disabled={!admin || m.id === session.user.id} onClick={() => banMember(m.id,true)}><Ban size={13}/> BAN</button>}</div></article>})}</section>
+        <section className="cc-admin-section"><h2>Access and rank</h2>{members.map(m => { const matchedRole = roles.find(x => x.id === m.id); const r = matchedRole?.role || 'member'; return <article key={m.id}><div><strong>{m.display_name}</strong><small>@{m.username} · {matchedRole?.email || 'EMAIL NOT RETURNED'} · {banned.includes(m.id) ? 'SUSPENDED' : 'ACTIVE'}</small></div><div className="cc-admin-controls"><select value={r} disabled={!admin || rolesLoading || !!roleLoadError || m.id === session.user.id} onChange={e => changeRole(m.id,e.target.value)}><option value="member">MEMBER</option><option value="moderator">MODERATOR</option><option value="admin">ADMIN</option></select>{banned.includes(m.id) ? <button disabled={!admin || m.id === session.user.id} onClick={() => banMember(m.id,false)}>UNBAN</button> : <button disabled={!admin || m.id === session.user.id} onClick={() => banMember(m.id,true)}><Ban size={13}/> BAN</button>}</div></article>})}</section>
         <section className="cc-admin-section"><h2>Security status</h2><div className="cc-security-grid"><article><Lock size={18}/><strong>TLS in transit</strong><small>Connections are protected in transit.</small></article><article><ShieldCheck size={18}/><strong>Encrypted database</strong><small>Managed storage encryption at rest.</small></article><article><KeyRound size={18}/><strong>AES-256-GCM vault</strong><small>Private entries are encrypted in the browser before upload.</small></article></div><p className="cc-muted">The vault is client-side encrypted. Feed posts and comments are not end-to-end encrypted.</p></section>
       </>}
       {tab === 'cipher' && <><div className="cc-heading"><div><p className="cc-kicker">CIPHER ARCHIVE / 04</p><h1>The <em>cipher archive.</em></h1><p>Private records are sealed in your browser before transmission. The key remains yours.</p></div><Lock size={34}/></div><div className="cc-cipher-explainer"><Lock size={18}/><div><strong>AES-256-GCM · PBKDF2-SHA-256</strong><p>Each entry gets a fresh random salt and IV. Your passphrase is never stored. Losing it means the entry cannot be recovered. These entries are private to your account; this is not group end-to-end encryption.</p></div></div><form className="cc-composer cc-cipher-form" onSubmit={sealCipherEntry}><label>ENTRY LABEL<input value={cipherLabel} onChange={e => setCipherLabel(e.target.value)} maxLength={60} placeholder="A short label"/></label><label>PRIVATE CONTENT<textarea value={cipherText} onChange={e => setCipherText(e.target.value)} rows={5} maxLength={12000} required placeholder="Write a private note. It is encrypted before upload."/></label><label>VAULT PASSPHRASE<input type="password" minLength={12} value={cipherPassphrase} onChange={e => setCipherPassphrase(e.target.value)} required placeholder="At least 12 characters"/></label><button className="cc-primary" disabled={busy}>{busy ? 'SEALING…' : 'ENCRYPT & SEAL'} <Lock size={15}/></button></form><div className="cc-admin-section"><h2>Sealed entries</h2>{cipherEntries.length ? cipherEntries.map(entry => <article key={entry.id}><div><strong>{entry.label}</strong><small>SEALED · {dateLabel(entry.created_at)}</small></div><div><button onClick={() => openCipherEntry(entry)}><KeyRound size={13}/> UNSEAL</button><button onClick={() => deleteCipherEntry(entry.id)}><X size={13}/> DELETE</button></div></article>) : <p className="cc-muted">No encrypted entries yet.</p>}{decryptedEntry && <div className="cc-decrypted"><div><strong>UNSEALED CONTENT</strong><button onClick={() => setDecryptedEntry(null)}><X size={14}/></button></div><p>{decryptedEntry.text}</p></div>}</div></>}
