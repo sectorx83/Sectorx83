@@ -1,14 +1,18 @@
 import { useEffect, useMemo, useState } from 'react'
 import type { FormEvent } from 'react'
-import { Activity, AlertTriangle, ArrowUpRight, Ban, Check, ChevronLeft, ChevronRight, Flag, Lock, LogOut, MessageCircle, Plus, Search, Send, ShieldCheck, Users, X } from 'lucide-react'
+import { Activity, AlertTriangle, ArrowUpRight, Ban, Bell, CalendarDays, Check, ChevronLeft, ChevronRight, ExternalLink, Flag, LibraryBig, Lock, LogOut, MapPin, MessageCircle, Plus, Search, Send, ShieldCheck, Users, X } from 'lucide-react'
 import { supabase } from './lib/supabase'
 import './sectorx83.css'
 
-type Profile = { id: string; username: string; display_name: string; bio: string | null; created_at: string }
+type Profile = { id: string; username: string; display_name: string; bio: string | null; created_at: string; avatar_url?: string | null; location?: string | null; website_url?: string | null; skills?: string[]; interests?: string[] }
 type Post = { id: string; author_id: string; title: string; body: string; category: string; is_announcement: boolean; created_at: string; author?: { username: string; display_name: string } | null }
 type Comment = { id: string; body: string; created_at: string; author?: { username: string; display_name: string } | null }
 type ChatMessage = { id: string; author_id: string; body: string; created_at: string; author?: { username: string; display_name: string } | null }
-type DirectMessage = { id: string; sender_id: string; recipient_id: string; body: string; created_at: string }
+type DirectMessage = { id: string; sender_id: string; recipient_id: string; body: string; created_at: string; read_at: string | null }
+type Notification = { id: string; user_id: string; actor_id: string | null; kind: 'direct_message' | 'comment'; entity_id: string; title: string; body: string; created_at: string; read_at: string | null }
+type CommunityEvent = { id: string; title: string; description: string; starts_at: string; location: string; created_at: string }
+type CommunityResource = { id: string; title: string; description: string; url: string; category: string; created_at: string }
+type AuditEntry = { id: number; actor_id: string | null; target_user_id: string | null; action: string; details: string; created_at: string }
 type Report = { id: string; reason: string; status: string; created_at: string; reporter?: { username: string } | null; post?: { title: string } | null }
 type Role = { id: string; email: string | null; role: string }
 const dateLabel = (value: string) => new Date(value).toLocaleString()
@@ -35,6 +39,20 @@ export default function Society() {
   const [username, setUsername] = useState('')
   const [displayName, setDisplayName] = useState('')
   const [profileBio, setProfileBio] = useState('')
+  const [profileAvatar, setProfileAvatar] = useState('')
+  const [profileLocation, setProfileLocation] = useState('')
+  const [profileWebsite, setProfileWebsite] = useState('')
+  const [profileSkills, setProfileSkills] = useState('')
+  const [profileInterests, setProfileInterests] = useState('')
+  const [memberSort, setMemberSort] = useState<'newest' | 'name'>('newest')
+  const [eventTitle, setEventTitle] = useState('')
+  const [eventDescription, setEventDescription] = useState('')
+  const [eventStartsAt, setEventStartsAt] = useState('')
+  const [eventLocation, setEventLocation] = useState('Online')
+  const [resourceTitle, setResourceTitle] = useState('')
+  const [resourceDescription, setResourceDescription] = useState('')
+  const [resourceUrl, setResourceUrl] = useState('')
+  const [resourceCategory, setResourceCategory] = useState('REFERENCE')
   const [profile, setProfile] = useState<Profile | null>(null)
   const [posts, setPosts] = useState<Post[]>([])
   const [members, setMembers] = useState<Profile[]>([])
@@ -42,6 +60,10 @@ export default function Society() {
   const [chatMessages, setChatMessages] = useState<ChatMessage[]>([])
   const [chatDraft, setChatDraft] = useState('')
   const [dmInbox, setDmInbox] = useState<DirectMessage[]>([])
+  const [notifications, setNotifications] = useState<Notification[]>([])
+  const [events, setEvents] = useState<CommunityEvent[]>([])
+  const [resources, setResources] = useState<CommunityResource[]>([])
+  const [auditLog, setAuditLog] = useState<AuditEntry[]>([])
   const [dmThread, setDmThread] = useState<DirectMessage[]>([])
   const [dmDraft, setDmDraft] = useState('')
   const [activeDm, setActiveDm] = useState<Profile | null>(null)
@@ -71,7 +93,9 @@ export default function Society() {
   const admin = role === 'admin'
   const moderator = admin || role === 'moderator'
   const suspended = !!session && banned.includes(session.user.id)
-  const nav = [{ id: 'feed', label: 'Dispatches', icon: Activity }, { id: 'chat', label: 'Community Chat', icon: MessageCircle }, { id: 'messages', label: 'Messages', icon: Send }, { id: 'members', label: 'Members', icon: Users }, { id: 'profile', label: 'My Profile', icon: ShieldCheck }, ...(moderator ? [{ id: 'admin', label: 'Command Desk', icon: Flag }] : [])]
+  const nav = [{ id: 'feed', label: 'Dispatches', icon: Activity }, { id: 'chat', label: 'Community Chat', icon: MessageCircle }, { id: 'messages', label: 'Messages', icon: Send }, { id: 'members', label: 'Members', icon: Users }, { id: 'notifications', label: 'Notifications', icon: Bell }, { id: 'events', label: 'Events', icon: CalendarDays }, { id: 'library', label: 'Library', icon: LibraryBig }, { id: 'profile', label: 'My Profile', icon: ShieldCheck }, ...(moderator ? [{ id: 'admin', label: 'Command Desk', icon: Flag }] : [])]
+  const unreadNotificationCount = notifications.filter(item => !item.read_at).length
+  const unreadMessageCount = dmInbox.filter(message => message.recipient_id === session?.user?.id && !message.read_at).length
 
   useEffect(() => {
     if (!supabase) { setReady(true); return }
@@ -87,26 +111,35 @@ export default function Society() {
     if (!supabase || !session) { setProfile(null); setPosts([]); setMembers([]); setBanned([]); return }
     let active = true
     async function load() {
-      const [p, f, m, b] = await Promise.all([
+      const [p, f, m, b, eventResult, resourceResult] = await Promise.all([
         supabase!.from('profiles').select('*').eq('id', session.user.id).maybeSingle(),
         supabase!.from('posts').select('id,author_id,title,body,category,is_announcement,created_at,author:profiles!posts_author_id_fkey(username,display_name)').order('is_announcement', { ascending: false }).order('created_at', { ascending: false }).limit(100),
         supabase!.from('profiles').select('*').order('created_at', { ascending: false }).limit(200),
         supabase!.from('banned_members').select('user_id'),
+        supabase!.from('community_events').select('*').order('starts_at', { ascending: true }).limit(100),
+        supabase!.from('community_resources').select('*').order('created_at', { ascending: false }).limit(200),
       ])
       if (!active) return
-      const loadError = [p.error, f.error, m.error, b.error].find(Boolean)
+      const loadError = [p.error, f.error, m.error, b.error, eventResult.error, resourceResult.error].find(Boolean)
       if (loadError) throw new Error(loadError.message)
       if (!p.data) throw new Error('Your member profile is missing. Confirm your account and verify that the Sectorx83 database migrations have been applied.')
       setProfile(p.data as Profile); setDisplayName(p.data.display_name || ''); setProfileBio(p.data.bio || '')
+      setProfileAvatar(p.data.avatar_url || ''); setProfileLocation(p.data.location || ''); setProfileWebsite(p.data.website_url || '')
+      setProfileSkills((p.data.skills || []).join(', ')); setProfileInterests((p.data.interests || []).join(', '))
       if (f.data) setPosts(f.data as unknown as Post[])
       if (m.data) setMembers(m.data as Profile[])
       if (b.data) setBanned(b.data.map((x: any) => x.user_id))
+      setEvents((eventResult.data || []) as CommunityEvent[])
+      setResources((resourceResult.data || []) as CommunityResource[])
 
       if (moderator) {
         const { data: reportData, error: reportError } = await supabase!.from('reports').select('id,reason,status,created_at,reporter:profiles!reports_reporter_id_fkey(username),post:posts!reports_post_id_fkey(title)').order('created_at', { ascending: false })
         if (!active) return
         if (reportError) throw reportError
         if (reportData) setReports(reportData as unknown as Report[])
+        const { data: auditData, error: auditError } = await supabase!.from('moderation_audit_log').select('*').order('created_at', { ascending: false }).limit(100)
+        if (auditError) throw auditError
+        setAuditLog((auditData || []) as AuditEntry[])
         if (admin) {
           setRolesLoading(true)
           const { data: roleData, error: roleError } = await supabase!.functions.invoke('manage-member-role', { body: { action: 'list' } })
@@ -176,7 +209,7 @@ export default function Society() {
     const loadInbox = async () => {
       const { data, error: inboxError } = await supabase!
         .from('direct_messages')
-        .select('id,sender_id,recipient_id,body,created_at')
+        .select('id,sender_id,recipient_id,body,created_at,read_at')
         .or(`sender_id.eq.${session.user.id},recipient_id.eq.${session.user.id}`)
         .order('created_at', { ascending: false })
         .limit(300)
@@ -224,19 +257,43 @@ export default function Society() {
     const loadThread = async () => {
       const { data, error: threadError } = await supabase!
         .from('direct_messages')
-        .select('id,sender_id,recipient_id,body,created_at')
+        .select('id,sender_id,recipient_id,body,created_at,read_at')
         .or(`and(sender_id.eq.${session.user.id},recipient_id.eq.${activeDm.id}),and(sender_id.eq.${activeDm.id},recipient_id.eq.${session.user.id})`)
         .order('created_at', { ascending: true })
         .limit(500)
       if (!active) return
       if (threadError) { setError(threadError.message); return }
-      setDmThread((data || []) as DirectMessage[])
+      const messages = (data || []) as DirectMessage[]
+      const unreadIds = messages.filter(message => message.recipient_id === session.user.id && !message.read_at).map(message => message.id)
+      if (unreadIds.length) {
+        const readAt = new Date().toISOString()
+        const { error: readError } = await supabase!.from('direct_messages').update({ read_at: readAt }).in('id', unreadIds)
+        if (readError) setError(readError.message)
+        else {
+          messages.forEach(message => { if (unreadIds.includes(message.id)) message.read_at = readAt })
+          setDmInbox(current => current.map(message => unreadIds.includes(message.id) ? { ...message, read_at: readAt } : message))
+        }
+      }
+      setDmThread(messages)
     }
     void loadThread()
     return () => { active = false }
   }, [session?.user?.id, activeDm?.id])
 
   const activeDmMessages = dmThread
+
+  useEffect(() => {
+    if (!supabase || !session) { setNotifications([]); return }
+    let active = true
+    const loadNotifications = async () => {
+      const { data, error: notificationError } = await supabase!.from('notifications').select('*').order('created_at', { ascending: false }).limit(100)
+      if (!active) return
+      if (notificationError) { setError(notificationError.message); return }
+      setNotifications((data || []) as Notification[])
+    }
+    void loadNotifications()
+    return () => { active = false }
+  }, [session?.user?.id, tab === 'notifications'])
 
   useEffect(() => {
     if (!profile) return
@@ -265,6 +322,7 @@ export default function Society() {
   }
 
   const filtered = useMemo(() => posts.filter(p => (category === 'ALL' || (category === 'ANNOUNCEMENT' ? p.is_announcement : p.category === category)) && (p.title + p.body + (p.author?.username || '')).toLowerCase().includes(search.toLowerCase())), [posts, category, search])
+  const filteredMembers = useMemo(() => members.filter(member => (member.display_name + member.username + (member.bio || '') + (member.location || '') + (member.skills || []).join(' ') + (member.interests || []).join(' ')).toLowerCase().includes(search.toLowerCase())).sort((a,b) => memberSort === 'name' ? a.display_name.localeCompare(b.display_name) : b.created_at.localeCompare(a.created_at)), [members, search, memberSort])
 
   async function auth(e: FormEvent) {
     e.preventDefault(); if (!supabase) return
@@ -306,7 +364,7 @@ export default function Society() {
       sender_id: session.user.id,
       recipient_id: activeDm.id,
       body: dmDraft.trim(),
-    }).select('id,sender_id,recipient_id,body,created_at').single()
+    }).select('id,sender_id,recipient_id,body,created_at,read_at').single()
     if (sendError) setError(sendError.message)
     else if (data) {
       setDmInbox(current => [data as DirectMessage, ...current.filter(message => message.id !== data.id)].slice(0, 300))
@@ -323,6 +381,63 @@ export default function Society() {
     setTab('messages')
     setError('')
     setNotice('')
+  }
+
+  async function markNotificationsRead() {
+    if (!supabase || !session) return
+    const unreadIds = notifications.filter(item => !item.read_at).map(item => item.id)
+    if (!unreadIds.length) return
+    const readAt = new Date().toISOString()
+    const { error: readError } = await supabase.from('notifications').update({ read_at: readAt }).in('id', unreadIds)
+    if (readError) setError(readError.message)
+    else setNotifications(current => current.map(item => unreadIds.includes(item.id) ? { ...item, read_at: readAt } : item))
+  }
+
+  async function openNotification(item: Notification) {
+    if (!supabase) return
+    if (!item.read_at) {
+      const readAt = new Date().toISOString()
+      const { error: readError } = await supabase.from('notifications').update({ read_at: readAt }).eq('id', item.id)
+      if (!readError) setNotifications(current => current.map(n => n.id === item.id ? { ...n, read_at: readAt } : n))
+    }
+    if (item.kind === 'direct_message' && item.actor_id) {
+      const peer = members.find(member => member.id === item.actor_id)
+      if (peer) openDirectMessage(peer)
+      else setTab('messages')
+      return
+    }
+    const { data } = await supabase.from('comments').select('post_id').eq('id', item.entity_id).maybeSingle()
+    const post = posts.find(candidate => candidate.id === data?.post_id)
+    setTab('feed')
+    if (post) setSelected(post)
+  }
+
+  async function createEvent(e: FormEvent) {
+    e.preventDefault()
+    if (!supabase || !session || !moderator || !eventTitle.trim() || !eventStartsAt) return
+    const { data, error: createError } = await supabase.from('community_events').insert({ title: eventTitle.trim(), description: eventDescription.trim(), starts_at: new Date(eventStartsAt).toISOString(), location: eventLocation.trim() || 'Online', created_by: session.user.id }).select('*').single()
+    if (createError) setError(createError.message)
+    else { setEvents(current => [...current, data as CommunityEvent].sort((a,b) => a.starts_at.localeCompare(b.starts_at))); setEventTitle(''); setEventDescription(''); setEventStartsAt(''); setEventLocation('Online'); setNotice('Event published.') }
+  }
+
+  async function createResource(e: FormEvent) {
+    e.preventDefault()
+    if (!supabase || !session || !moderator || !resourceTitle.trim() || !resourceUrl.startsWith('https://')) return
+    const { data, error: createError } = await supabase.from('community_resources').insert({ title: resourceTitle.trim(), description: resourceDescription.trim(), url: resourceUrl.trim(), category: resourceCategory, created_by: session.user.id }).select('*').single()
+    if (createError) setError(createError.message)
+    else { setResources(current => [data as CommunityResource, ...current]); setResourceTitle(''); setResourceDescription(''); setResourceUrl(''); setResourceCategory('REFERENCE'); setNotice('Resource added to the library.') }
+  }
+
+  async function removeEvent(id: string) {
+    if (!supabase || !moderator || !confirm('Delete this event?')) return
+    const { error: removeError } = await supabase.from('community_events').delete().eq('id', id)
+    if (removeError) setError(removeError.message); else setEvents(current => current.filter(event => event.id !== id))
+  }
+
+  async function removeResource(id: string) {
+    if (!supabase || !moderator || !confirm('Remove this library resource?')) return
+    const { error: removeError } = await supabase.from('community_resources').delete().eq('id', id)
+    if (removeError) setError(removeError.message); else setResources(current => current.filter(resource => resource.id !== id))
   }
 
   async function refreshPosts() {
@@ -414,8 +529,13 @@ export default function Society() {
 
   async function saveProfile(e: FormEvent) {
     e.preventDefault(); if (!supabase || !session) return
-    const { error: e1 } = await supabase.from('profiles').update({ display_name: displayName.trim(), bio: profileBio.trim().slice(0,240) }).eq('id', session.user.id)
-    if (e1) setError(e1.message); else { setNotice('Profile updated.'); setProfile(old => old ? { ...old, display_name: displayName.trim(), bio: profileBio.trim().slice(0,240) } : old) }
+    const skills = [...new Set(profileSkills.split(',').map(value => value.trim()).filter(Boolean))].slice(0,12)
+    const interests = [...new Set(profileInterests.split(',').map(value => value.trim()).filter(Boolean))].slice(0,12)
+    const avatar = profileAvatar.trim() || null
+    const website = profileWebsite.trim() || null
+    const location = profileLocation.trim() || null
+    const { error: e1 } = await supabase.from('profiles').update({ display_name: displayName.trim(), bio: profileBio.trim().slice(0,240), avatar_url: avatar, location, website_url: website, skills, interests }).eq('id', session.user.id)
+    if (e1) setError(e1.message); else { setNotice('Profile updated.'); setProfile(old => old ? { ...old, display_name: displayName.trim(), bio: profileBio.trim().slice(0,240), avatar_url: avatar, location, website_url: website, skills, interests } : old); setMembers(old => old.map(member => member.id === session.user.id ? { ...member, display_name: displayName.trim(), bio: profileBio.trim().slice(0,240), avatar_url: avatar, location, website_url: website, skills, interests } : member)) }
   }
 
   if (!ready) return <main className="cc-shell cc-loading"><Crest large/><span>ESTABLISHING SECURE CHANNEL</span><i/></main>
