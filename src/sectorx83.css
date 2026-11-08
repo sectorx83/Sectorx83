@@ -461,3 +461,10 @@
 .cc-profile-session small{color:var(--muted);font:9px/1.5 Manrope,sans-serif}
 .cc-profile-session button{display:flex;align-items:center;gap:7px;padding:9px 11px;border:1px solid rgba(159,29,45,.55);background:rgba(159,29,45,.12);color:#e3c5bd;font:8px var(--mono);white-space:nowrap}
 @media(max-width:650px){.cc-profile-session{align-items:flex-start;flex-direction:column}.cc-profile-session button{width:100%;justify-content:center}}
+
+
+.cc-dm-block{margin-left:auto!important;padding:8px 10px!important;width:auto!important;height:auto!important;border-color:rgba(159,29,45,.5)!important;color:#e2bdb5!important;font:7px var(--mono)!important;letter-spacing:.08em}
+.cc-dm-block:hover{background:rgba(159,29,45,.16)!important}
+.cc-message-report{display:inline-flex;align-items:center;gap:5px;margin-top:8px;padding:5px 7px;border:1px solid rgba(159,29,45,.28);background:transparent;color:#bca79b;font:7px var(--mono);letter-spacing:.06em}
+.cc-message-report:hover{border-color:var(--red);color:#e4c3bd}
+@media(max-width:650px){.cc-dm-thread-head .cc-dm-block{padding:7px!important;font-size:6px!important}}
