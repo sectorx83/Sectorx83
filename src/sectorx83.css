@@ -254,7 +254,7 @@
 .cc-member-message:hover{background:rgba(159,29,45,.18);border-color:var(--gold)}
 .cc-member-message:disabled{opacity:.35;cursor:not-allowed}
 @media(max-width:760px){
- .cc-sidebar{grid-template-columns:repeat(7,minmax(0,1fr))}
+ .cc-sidebar{grid-template-columns:repeat(6,minmax(0,1fr))}
  .cc-sidebar>button{font-size:6px}
  .cc-dm-layout{grid-template-columns:1fr;min-height:0}
  .cc-dm-list{border-right:0;border-bottom:1px solid var(--line);max-height:210px;overflow:auto}
