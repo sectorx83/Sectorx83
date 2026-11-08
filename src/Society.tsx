@@ -486,7 +486,11 @@ export default function Society() {
     if (!supabase || !moderator) return
     const { error: reviewError } = await supabase.from('message_reports').update({ status, reviewed_by: session.user.id, reviewed_at: new Date().toISOString() }).eq('id', id)
     if (reviewError) setError(reviewError.message)
-    else setMessageReports(current => current.map(item => item.id === id ? { ...item, status } : item))
+    else {
+      setMessageReports(current => current.map(item => item.id === id ? { ...item, status } : item))
+      const { data } = await supabase.from('moderation_audit_log').select('*').order('created_at', { ascending: false }).limit(100)
+      if (data) setAuditLog(data as AuditEntry[])
+    }
   }
 
   async function refreshPosts() {
@@ -528,7 +532,11 @@ export default function Society() {
   async function banMember(id: string, ban: boolean) {
     if (!supabase || !session || !admin || id === session.user.id) return
     const result = ban ? await supabase.from('banned_members').insert({ user_id: id, banned_by: session.user.id, reason: 'Community rules violation' }) : await supabase.from('banned_members').delete().eq('user_id', id)
-    if (result.error) setError(result.error.message); else setBanned(old => ban ? [...old, id] : old.filter(x => x !== id))
+    if (result.error) setError(result.error.message); else {
+      setBanned(old => ban ? [...old, id] : old.filter(x => x !== id))
+      const { data } = await supabase.from('moderation_audit_log').select('*').order('created_at', { ascending: false }).limit(100)
+      if (data) setAuditLog(data as AuditEntry[])
+    }
   }
 
   async function changeRole(id: string, next: string) {
@@ -542,18 +550,22 @@ export default function Society() {
     if (!supabase || !session || !moderator) return
     setAdminRefreshing(true); setError(''); setRoleLoadError('')
     try {
-      const [memberResult, postResult, banResult, reportResult] = await Promise.all([
+      const [memberResult, postResult, banResult, reportResult, messageReportResult, auditResult] = await Promise.all([
         supabase.from('profiles').select('*').order('created_at', { ascending: false }).limit(200),
         supabase.from('posts').select('id,author_id,title,body,category,is_announcement,created_at,author:profiles!posts_author_id_fkey(username,display_name)').order('is_announcement', { ascending: false }).order('created_at', { ascending: false }).limit(100),
         supabase.from('banned_members').select('user_id'),
         supabase.from('reports').select('id,reason,status,created_at,reporter:profiles!reports_reporter_id_fkey(username),post:posts!reports_post_id_fkey(title)').order('created_at', { ascending: false }),
+        supabase.from('message_reports').select('id,reason,status,created_at,reporter:profiles!message_reports_reporter_id_fkey(username),message:direct_messages!message_reports_message_id_fkey(body,sender_id,recipient_id)').order('created_at', { ascending: false }),
+        supabase.from('moderation_audit_log').select('*').order('created_at', { ascending: false }).limit(100),
       ])
-      const firstError = [memberResult.error, postResult.error, banResult.error, reportResult.error].find(Boolean)
+      const firstError = [memberResult.error, postResult.error, banResult.error, reportResult.error, messageReportResult.error, auditResult.error].find(Boolean)
       if (firstError) throw firstError
       setMembers((memberResult.data || []) as Profile[])
       setPosts((postResult.data || []) as unknown as Post[])
       setBanned((banResult.data || []).map((row: any) => row.user_id))
       setReports((reportResult.data || []) as unknown as Report[])
+      setMessageReports((messageReportResult.data || []) as unknown as MessageReport[])
+      setAuditLog((auditResult.data || []) as AuditEntry[])
       if (admin) {
         setRolesLoading(true)
         const { data, error: fnError } = await supabase.functions.invoke('manage-member-role', { body: { action: 'list' } })
@@ -573,7 +585,11 @@ export default function Society() {
   async function reviewReport(id: string, status: string) {
     if (!supabase || !moderator) return
     const { error: e1 } = await supabase.from('reports').update({ status, reviewed_by: session.user.id, reviewed_at: new Date().toISOString() }).eq('id', id)
-    if (e1) setError(e1.message); else setReports(old => old.map(x => x.id === id ? { ...x, status } : x))
+    if (e1) setError(e1.message); else {
+      setReports(old => old.map(x => x.id === id ? { ...x, status } : x))
+      const { data } = await supabase.from('moderation_audit_log').select('*').order('created_at', { ascending: false }).limit(100)
+      if (data) setAuditLog(data as AuditEntry[])
+    }
   }
 
   async function saveProfile(e: FormEvent) {
