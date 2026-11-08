@@ -1,16 +1,10 @@
 {
+  "redirects": [
+    { "source": "/sectorx83", "destination": "/", "permanent": true },
+    { "source": "/sectorx83/:path*", "destination": "/", "permanent": true },
+    { "source": "/projects/:path*", "destination": "/", "permanent": true }
+  ],
   "rewrites": [
-    {
-      "source": "/projects/:path*",
-      "destination": "/index.html"
-    },
-    {
-      "source": "/sectorx83",
-      "destination": "/index.html"
-    },
-    {
-      "source": "/sectorx83/:path*",
-      "destination": "/index.html"
-    }
+    { "source": "/(.*)", "destination": "/index.html" }
   ]
 }
