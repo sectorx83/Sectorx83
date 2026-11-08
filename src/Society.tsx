@@ -1,11 +1,12 @@
 import { useEffect, useMemo, useState } from 'react'
 import type { FormEvent } from 'react'
-import { Activity, AlertTriangle, ArrowUpRight, Ban, Bell, CalendarDays, Check, ChevronLeft, ChevronRight, ExternalLink, Flag, LibraryBig, Lock, LogOut, MessageCircle, Plus, Search, Send, ShieldCheck, Users, X } from 'lucide-react'
+import { Activity, AlertTriangle, ArrowUpRight, Ban, Bell, CalendarDays, Check, ChevronLeft, ChevronRight, ExternalLink, Flag, LibraryBig, Lightbulb, Lock, LogOut, MessageCircle, Pencil, Plus, Search, Send, ShieldCheck, ThumbsUp, Users, X } from 'lucide-react'
 import { supabase } from './lib/supabase'
 import './sectorx83.css'
 
 type Profile = { id: string; username: string; display_name: string; bio: string | null; created_at: string; avatar_url?: string | null; location?: string | null; website_url?: string | null; skills?: string[]; interests?: string[] }
 type Post = { id: string; author_id: string; title: string; body: string; category: string; is_announcement: boolean; created_at: string; author?: { username: string; display_name: string } | null }
+type PostReaction = { id: string; post_id: string; user_id: string; reaction_type: 'support' | 'insightful' }
 type Comment = { id: string; body: string; created_at: string; author?: { username: string; display_name: string } | null }
 type ChatMessage = { id: string; author_id: string; body: string; created_at: string; author?: { username: string; display_name: string } | null }
 type DirectMessage = { id: string; sender_id: string; recipient_id: string; body: string; created_at: string; read_at: string | null }
@@ -56,6 +57,11 @@ export default function Society() {
   const [resourceCategory, setResourceCategory] = useState('REFERENCE')
   const [profile, setProfile] = useState<Profile | null>(null)
   const [posts, setPosts] = useState<Post[]>([])
+  const [postReactions, setPostReactions] = useState<PostReaction[]>([])
+  const [draftLoadedFor, setDraftLoadedFor] = useState('')
+  const [editingPost, setEditingPost] = useState<Post | null>(null)
+  const [editTitle, setEditTitle] = useState('')
+  const [editBody, setEditBody] = useState('')
   const [members, setMembers] = useState<Profile[]>([])
   const [comments, setComments] = useState<Comment[]>([])
   const [chatMessages, setChatMessages] = useState<ChatMessage[]>([])
@@ -114,7 +120,7 @@ export default function Society() {
   }, [])
 
   useEffect(() => {
-    if (!supabase || !session) { setProfile(null); setPosts([]); setMembers([]); setBanned([]); return }
+    if (!supabase || !session) { setProfile(null); setPosts([]); setMembers([]); setBanned([]); setPostReactions([]); return }
     let active = true
     async function load() {
       const [p, f, m, b, eventResult, resourceResult, blockResult] = await Promise.all([
@@ -173,6 +179,38 @@ export default function Society() {
     load().catch(e => { if (active) setError(e.message || 'Unable to load community data.') })
     return () => { active = false }
   }, [session?.user?.id, role])
+
+  useEffect(() => {
+    if (!supabase || !session) return
+    let active = true
+    supabase.from('post_reactions').select('id,post_id,user_id,reaction_type').limit(1000).then(({ data, error: reactionError }) => {
+      if (!active) return
+      if (reactionError) setError(reactionError.message)
+      else setPostReactions((data || []) as PostReaction[])
+    })
+    return () => { active = false }
+  }, [session?.user?.id])
+
+  useEffect(() => {
+    if (!session) { setDraftLoadedFor(''); return }
+    const key = `sectorx83-dispatch-draft:${session.user.id}`
+    try {
+      const saved = localStorage.getItem(key)
+      if (saved) {
+        const draft = JSON.parse(saved)
+        setTitle(typeof draft.title === 'string' ? draft.title : '')
+        setBody(typeof draft.body === 'string' ? draft.body : '')
+        setPostSection(typeof draft.postSection === 'string' ? draft.postSection : 'GENERAL')
+        if (draft.title || draft.body) setShowComposer(true)
+      }
+    } catch { localStorage.removeItem(key) }
+    setDraftLoadedFor(session.user.id)
+  }, [session?.user?.id])
+
+  useEffect(() => {
+    if (!session || draftLoadedFor !== session.user.id) return
+    localStorage.setItem(`sectorx83-dispatch-draft:${session.user.id}`, JSON.stringify({ title, body, postSection }))
+  }, [session?.user?.id, draftLoadedFor, title, body, postSection])
 
   useEffect(() => {
     if (!supabase || !session || !selected) { setComments([]); return }
@@ -500,13 +538,52 @@ export default function Society() {
     if (data) setPosts(data as unknown as Post[])
   }
 
+  async function toggleReaction(post: Post, reactionType: 'support' | 'insightful') {
+    if (!supabase || !session || suspended) return
+    const existing = postReactions.find(reaction => reaction.post_id === post.id && reaction.user_id === session.user.id)
+    if (existing?.reaction_type === reactionType) {
+      const { error: reactionError } = await supabase.from('post_reactions').delete().eq('id', existing.id)
+      if (reactionError) setError(reactionError.message)
+      else setPostReactions(current => current.filter(reaction => reaction.id !== existing.id))
+      return
+    }
+    if (existing) {
+      const { error: removeError } = await supabase.from('post_reactions').delete().eq('id', existing.id)
+      if (removeError) { setError(removeError.message); return }
+      setPostReactions(current => current.filter(reaction => reaction.id !== existing.id))
+    }
+    const { data, error: addError } = await supabase.from('post_reactions').insert({ post_id: post.id, user_id: session.user.id, reaction_type: reactionType }).select('id,post_id,user_id,reaction_type').single()
+    if (addError) setError(addError.message)
+    else if (data) setPostReactions(current => [...current.filter(reaction => reaction.post_id !== post.id || reaction.user_id !== session.user.id), data as PostReaction])
+  }
+
+  function beginEditPost(post: Post) {
+    setEditingPost(post)
+    setEditTitle(post.title)
+    setEditBody(post.body)
+  }
+
+  async function savePostEdit(e: FormEvent) {
+    e.preventDefault()
+    if (!supabase || !session || !editingPost || !editTitle.trim() || !editBody.trim()) return
+    const { error: editError } = await supabase.from('posts').update({ title: editTitle.trim(), body: editBody.trim() }).eq('id', editingPost.id)
+    if (editError) setError(editError.message)
+    else {
+      const updated = { ...editingPost, title: editTitle.trim(), body: editBody.trim() }
+      setPosts(current => current.map(post => post.id === updated.id ? updated : post))
+      if (selected?.id === updated.id) setSelected(updated)
+      setEditingPost(null)
+      setNotice('Dispatch updated.')
+    }
+  }
+
   async function publish(e: FormEvent) {
     e.preventDefault(); if (!supabase || !session || suspended) return
     setBusy(true)
     const announcement = postSection === 'ANNOUNCEMENT'
     const { error: e1 } = await supabase.from('posts').insert({ author_id: session.user.id, title: title.trim(), body: body.trim(), category: announcement ? 'GENERAL' : postSection, is_announcement: announcement })
     if (e1) setError(e1.message)
-    else { setTitle(''); setBody(''); setPostSection('GENERAL'); setShowComposer(false); await refreshPosts() }
+    else { setTitle(''); setBody(''); setPostSection('GENERAL'); setShowComposer(false); localStorage.removeItem(`sectorx83-dispatch-draft:${session.user.id}`); await refreshPosts() }
     setBusy(false)
   }
 
@@ -628,8 +705,8 @@ export default function Society() {
       {tab === 'feed' && <><div className="cc-heading"><div><p className="cc-kicker">THE DISPATCH / 01</p><h1>Words carry <em>weight.</em></h1><p>No noise. No spectacle. Ideas recorded, challenged and put to work.</p></div><Crest large/></div>
         <div className="cc-toolbar"><div className="cc-categories">{sections.map(s => <button key={s} className={category === s ? 'active' : ''} onClick={() => setCategory(s)}>{s}</button>)}</div><label className="cc-search"><Search size={14}/><input value={search} onChange={e => setSearch(e.target.value)} placeholder="Search the record"/></label></div>
         {!suspended && <div className="cc-compose-toggle"><span>Something worth putting on record?</span><button onClick={() => setShowComposer(!showComposer)}><Plus size={15}/> NEW DISPATCH</button></div>}
-        {showComposer && <form className="cc-composer" onSubmit={publish}><label>SUBJECT<input value={title} onChange={e => setTitle(e.target.value)} maxLength={120} required/></label><label>CLASSIFICATION<select value={postSection} onChange={e => setPostSection(e.target.value)}>{(moderator ? sections.slice(1) : sections.slice(1,4)).map(s => <option key={s}>{s}</option>)}</select></label><label>YOUR CONTRIBUTION<textarea value={body} onChange={e => setBody(e.target.value)} rows={5} maxLength={10000} required/></label><button className="cc-primary" disabled={busy}>SEAL DISPATCH <ArrowUpRight size={15}/></button></form>}
-        <div className="cc-posts">{filtered.map(post => <article className={post.is_announcement ? 'cc-post announcement' : 'cc-post'} key={post.id}><div className="cc-post-meta"><span>{post.is_announcement ? 'OFFICIAL DIRECTIVE' : post.category}</span><time>{dateLabel(post.created_at)}</time></div><h2>{post.title}</h2><p>{post.body}</p><div className="cc-post-bottom"><span>{post.author?.display_name || 'Network member'} <small>@{post.author?.username || 'member'}</small></span><div><button onClick={() => setSelected(post)}><MessageCircle size={14}/> DISCUSS</button>{!post.is_announcement && <button onClick={() => setReporting(post)}><Flag size={13}/> REPORT</button>}{(moderator || post.author_id === session.user.id) && <button onClick={() => removePost(post)}><X size={14}/></button>}</div></div></article>)}{!filtered.length && <div className="cc-empty">The record is empty. Make the first statement.</div>}</div>
+        {showComposer && <form className="cc-composer" onSubmit={publish}><p className="cc-draft-status">DRAFT AUTO-SAVES ON THIS DEVICE</p><label>SUBJECT<input value={title} onChange={e => setTitle(e.target.value)} maxLength={120} required/></label><label>CLASSIFICATION<select value={postSection} onChange={e => setPostSection(e.target.value)}>{(moderator ? sections.slice(1) : sections.slice(1,4)).map(s => <option key={s}>{s}</option>)}</select></label><label>YOUR CONTRIBUTION<textarea value={body} onChange={e => setBody(e.target.value)} rows={5} maxLength={10000} required/></label><button className="cc-primary" disabled={busy}>SEAL DISPATCH <ArrowUpRight size={15}/></button></form>}
+        <div className="cc-posts">{filtered.map(post => <article className={post.is_announcement ? 'cc-post announcement' : 'cc-post'} key={post.id}><div className="cc-post-meta"><span>{post.is_announcement ? 'OFFICIAL DIRECTIVE' : post.category}</span><time>{dateLabel(post.created_at)}</time></div><h2>{post.title}</h2><p>{post.body}</p><div className="cc-post-reactions"><button className={postReactions.some(reaction => reaction.post_id === post.id && reaction.user_id === session.user.id && reaction.reaction_type === 'support') ? 'active' : ''} onClick={() => toggleReaction(post,'support')} disabled={suspended}><ThumbsUp size={13}/> SUPPORT <b>{postReactions.filter(reaction => reaction.post_id === post.id && reaction.reaction_type === 'support').length}</b></button><button className={postReactions.some(reaction => reaction.post_id === post.id && reaction.user_id === session.user.id && reaction.reaction_type === 'insightful') ? 'active' : ''} onClick={() => toggleReaction(post,'insightful')} disabled={suspended}><Lightbulb size={13}/> INSIGHTFUL <b>{postReactions.filter(reaction => reaction.post_id === post.id && reaction.reaction_type === 'insightful').length}</b></button></div><div className="cc-post-bottom"><span>{post.author?.display_name || 'Network member'} <small>@{post.author?.username || 'member'}</small></span><div><button onClick={() => setSelected(post)}><MessageCircle size={14}/> DISCUSS</button>{!post.is_announcement && <button onClick={() => setReporting(post)}><Flag size={13}/> REPORT</button>}{(moderator || post.author_id === session.user.id) && <button onClick={() => beginEditPost(post)} aria-label="Edit dispatch"><Pencil size={13}/></button>}{(moderator || post.author_id === session.user.id) && <button onClick={() => removePost(post)}><X size={14}/></button>}</div></div></article>)}{!filtered.length && <div className="cc-empty">The record is empty. Make the first statement.</div>}</div>
       </>}
       {tab === 'chat' && <><div className="cc-heading cc-chat-heading"><div><p className="cc-kicker">COMMUNITY CHAT / LIVE ROOM</p><h1>Talk <em>together.</em></h1><p>Short conversations belong here. Dispatches remain separate and searchable.</p></div><div className="cc-chat-live"><i/> MEMBER ROOM</div></div><div className="cc-chat-context"><MessageCircle size={17}/><span><strong>One shared room.</strong> Keep it useful, respectful and on-topic. No private messages or direct-message claims.</span></div><section className="cc-chat-panel"><div className="cc-chat-top"><span>SECTORX83 / COMMUNITY CHANNEL</span><span>{chatMessages.length} RECENT MESSAGES</span></div><div className="cc-chat-messages" aria-live="polite">{chatMessages.map(message => <article className={message.author_id === session.user.id ? 'cc-chat-message is-own' : 'cc-chat-message'} key={message.id}><span className="cc-chat-avatar">{(message.author?.display_name || 'M').slice(0,1).toUpperCase()}</span><div><header><strong>{message.author?.display_name || 'Member'}</strong><small>@{message.author?.username || 'member'} · {dateLabel(message.created_at)}</small></header><p>{message.body}</p></div></article>)}{!chatMessages.length && <div className="cc-chat-empty"><MessageCircle size={24}/><strong>The room is quiet.</strong><span>Start the first conversation.</span></div>}</div>{suspended ? <p className="cc-chat-locked">Posting is disabled while your account is suspended.</p> : <form className="cc-chat-compose" onSubmit={sendChat}><textarea value={chatDraft} onChange={e => setChatDraft(e.target.value)} rows={2} maxLength={2000} placeholder="Write a message to the room…" required/><div><small>{chatDraft.length}/2000 · Messages are visible to signed-in members.</small><button className="cc-primary" disabled={busy || !chatDraft.trim()}>{busy ? 'SENDING…' : 'SEND MESSAGE'} <Send size={14}/></button></div></form>}</section></>}
       {tab === 'messages' && <><div className="cc-heading"><div><p className="cc-kicker">PRIVATE CORRESPONDENCE / MEMBER NETWORK</p><h1>Direct <em>messages.</em></h1><p>One-to-one conversations. Only the two participants can access each conversation.</p></div><div className="cc-chat-live"><Lock size={13}/> PRIVATE</div></div><div className="cc-dm-layout"><aside className="cc-dm-list"><div className="cc-dm-list-head"><strong>CONVERSATIONS</strong><span>{dmConversations.length.toString().padStart(2,'0')}</span></div><label className="cc-search cc-dm-search"><Search size={13}/><input value={dmSearch} onChange={e => setDmSearch(e.target.value)} placeholder="Search conversations"/></label>{dmConversations.filter(({peer,message}) => (peer.display_name + peer.username + message.body).toLowerCase().includes(dmSearch.toLowerCase())).map(({peer,message}) => <button key={peer.id} className={activeDm?.id === peer.id ? 'active' : ''} onClick={() => setActiveDm(peer)}><i>{peer.display_name.slice(0,1).toUpperCase()}</i><span><strong>{peer.display_name}</strong><small>@{peer.username} · {dateLabel(message.created_at)}</small><em>{message.body}</em>{dmInbox.filter(item => item.sender_id === peer.id && item.recipient_id === session.user.id && !item.read_at).length > 0 && <b className="cc-dm-unread">{dmInbox.filter(item => item.sender_id === peer.id && item.recipient_id === session.user.id && !item.read_at).length}</b>}</span></button>)}{!dmConversations.length && <p className="cc-dm-empty">No conversations yet. Open the member register to start one.</p>}</aside><section className="cc-dm-thread">{activeDm ? <><header className="cc-dm-thread-head"><button onClick={() => setActiveDm(null)} aria-label="Back to conversations"><ChevronLeft size={16}/></button><i>{activeDm.display_name.slice(0,1).toUpperCase()}</i><span><strong>{activeDm.display_name}</strong><small>@{activeDm.username} · PRIVATE CONVERSATION</small></span><button className="cc-dm-block" onClick={() => toggleMemberBlock(activeDm)}>{blockedMembers.includes(activeDm.id) ? 'UNBLOCK' : 'BLOCK'}</button></header><div className="cc-chat-messages cc-dm-messages" aria-live="polite">{activeDmMessages.map(message => <article className={message.sender_id === session.user.id ? 'cc-chat-message is-own' : 'cc-chat-message'} key={message.id}><span className="cc-chat-avatar">{(message.sender_id === session.user.id ? profile?.display_name : activeDm.display_name)?.slice(0,1).toUpperCase() || 'M'}</span><div><header><strong>{message.sender_id === session.user.id ? 'You' : activeDm.display_name}</strong><small>{dateLabel(message.created_at)}</small></header><p>{message.body}</p>{message.sender_id !== session.user.id && <button className="cc-message-report" onClick={() => { setReportingMessage(message); setMessageReportReason('') }}><Flag size={11}/> REPORT MESSAGE</button>}</div></article>)}{!activeDmMessages.length && <div className="cc-chat-empty"><MessageCircle size={24}/><strong>Start a conversation.</strong><span>Your messages here are visible only to you and {activeDm.display_name}.</span></div>}</div>{blockedMembers.includes(activeDm.id) ? <p className="cc-chat-locked">You blocked this member. Unblock them to send another message.</p> : suspended ? <p className="cc-chat-locked">Messaging is disabled while your account is suspended.</p> : <form className="cc-chat-compose" onSubmit={sendDirectMessage}><textarea value={dmDraft} onChange={e => setDmDraft(e.target.value)} rows={2} maxLength={2000} placeholder={`Write privately to ${activeDm.display_name}…`} required/><div><small>{dmDraft.length}/2000 · Private between two members.</small><button className="cc-primary" disabled={busy || !dmDraft.trim()}>{busy ? 'SENDING…' : 'SEND PRIVATELY'} <Send size={14}/></button></div></form>}</> : <div className="cc-dm-no-selection"><MessageCircle size={28}/><strong>Select a conversation</strong><span>Or open the Members register and choose Message on a member profile.</span><button className="cc-primary" onClick={() => setTab('members')}>OPEN MEMBER REGISTER <Users size={14}/></button></div>}</section></div></>}
@@ -650,6 +727,7 @@ export default function Society() {
     </section></div>
     <nav className="cc-bottom-nav" aria-label="Main navigation">{nav.map(item => { const Icon = item.icon; return <button key={item.id} className={tab === item.id ? 'active' : ''} aria-current={tab === item.id ? 'page' : undefined} onClick={() => { setTab(item.id); setSelected(null); if (item.id !== 'messages') setActiveDm(null); setError(''); setNotice('') }}><Icon size={18}/><span>{item.id === 'messages' ? 'Inbox' : item.id === 'notifications' ? 'Alerts' : item.id === 'events' ? 'Events' : item.id === 'library' ? 'Library' : item.id === 'admin' ? 'Council' : item.id === 'profile' ? 'Profile' : item.id === 'members' ? 'Members' : item.id === 'chat' ? 'Chat' : 'Feed'}</span>{item.id === 'messages' && unreadMessageCount > 0 && <b className="cc-nav-count">{unreadMessageCount > 99 ? '99+' : unreadMessageCount}</b>}{item.id === 'notifications' && unreadNotificationCount > 0 && <b className="cc-nav-count">{unreadNotificationCount > 99 ? '99+' : unreadNotificationCount}</b>}</button> })}</nav>
     {tourStep !== null && <div className="cc-tour-scrim"><section className="cc-tour-card" role="dialog" aria-modal="true" aria-labelledby="cc-tour-title"><div className="cc-tour-top"><span>SECTORX83 / FIRST VISIT</span><button onClick={finishTour} aria-label="Close tour"><X size={16}/></button></div><div className="cc-tour-progress">{tourSteps.map((_,i)=><i key={i} className={i <= tourStep ? 'is-active' : ''}/>)}</div><p className="cc-kicker">GUIDED INTRODUCTION · 0{tourStep + 1} / 0{tourSteps.length}</p><span className="cc-tour-target">{tourSteps[tourStep].target}</span><h2 id="cc-tour-title">{tourSteps[tourStep].title}</h2><p>{tourSteps[tourStep].body}</p><div className="cc-tour-actions"><button className="cc-tour-skip" onClick={finishTour}>SKIP TOUR</button><div>{tourStep > 0 && <button className="cc-tour-back" onClick={() => setTourStep(step => step === null ? null : Math.max(0,step-1))}><ChevronLeft size={14}/> BACK</button>}<button className="cc-primary" onClick={() => tourStep === tourSteps.length - 1 ? finishTour() : setTourStep(step => step === null ? null : Math.min(tourSteps.length-1,step+1))}>{tourStep === tourSteps.length - 1 ? 'FINISH' : 'NEXT'} <ChevronRight size={14}/></button></div></div></section></div>}
+    {editingPost && <div className="cc-overlay" onClick={e => { if (e.target === e.currentTarget) setEditingPost(null) }}><form className="cc-thread cc-edit-thread" onSubmit={savePostEdit}><header>EDIT DISPATCH <button type="button" onClick={() => setEditingPost(null)}><X size={17}/></button></header><label>SUBJECT<input value={editTitle} onChange={e => setEditTitle(e.target.value)} maxLength={120} required/></label><label>YOUR CONTRIBUTION<textarea value={editBody} onChange={e => setEditBody(e.target.value)} rows={8} maxLength={10000} required/></label><button className="cc-primary" disabled={!editTitle.trim() || !editBody.trim()}>SAVE CHANGES <Check size={14}/></button></form></div>}
     {selected && <div className="cc-overlay" onClick={e => { if (e.target === e.currentTarget) setSelected(null) }}><section className="cc-thread"><header>DISPATCH RECORD <button onClick={() => setSelected(null)}><X size={17}/></button></header><h2>{selected.title}</h2><p>{selected.body}</p><h3>{comments.length} RESPONSES</h3>{comments.map(c => <article key={c.id}><strong>{c.author?.display_name || 'Member'} <small>@{c.author?.username}</small></strong><p>{c.body}</p><time>{dateLabel(c.created_at)}</time></article>)}{!suspended && <form onSubmit={addComment}><textarea value={comment} onChange={e => setComment(e.target.value)} placeholder="Add evidence. Challenge the argument. Keep it precise." rows={3} required/><button className="cc-primary">POST RESPONSE <MessageCircle size={14}/></button></form>}</section></div>}
     {reportingMessage && <div className="cc-overlay" onClick={e => { if (e.target === e.currentTarget) setReportingMessage(null) }}><section className="cc-thread"><header>NETWORK INTEGRITY / PRIVATE MESSAGE REPORT <button onClick={() => setReportingMessage(null)}><X size={17}/></button></header><h2>Report private message</h2><p>{reportingMessage.body}</p><textarea rows={4} value={messageReportReason} onChange={e => setMessageReportReason(e.target.value)} placeholder="Explain why this message requires moderator attention."/><button className="cc-primary" disabled={messageReportReason.trim().length < 5} onClick={submitMessageReport}>SUBMIT REPORT <Flag size={14}/></button></section></div>}
     {reporting && <div className="cc-overlay" onClick={e => { if (e.target === e.currentTarget) setReporting(null) }}><section className="cc-thread"><header>NETWORK INTEGRITY / REPORT <button onClick={() => setReporting(null)}><X size={17}/></button></header><h2>Report discussion</h2><p>{reporting.title}</p><textarea rows={4} value={reportReason} onChange={e => setReportReason(e.target.value)} placeholder="Explain what needs moderator attention."/><button className="cc-primary" onClick={submitReport}>SUBMIT REPORT <Flag size={14}/></button></section></div>}
