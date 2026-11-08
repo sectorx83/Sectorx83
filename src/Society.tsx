@@ -8,6 +8,7 @@ type Profile = { id: string; username: string; display_name: string; bio: string
 type Post = { id: string; author_id: string; title: string; body: string; category: string; is_announcement: boolean; created_at: string; author?: { username: string; display_name: string } | null }
 type Comment = { id: string; body: string; created_at: string; author?: { username: string; display_name: string } | null }
 type ChatMessage = { id: string; author_id: string; body: string; created_at: string; author?: { username: string; display_name: string } | null }
+type DirectMessage = { id: string; sender_id: string; recipient_id: string; body: string; created_at: string }
 type Report = { id: string; reason: string; status: string; created_at: string; reporter?: { username: string } | null; post?: { title: string } | null }
 type Role = { id: string; email: string | null; role: string }
 const dateLabel = (value: string) => new Date(value).toLocaleString()
@@ -87,6 +88,9 @@ export default function Society() {
   const [comments, setComments] = useState<Comment[]>([])
   const [chatMessages, setChatMessages] = useState<ChatMessage[]>([])
   const [chatDraft, setChatDraft] = useState('')
+  const [dmInbox, setDmInbox] = useState<DirectMessage[]>([])
+  const [dmDraft, setDmDraft] = useState('')
+  const [activeDm, setActiveDm] = useState<Profile | null>(null)
   const [tourStep, setTourStep] = useState<number | null>(null)
   const [reports, setReports] = useState<Report[]>([])
   const [roles, setRoles] = useState<Role[]>([])
@@ -113,7 +117,7 @@ export default function Society() {
   const admin = role === 'admin'
   const moderator = admin || role === 'moderator'
   const suspended = !!session && banned.includes(session.user.id)
-  const nav = [{ id: 'feed', label: 'Dispatches', icon: Activity }, { id: 'chat', label: 'Community Chat', icon: MessageCircle }, { id: 'members', label: 'Members', icon: Users }, { id: 'profile', label: 'My Profile', icon: ShieldCheck }, ...(moderator ? [{ id: 'admin', label: 'Command Desk', icon: Flag }] : [])]
+  const nav = [{ id: 'feed', label: 'Dispatches', icon: Activity }, { id: 'chat', label: 'Community Chat', icon: MessageCircle }, { id: 'messages', label: 'Messages', icon: Send }, { id: 'members', label: 'Members', icon: Users }, { id: 'profile', label: 'My Profile', icon: ShieldCheck }, ...(moderator ? [{ id: 'admin', label: 'Command Desk', icon: Flag }] : [])]
 
   useEffect(() => {
     if (!supabase) { setReady(true); return }
@@ -213,6 +217,52 @@ export default function Society() {
   }, [session?.user?.id, tab, members, profile?.id])
 
   useEffect(() => {
+    if (!supabase || !session || tab !== 'messages') return
+    let active = true
+    const loadInbox = async () => {
+      const { data, error: inboxError } = await supabase!
+        .from('direct_messages')
+        .select('id,sender_id,recipient_id,body,created_at')
+        .or(`sender_id.eq.${session.user.id},recipient_id.eq.${session.user.id}`)
+        .order('created_at', { ascending: false })
+        .limit(300)
+      if (!active) return
+      if (inboxError) { setError(inboxError.message); return }
+      setDmInbox((data || []) as DirectMessage[])
+    }
+    void loadInbox()
+    const channel = supabase.channel(`sectorx83-dm-${session.user.id}`)
+      .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'direct_messages' }, payload => {
+        if (!active) return
+        const row = payload.new as DirectMessage
+        setDmInbox(current => current.some(message => message.id === row.id)
+          ? current
+          : [row, ...current].slice(0, 300))
+      })
+      .subscribe()
+    return () => { active = false; void supabase!.removeChannel(channel) }
+  }, [session?.user?.id, tab])
+
+  const dmConversations = useMemo(() => {
+    if (!session) return []
+    const seen = new Set<string>()
+    return dmInbox.flatMap(message => {
+      const peerId = message.sender_id === session.user.id ? message.recipient_id : message.sender_id
+      if (seen.has(peerId)) return []
+      seen.add(peerId)
+      const peer = members.find(member => member.id === peerId)
+      return peer ? [{ peer, message }] : []
+    })
+  }, [dmInbox, members, session?.user?.id])
+
+  const activeDmMessages = useMemo(() => activeDm && session
+    ? dmInbox.filter(message =>
+        (message.sender_id === session.user.id && message.recipient_id === activeDm.id) ||
+        (message.sender_id === activeDm.id && message.recipient_id === session.user.id)
+      ).sort((a, b) => a.created_at.localeCompare(b.created_at))
+    : [], [dmInbox, activeDm?.id, session?.user?.id])
+
+  useEffect(() => {
     if (profile && !localStorage.getItem('sectorx83-tour-v1')) setTourStep(0)
   }, [profile?.id])
 
@@ -260,6 +310,33 @@ export default function Society() {
     if (sendError) setError(sendError.message)
     else setChatDraft('')
     setBusy(false)
+  }
+
+  async function sendDirectMessage(e: FormEvent) {
+    e.preventDefault()
+    if (!supabase || !session || !activeDm || suspended || !dmDraft.trim()) return
+    setBusy(true)
+    setError('')
+    const { data, error: sendError } = await supabase.from('direct_messages').insert({
+      sender_id: session.user.id,
+      recipient_id: activeDm.id,
+      body: dmDraft.trim(),
+    }).select('id,sender_id,recipient_id,body,created_at').single()
+    if (sendError) setError(sendError.message)
+    else if (data) {
+      setDmInbox(current => [data as DirectMessage, ...current.filter(message => message.id !== data.id)].slice(0, 300))
+      setDmDraft('')
+    }
+    setBusy(false)
+  }
+
+  function openDirectMessage(member: Profile) {
+    if (!session || member.id === session.user.id) return
+    setActiveDm(member)
+    setDmDraft('')
+    setTab('messages')
+    setError('')
+    setNotice('')
   }
 
   async function refreshPosts() {
@@ -372,7 +449,7 @@ export default function Society() {
 
   return <main className="cc-shell cc-community">
     <header className="cc-header cc-header-inside"><a className="cc-brand" href="/sectorx83"><Crest/><span>SECTORX83<small>MEMBER NETWORK</small></span></a><div className="cc-header-actions"><button className="cc-tour-trigger" onClick={() => setTourStep(0)}><Compass size={15}/> TAKE THE TOUR</button><div className="cc-user"><span>{profile?.display_name || session.user.email}<small>@{profile?.username || 'member'} · {role.toUpperCase()}</small></span><button onClick={() => { if (supabase) void supabase.auth.signOut() }} aria-label="Sign out"><LogOut size={16}/></button></div></div></header>
-    <div className="cc-layout"><aside className="cc-sidebar"><small>SECTORX83 / NAVIGATION</small>{nav.map(item => { const Icon = item.icon; return <button key={item.id} className={tab === item.id ? 'active' : ''} onClick={() => { setTab(item.id); setSelected(null); setError(''); setNotice('') }}><Icon size={16}/>{item.label}</button> })}<div className="cc-principle"><Crest/><small>COMMUNITY PRINCIPLE</small><strong>Question every claim. Respect every person.</strong><p>Authority is accountable. Evidence outranks status. Disagreement is not disloyalty.</p></div><div className="cc-side-meta">ACCESS / {role.toUpperCase()}<br/>NETWORK / MEMBERS</div></aside>
+    <div className="cc-layout"><aside className="cc-sidebar"><small>SECTORX83 / NAVIGATION</small>{nav.map(item => { const Icon = item.icon; return <button key={item.id} className={tab === item.id ? 'active' : ''} onClick={() => { setTab(item.id); setSelected(null); if (item.id !== 'messages') setActiveDm(null); setError(''); setNotice('') }}><Icon size={16}/>{item.label}</button> })}<div className="cc-principle"><Crest/><small>COMMUNITY PRINCIPLE</small><strong>Question every claim. Respect every person.</strong><p>Authority is accountable. Evidence outranks status. Disagreement is not disloyalty.</p></div><div className="cc-side-meta">ACCESS / {role.toUpperCase()}<br/>NETWORK / MEMBERS</div></aside>
     <section className="cc-main"><div className="cc-crumb">SECTORX83 <b>/</b> {nav.find(x => x.id === tab)?.label.toUpperCase()}</div>
       {tab === 'feed' && <section className="cc-welcome-strip"><div><p className="cc-kicker">WELCOME TO THE NETWORK</p><strong>Ideas in the feed. Conversation in the chat. People at the centre.</strong><span>Use the guided tour to see how each part works.</span></div><button onClick={() => setTourStep(0)}><Compass size={15}/> EXPLORE THE NETWORK</button></section>}
       {(error || notice) && <div className={error ? 'cc-alert is-error' : 'cc-alert'}>{error || notice}<button onClick={() => { setError(''); setNotice('') }}><X size={14}/></button></div>}
@@ -384,7 +461,8 @@ export default function Society() {
         <div className="cc-posts">{filtered.map(post => <article className={post.is_announcement ? 'cc-post announcement' : 'cc-post'} key={post.id}><div className="cc-post-meta"><span>{post.is_announcement ? 'OFFICIAL DIRECTIVE' : post.category}</span><time>{dateLabel(post.created_at)}</time></div><h2>{post.title}</h2><p>{post.body}</p><div className="cc-post-bottom"><span>{post.author?.display_name || 'Network member'} <small>@{post.author?.username || 'member'}</small></span><div><button onClick={() => setSelected(post)}><MessageCircle size={14}/> DISCUSS</button>{!post.is_announcement && <button onClick={() => setReporting(post)}><Flag size={13}/> REPORT</button>}{(moderator || post.author_id === session.user.id) && <button onClick={() => removePost(post)}><X size={14}/></button>}</div></div></article>)}{!filtered.length && <div className="cc-empty">The record is empty. Make the first statement.</div>}</div>
       </>}
       {tab === 'chat' && <><div className="cc-heading cc-chat-heading"><div><p className="cc-kicker">COMMUNITY CHAT / LIVE ROOM</p><h1>Talk <em>together.</em></h1><p>Short conversations belong here. Dispatches remain separate and searchable.</p></div><div className="cc-chat-live"><i/> MEMBER ROOM</div></div><div className="cc-chat-context"><MessageCircle size={17}/><span><strong>One shared room.</strong> Keep it useful, respectful and on-topic. No private messages or direct-message claims.</span></div><section className="cc-chat-panel"><div className="cc-chat-top"><span>SECTORX83 / COMMUNITY CHANNEL</span><span>{chatMessages.length} RECENT MESSAGES</span></div><div className="cc-chat-messages" aria-live="polite">{chatMessages.map(message => <article className={message.author_id === session.user.id ? 'cc-chat-message is-own' : 'cc-chat-message'} key={message.id}><span className="cc-chat-avatar">{(message.author?.display_name || 'M').slice(0,1).toUpperCase()}</span><div><header><strong>{message.author?.display_name || 'Member'}</strong><small>@{message.author?.username || 'member'} · {dateLabel(message.created_at)}</small></header><p>{message.body}</p></div></article>)}{!chatMessages.length && <div className="cc-chat-empty"><MessageCircle size={24}/><strong>The room is quiet.</strong><span>Start the first conversation.</span></div>}</div>{suspended ? <p className="cc-chat-locked">Posting is disabled while your account is suspended.</p> : <form className="cc-chat-compose" onSubmit={sendChat}><textarea value={chatDraft} onChange={e => setChatDraft(e.target.value)} rows={2} maxLength={2000} placeholder="Write a message to the room…" required/><div><small>{chatDraft.length}/2000 · Messages are visible to signed-in members.</small><button className="cc-primary" disabled={busy || !chatDraft.trim()}>{busy ? 'SENDING…' : 'SEND MESSAGE'} <Send size={14}/></button></div></form>}</section></>}
-      {tab === 'members' && <><div className="cc-heading"><div><p className="cc-kicker">THE REGISTER / 02</p><h1>The <em>register.</em></h1><p>Every identity is recorded. Every member is accountable for their conduct.</p></div><strong className="cc-count">{members.length.toString().padStart(2,'0')}<small>MEMBERS</small></strong></div><label className="cc-search cc-member-search"><Search size={14}/><input value={search} onChange={e => setSearch(e.target.value)} placeholder="Search the register"/></label><div className="cc-members">{members.filter(m => (m.display_name + m.username).toLowerCase().includes(search.toLowerCase())).map(m => <article key={m.id}><i>{m.display_name.slice(0,1).toUpperCase()}</i><div><strong>{m.display_name}</strong><span>@{m.username}</span><small>MEMBER · JOINED {new Date(m.created_at).toLocaleDateString()}</small>{m.bio && <p>{m.bio}</p>}</div></article>)}</div></>}
+      {tab === 'messages' && <><div className="cc-heading"><div><p className="cc-kicker">PRIVATE CORRESPONDENCE / MEMBER NETWORK</p><h1>Direct <em>messages.</em></h1><p>One-to-one conversations. Only the two participants can access each conversation.</p></div><div className="cc-chat-live"><Lock size={13}/> PRIVATE</div></div><div className="cc-dm-layout"><aside className="cc-dm-list"><div className="cc-dm-list-head"><strong>CONVERSATIONS</strong><span>{dmConversations.length.toString().padStart(2,'0')}</span></div>{dmConversations.map(({peer,message}) => <button key={peer.id} className={activeDm?.id === peer.id ? 'active' : ''} onClick={() => setActiveDm(peer)}><i>{peer.display_name.slice(0,1).toUpperCase()}</i><span><strong>{peer.display_name}</strong><small>@{peer.username} · {dateLabel(message.created_at)}</small><em>{message.body}</em></span></button>)}{!dmConversations.length && <p className="cc-dm-empty">No conversations yet. Open the member register to start one.</p>}</aside><section className="cc-dm-thread">{activeDm ? <><header className="cc-dm-thread-head"><button onClick={() => setActiveDm(null)} aria-label="Back to conversations"><ChevronLeft size={16}/></button><i>{activeDm.display_name.slice(0,1).toUpperCase()}</i><span><strong>{activeDm.display_name}</strong><small>@{activeDm.username} · PRIVATE CONVERSATION</small></span></header><div className="cc-chat-messages cc-dm-messages" aria-live="polite">{activeDmMessages.map(message => <article className={message.sender_id === session.user.id ? 'cc-chat-message is-own' : 'cc-chat-message'} key={message.id}><span className="cc-chat-avatar">{(message.sender_id === session.user.id ? profile?.display_name : activeDm.display_name)?.slice(0,1).toUpperCase() || 'M'}</span><div><header><strong>{message.sender_id === session.user.id ? 'You' : activeDm.display_name}</strong><small>{dateLabel(message.created_at)}</small></header><p>{message.body}</p></div></article>)}{!activeDmMessages.length && <div className="cc-chat-empty"><MessageCircle size={24}/><strong>Start a conversation.</strong><span>Your messages here are visible only to you and {activeDm.display_name}.</span></div>}</div>{suspended ? <p className="cc-chat-locked">Messaging is disabled while your account is suspended.</p> : <form className="cc-chat-compose" onSubmit={sendDirectMessage}><textarea value={dmDraft} onChange={e => setDmDraft(e.target.value)} rows={2} maxLength={2000} placeholder={`Write privately to ${activeDm.display_name}…`} required/><div><small>{dmDraft.length}/2000 · Private between two members.</small><button className="cc-primary" disabled={busy || !dmDraft.trim()}>{busy ? 'SENDING…' : 'SEND PRIVATELY'} <Send size={14}/></button></div></form>}</> : <div className="cc-dm-no-selection"><MessageCircle size={28}/><strong>Select a conversation</strong><span>Or open the Members register and choose Message on a member profile.</span><button className="cc-primary" onClick={() => setTab('members')}>OPEN MEMBER REGISTER <Users size={14}/></button></div>}</section></div></>}
+      {tab === 'members' && <><div className="cc-heading"><div><p className="cc-kicker">THE REGISTER / 02</p><h1>The <em>register.</em></h1><p>Every identity is recorded. Every member is accountable for their conduct.</p></div><strong className="cc-count">{members.length.toString().padStart(2,'0')}<small>MEMBERS</small></strong></div><label className="cc-search cc-member-search"><Search size={14}/><input value={search} onChange={e => setSearch(e.target.value)} placeholder="Search the register"/></label><div className="cc-members">{members.filter(m => (m.display_name + m.username).toLowerCase().includes(search.toLowerCase())).map(m => <article key={m.id}><i>{m.display_name.slice(0,1).toUpperCase()}</i><div><strong>{m.display_name}</strong><span>@{m.username}</span><small>MEMBER · JOINED {new Date(m.created_at).toLocaleDateString()}</small>{m.bio && <p>{m.bio}</p>}<button className="cc-member-message" disabled={m.id === session.user.id} onClick={() => openDirectMessage(m)}><MessageCircle size={13}/> MESSAGE</button></div></article>)}</div></>}
       {tab === 'profile' && <><div className="cc-heading"><div><p className="cc-kicker">IDENTITY RECORD / 03</p><h1>Your <em>record.</em></h1><p>Keep your public identity accurate. Your actions remain your responsibility.</p></div></div><form className="cc-composer cc-profile" onSubmit={saveProfile}><label>DISPLAY NAME<input value={displayName} onChange={e => setDisplayName(e.target.value)} maxLength={48} required/></label><label>ABOUT YOU<textarea rows={4} maxLength={240} value={profileBio} onChange={e => setProfileBio(e.target.value)} placeholder="A short introduction (optional)"/></label><button className="cc-primary">SAVE PROFILE <Check size={15}/></button></form></>}
       {tab === 'admin' && !moderator && <div className="cc-heading"><div><p className="cc-kicker">RESTRICTED ACCESS / 05</p><h1>Command <em>desk.</em></h1><p>Restricted authority. Your verified role does not grant permission to enter this command level.</p></div><Lock size={34}/></div>}
       {tab === 'admin' && moderator && <><div className="cc-heading"><div><p className="cc-kicker">RESTRICTED ACCESS / 05</p><h1>The <em>council.</em></h1><p>Review violations. Govern access. Preserve the integrity of the network. Every exercise of authority must be justified.</p><p className="cc-admin-identity">AUTHENTICATED AS {session.user.email || 'VERIFIED ADMINISTRATOR'} · {role.toUpperCase()}</p></div><Themis large/></div><div className="cc-admin-toolbar"><span>COMMAND STATUS / {rolesLoading ? 'SYNCING DIRECTORY' : 'LIVE SESSION'}</span><button onClick={refreshAdminPanel} disabled={adminRefreshing}>{adminRefreshing ? 'REFRESHING…' : 'REFRESH COMMAND DATA'} <Activity size={14}/></button></div>{roleLoadError && <div className="cc-alert is-error">Role directory unavailable: {roleLoadError}</div>}{rolesLoading && <div className="cc-muted">Synchronising member privileges…</div>}<div className="cc-admin-stats"><div><strong>{members.length}</strong><small>MEMBERS</small></div><div><strong>{posts.length}</strong><small>POSTS</small></div><div><strong>{reports.filter(r => r.status === 'open').length}</strong><small>OPEN REPORTS</small></div><div><strong>{banned.length}</strong><small>SUSPENDED</small></div></div>
