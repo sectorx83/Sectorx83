@@ -104,8 +104,6 @@
 .cc-ribbon{fill:var(--red);stroke:var(--gold);stroke-width:.8}
 .cc-ribbon-type{fill:var(--ivory);font:700 7px Georgia,serif;letter-spacing:1px}
 .cc-header-actions{display:flex;align-items:center;gap:20px}
-.cc-tour-trigger{display:flex;align-items:center;gap:8px;background:transparent;border:1px solid rgba(176,138,69,.5);color:var(--ivory);padding:9px 12px;font:8px var(--mono);letter-spacing:.12em;transition:background .2s,border-color .2s}
-.cc-tour-trigger:hover{background:rgba(159,29,45,.2);border-color:var(--gold)}
 .cc-user{gap:11px;font-size:10px}
 .cc-user button{border-color:rgba(231,223,200,.2);transition:border-color .2s,color .2s}
 .cc-user button:hover{border-color:var(--red);color:var(--ivory)}
@@ -189,9 +187,7 @@
 @media(max-width:760px){
  .cc-header-inside{height:62px;padding:0 14px}
  .cc-header-actions{gap:9px}
- .cc-tour-trigger{padding:8px;font-size:0;gap:0}
- .cc-tour-trigger svg{width:17px;height:17px}
- .cc-user{gap:7px;font-size:9px}
+  .cc-user{gap:7px;font-size:9px}
  .cc-user small{font-size:6px}
  .cc-layout{display:block;min-height:calc(100vh - 62px)}
  .cc-sidebar{position:sticky;top:0;z-index:10;display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:3px;padding:7px 6px;border-right:0;border-bottom:1px solid var(--line);background:rgba(16,16,16,.97);backdrop-filter:blur(12px)}
@@ -223,9 +219,7 @@
 .cc-welcome-strip strong,.cc-welcome-strip span{display:block}
 .cc-welcome-strip strong{font:italic 17px Georgia,serif;color:var(--ivory)}
 .cc-welcome-strip span{margin-top:6px;color:var(--muted);font:9px/1.6 Manrope,sans-serif}
-.cc-welcome-strip button{display:flex;align-items:center;gap:8px;flex:none;padding:10px 12px;border:1px solid rgba(176,138,69,.45);background:transparent;color:var(--ivory);font:7px var(--mono);letter-spacing:.1em}
-.cc-welcome-strip button:hover{background:rgba(159,29,45,.2)}
-@media(max-width:760px){.cc-welcome-strip{align-items:flex-start;flex-direction:column;gap:13px;padding:14px}.cc-welcome-strip strong{font-size:15px}.cc-welcome-strip button{width:100%;justify-content:center}}
+@media(max-width:760px){ .cc-welcome-strip{align-items:flex-start;flex-direction:column;gap:13px;padding:14px}.cc-welcome-strip strong{font-size:15px}}
 
 
 /* Private member messaging */
