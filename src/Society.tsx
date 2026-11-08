@@ -89,6 +89,7 @@ export default function Society() {
   const [chatMessages, setChatMessages] = useState<ChatMessage[]>([])
   const [chatDraft, setChatDraft] = useState('')
   const [dmInbox, setDmInbox] = useState<DirectMessage[]>([])
+  const [dmThread, setDmThread] = useState<DirectMessage[]>([])
   const [dmDraft, setDmDraft] = useState('')
   const [activeDm, setActiveDm] = useState<Profile | null>(null)
   const [tourStep, setTourStep] = useState<number | null>(null)
@@ -238,6 +239,15 @@ export default function Society() {
         setDmInbox(current => current.some(message => message.id === row.id)
           ? current
           : [row, ...current].slice(0, 300))
+        setDmThread(current => {
+          const belongsToOpenThread = activeDm && (
+            (row.sender_id === session.user.id && row.recipient_id === activeDm.id) ||
+            (row.sender_id === activeDm.id && row.recipient_id === session.user.id)
+          )
+          return belongsToOpenThread && !current.some(message => message.id === row.id)
+            ? [...current, row].sort((a, b) => a.created_at.localeCompare(b.created_at))
+            : current
+        })
       })
       .subscribe()
     return () => { active = false; void supabase!.removeChannel(channel) }
@@ -255,12 +265,25 @@ export default function Society() {
     })
   }, [dmInbox, members, session?.user?.id])
 
-  const activeDmMessages = useMemo(() => activeDm && session
-    ? dmInbox.filter(message =>
-        (message.sender_id === session.user.id && message.recipient_id === activeDm.id) ||
-        (message.sender_id === activeDm.id && message.recipient_id === session.user.id)
-      ).sort((a, b) => a.created_at.localeCompare(b.created_at))
-    : [], [dmInbox, activeDm?.id, session?.user?.id])
+  useEffect(() => {
+    if (!supabase || !session || !activeDm) { setDmThread([]); return }
+    let active = true
+    const loadThread = async () => {
+      const { data, error: threadError } = await supabase!
+        .from('direct_messages')
+        .select('id,sender_id,recipient_id,body,created_at')
+        .or(`and(sender_id.eq.${session.user.id},recipient_id.eq.${activeDm.id}),and(sender_id.eq.${activeDm.id},recipient_id.eq.${session.user.id})`)
+        .order('created_at', { ascending: true })
+        .limit(500)
+      if (!active) return
+      if (threadError) { setError(threadError.message); return }
+      setDmThread((data || []) as DirectMessage[])
+    }
+    void loadThread()
+    return () => { active = false }
+  }, [session?.user?.id, activeDm?.id])
+
+  const activeDmMessages = dmThread
 
   useEffect(() => {
     if (profile && !localStorage.getItem('sectorx83-tour-v1')) setTourStep(0)
@@ -325,6 +348,7 @@ export default function Society() {
     if (sendError) setError(sendError.message)
     else if (data) {
       setDmInbox(current => [data as DirectMessage, ...current.filter(message => message.id !== data.id)].slice(0, 300))
+      setDmThread(current => [...current.filter(message => message.id !== data.id), data as DirectMessage].sort((a, b) => a.created_at.localeCompare(b.created_at)))
       setDmDraft('')
     }
     setBusy(false)
