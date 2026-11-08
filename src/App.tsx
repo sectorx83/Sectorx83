@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import type { ReactNode } from 'react'
+import Society from './Society'
 import { ArrowDown, ArrowLeft, ArrowRight, ArrowUpRight, Github, Instagram, Mail, Menu, Moon, Sun, X, ExternalLink, Layers3, Cpu } from 'lucide-react'
 
 type Project = {
@@ -274,7 +275,7 @@ function App() {
       <div className="loader-track"><span /></div>
       <div className="loader-meta mono"><span>SECTORX83 / SYSTEMS & SOFTWARE</span><span>LOADING</span></div>
     </div>}
-    <div className={loading ? "site-shell site-shell--loading" : "site-shell"}>{secretPath ? <SecretSocietyPage /> : <><Header dark={dark} setDark={setDark} />{project ? <ProjectPage project={project} /> : projectSlug ? <main className="not-found section-wrap"><Label>404 / NOT FOUND</Label><h1>That project<br /><span>is not here.</span></h1><a className="button button--dark" href="/#work">Back to projects <ArrowLeft size={15} /></a></main> : <HomePage />}<Footer /></>}</div>
+    <div className={loading ? "site-shell site-shell--loading" : "site-shell"}>{secretPath ? <Society /> : <><Header dark={dark} setDark={setDark} />{project ? <ProjectPage project={project} /> : projectSlug ? <main className="not-found section-wrap"><Label>404 / NOT FOUND</Label><h1>That project<br /><span>is not here.</span></h1><a className="button button--dark" href="/#work">Back to projects <ArrowLeft size={15} /></a></main> : <HomePage />}<Footer /></>}</div>
   </>
 }
 export default App
