@@ -85,7 +85,6 @@ function ProjectDetail({id}:{id:string}) {
 
 function App() {
   const routeMatch = window.location.pathname.match(/^\/projects\/([^/]+)\/?$/)
-  if (routeMatch) return <ProjectDetail id={routeMatch[1]}/>
   const [filter,setFilter] = useState('All')
   const [mobileOpen,setMobileOpen] = useState(false)
   const visibleProjects = useMemo(() => projects.filter(p => filter === 'All' || p.category === filter),[filter])
@@ -110,6 +109,7 @@ function App() {
     })
     return () => observer.disconnect()
   }, [])
+  if (routeMatch) return <ProjectDetail id={routeMatch[1]}/>
   return <div className="site-shell">
     <div className="ambient ambient-one"/><div className="ambient ambient-two"/>
     <header className="topbar">
