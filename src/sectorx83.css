@@ -226,3 +226,40 @@
 .cc-welcome-strip button{display:flex;align-items:center;gap:8px;flex:none;padding:10px 12px;border:1px solid rgba(176,138,69,.45);background:transparent;color:var(--ivory);font:7px var(--mono);letter-spacing:.1em}
 .cc-welcome-strip button:hover{background:rgba(159,29,45,.2)}
 @media(max-width:760px){.cc-welcome-strip{align-items:flex-start;flex-direction:column;gap:13px;padding:14px}.cc-welcome-strip strong{font-size:15px}.cc-welcome-strip button{width:100%;justify-content:center}}
+
+
+/* Private member messaging */
+.cc-dm-layout{display:grid;grid-template-columns:minmax(220px,290px) minmax(0,1fr);min-height:480px;border:1px solid var(--line);background:rgba(8,8,8,.38)}
+.cc-dm-list{border-right:1px solid var(--line);min-width:0}
+.cc-dm-list-head{display:flex;justify-content:space-between;padding:15px;border-bottom:1px solid var(--line);font:8px var(--mono);letter-spacing:.12em;color:var(--gold)}
+.cc-dm-list>button{display:flex;align-items:center;gap:11px;width:100%;padding:13px;border:0;border-bottom:1px solid rgba(231,223,200,.07);background:transparent;color:var(--ivory);text-align:left}
+.cc-dm-list>button:hover,.cc-dm-list>button.active{background:rgba(159,29,45,.13)}
+.cc-dm-list>button.active{box-shadow:inset 2px 0 var(--red)}
+.cc-dm-list>button>i,.cc-dm-thread-head>i{width:34px;height:34px;display:grid;place-items:center;flex:none;border:1px solid rgba(176,138,69,.5);background:rgba(159,29,45,.16);font:15px Georgia,serif;font-style:normal}
+.cc-dm-list>button>span,.cc-dm-thread-head>span{display:grid;gap:4px;min-width:0}
+.cc-dm-list>button strong,.cc-dm-thread-head strong{font:600 10px Manrope,sans-serif}
+.cc-dm-list>button small,.cc-dm-thread-head small{font:7px var(--mono);color:var(--muted)}
+.cc-dm-list>button em{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:#a99f8d;font:italic 10px Georgia,serif;max-width:205px}
+.cc-dm-empty{padding:18px;color:var(--muted);font:10px/1.7 Manrope,sans-serif}
+.cc-dm-thread{display:flex;flex-direction:column;min-width:0}
+.cc-dm-thread-head{display:flex;align-items:center;gap:10px;padding:12px 15px;border-bottom:1px solid var(--line)}
+.cc-dm-thread-head>button{display:grid;place-items:center;width:28px;height:28px;border:1px solid var(--line);background:transparent;color:var(--ivory)}
+.cc-dm-messages{flex:1;height:430px;max-height:60vh}
+.cc-dm-no-selection{display:grid;place-content:center;justify-items:center;gap:12px;flex:1;min-height:420px;padding:24px;text-align:center;color:var(--muted)}
+.cc-dm-no-selection>svg{color:var(--gold)}
+.cc-dm-no-selection strong{font:italic 22px Georgia,serif;color:var(--ivory)}
+.cc-dm-no-selection span{max-width:280px;font:10px/1.7 Manrope,sans-serif}
+.cc-dm-no-selection .cc-primary{width:auto;margin:8px 0 0;padding:11px 14px}
+.cc-member-message{display:inline-flex;align-items:center;gap:7px;margin-top:10px;padding:8px 10px;border:1px solid rgba(176,138,69,.42);background:rgba(176,138,69,.06);color:var(--ivory);font:7px var(--mono);letter-spacing:.1em}
+.cc-member-message:hover{background:rgba(159,29,45,.18);border-color:var(--gold)}
+.cc-member-message:disabled{opacity:.35;cursor:not-allowed}
+@media(max-width:760px){
+ .cc-sidebar{grid-template-columns:repeat(7,minmax(0,1fr))}
+ .cc-sidebar>button{font-size:6px}
+ .cc-dm-layout{grid-template-columns:1fr;min-height:0}
+ .cc-dm-list{border-right:0;border-bottom:1px solid var(--line);max-height:210px;overflow:auto}
+ .cc-dm-list>button{padding:10px}
+ .cc-dm-list>button em{max-width:calc(100vw - 115px)}
+ .cc-dm-thread{min-height:400px}
+ .cc-dm-messages{height:48vh;max-height:none;min-height:250px}
+}
