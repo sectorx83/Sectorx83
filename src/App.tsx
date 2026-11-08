@@ -231,17 +231,6 @@ function ProjectPage({ project }: { project: Project }) {
   </main>
 }
 
-function SecretSocietyPage() {
- const [password,setPassword]=useState(''),[ok,setOk]=useState(false),[busy,setBusy]=useState(false),[error,setError]=useState(''),[data,setData]=useState<any>(null);
- useEffect(()=>{fetch('/api/sectorx83').then(async r=>{if(r.ok){setData(await r.json());setOk(true)}}).catch(()=>{})},[]);
- async function login(e:React.FormEvent<HTMLFormElement>){e.preventDefault();setBusy(true);setError('');try{const r=await fetch('/api/sectorx83',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({password})});if(!r.ok)throw new Error('ACCESS DENIED');setData(await r.json());setOk(true);setPassword('')}catch{setError('ACCESS DENIED. KEY NOT RECOGNIZED.')}finally{setBusy(false)}}
- async function logout(){await fetch('/api/sectorx83',{method:'DELETE'});setOk(false);setData(null)}
- return <main className="society-page"><header className="society-top mono"><a href="/">← SECTORX83</a><span>ENCRYPTED NODE / 07</span><span>{ok?'CHANNEL OPEN':'CHANNEL LOCKED'}</span></header>
- {!ok?<section className="society-gate"><div className="society-seal">83</div><p className="mono society-kicker">THE VORKUTA DIRECTIVE · EST. UNKNOWN</p><h1>THE <em>UNSEEN</em><br/>COLLECTIVE</h1><p className="society-lede">A quiet network for those who refuse to let the watchers write the rules.</p><form onSubmit={login} className="society-login"><label className="mono" htmlFor="society-key">AUTHENTICATION KEY</label><div className="society-input"><input id="society-key" type="password" autoComplete="current-password" value={password} onChange={e=>setPassword(e.target.value)} placeholder="Enter access phrase" required/><button disabled={busy||!password}>{busy?'VERIFYING':'ENTER ↗'}</button></div>{error&&<p className="society-error mono">{error}</p>}<small className="mono">ONE KEY · ONE DOOR · NO PUBLIC ROSTER</small></form></section>
- :<section className="society-dossier"><div className="society-dossier-head"><div><p className="mono society-kicker">ACCESS GRANTED / MEMBER CHANNEL</p><h1>WELCOME TO<br/><em>THE QUIET SIDE.</em></h1></div><button className="society-exit" onClick={logout}>SEAL SESSION ×</button></div><div className="society-manifesto"><span className="mono">01 / THE DIRECTIVE</span><div><h2>{data?.title}</h2><p>{data?.mission}</p></div></div><div className="society-facts"><article><small>FICTIONAL HEADQUARTERS</small><strong>{data?.hq}</strong><p>{data?.hqNote}</p></article><article><small>PRIMARY ADVERSARY</small><strong>{data?.adversary}</strong><p>{data?.adversaryNote}</p></article><article><small>OPERATING PRINCIPLE</small><strong>{data?.principle}</strong><p>{data?.principleNote}</p></article></div><blockquote className="society-pledge">“{data?.pledge}”</blockquote><footer className="society-bottom mono">VORKUTA NODE / FICTIONAL CREATIVE PROJECT</footer></section>}
- </main>
-}
-
 function App() {
   const [dark, setDark] = useState(false)
   const [loading, setLoading] = useState(true)
