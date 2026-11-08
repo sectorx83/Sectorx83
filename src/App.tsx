@@ -245,6 +245,7 @@ function App() {
   const [dark, setDark] = useState(false)
   const [loading, setLoading] = useState(true)
   const path = window.location.pathname.replace(/\/+$/, '')
+  const secretPath = path === '/sectorx83'
   const projectSlug = path.startsWith('/projects/') ? path.slice('/projects/'.length) : ''
   const project = projects.find((item) => item.slug === projectSlug)
   useEffect(() => {
