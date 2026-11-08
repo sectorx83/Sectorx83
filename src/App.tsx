@@ -4,12 +4,84 @@ import { ArrowDownRight, ArrowUpRight, Atom, Bot, Code2, Cpu, ExternalLink, Gith
 const github = 'https://github.com/sectorx83'
 const projects = [
   { id:'d3x8', number:'01', name:'D3X8', type:'Operating system', category:'Systems', status:'Active development', tone:'live', description:'A 64-bit x86_64 operating system built from the ground up — custom kernel, userspace, drivers, networking, and a graphical desktop.', details:'Kernel engineering · SMP · ELF64 · Harp desktop', stack:['C','x86_64 ASM','Limine','Make'], icon:Cpu, featured:true, href:'https://github.com/sectorx83/D3X8', accent:'violet' },
-  { id:'flux', number:'02', name:'Flux Agent', type:'AI developer tooling', category:'AI', status:'Active development', tone:'live', description:'A local-first AI agent and automation CLI with planning, approval-gated build tools, provider fallbacks, memory, and remote task execution.', details:'Multi-provider · Multi-agent · Local-first', stack:['Python','Groq','OpenRouter','SQLite'], icon:Bot, featured:true, href:'https://github.com/sectorx83/Flux-agent', accent:'cyan' },
-  { id:'cathedral', number:'03', name:'Cathedral', type:'Developer infrastructure', category:'Infrastructure', status:'Phase 4 in progress', tone:'progress', description:'An open computing laboratory for running isolated software experiments, inspecting runtime behavior, and reproducing environments.', details:'Rust core · Linux isolation · Desktop studio', stack:['Rust','Tauri','React','SQLite'], icon:Layers3, featured:true, href:'https://github.com/sectorx83/Cathedral', accent:'amber' },
-  { id:'gravity', number:'04', name:'Gravity', type:'Computational runtime', category:'Systems', status:'Phase 1 complete', tone:'complete', description:'An adaptive computational runtime exploring safe live topology changes while preserving required state and correctness.', details:'Mutable graphs · State transfer · Runtime evolution', stack:['Rust','Graph runtime','CLI'], icon:Atom, featured:false, href:'https://github.com/sectorx83/Gravity', accent:'rose' },
+  { id:'flux', number:'02', name:'Flux Agent', type:'AI developer tooling', category:'AI', status:'Phase 3 · in progress', tone:'progress', description:'A local-first AI agent and automation CLI with planning, approval-gated build tools, provider fallbacks, memory, and remote task execution.', details:'Multi-provider · Multi-agent · Local-first', stack:['Python','Groq','OpenRouter','SQLite'], icon:Bot, featured:true, href:'https://github.com/sectorx83/Flux-agent', accent:'cyan' },
+  { id:'cathedral', number:'03', name:'Cathedral', type:'Developer infrastructure', category:'Infrastructure', status:'Phase 4 · in progress', tone:'progress', description:'An open computing laboratory for running isolated software experiments, inspecting runtime behavior, and reproducing environments.', details:'Rust core · Linux isolation · Desktop studio', stack:['Rust','Tauri','React','SQLite'], icon:Layers3, featured:true, href:'https://github.com/sectorx83/Cathedral', accent:'amber' },
+  { id:'gravity', number:'04', name:'Gravity', type:'Computational runtime', category:'Systems', status:'Phase 2 · in progress', tone:'progress', description:'An adaptive computational runtime exploring safe live topology changes while preserving required state and correctness.', details:'Mutable graphs · State transfer · Runtime evolution', stack:['Rust','Graph runtime','CLI'], icon:Atom, featured:false, href:'https://github.com/sectorx83/Gravity', accent:'rose' },
   { id:'edith', number:'05', name:'EDITH X1', type:'AI assistant platform', category:'AI', status:'Live', tone:'complete', description:'A multi-user AI assistant with chat, voice input, configurable behavior, and an execution layer for connected workflows.', details:'AI chat · Voice interface · Supabase', stack:['React','TypeScript','TanStack','Supabase'], icon:Radio, featured:false, href:'https://github.com/sectorx83/edithx1', live:'https://www.edithx1.vercel.app', accent:'green' },
 ]
 const filters = ['All','Systems','AI','Infrastructure']
+const profilePic = 'https://avatars.githubusercontent.com/u/352018852?v=4'
+const projectPages: Record<string, { kicker:string; headline:string; overview:string; stage:string; focus:string[]; milestones:{label:string;state:'done'|'active'|'next'}[]; limitations:string }> = {
+  d3x8: {
+    kicker:'SYSTEMS / OPERATING SYSTEM',
+    headline:'An operating system, built from the ground up.',
+    overview:'D3X8 is a 64-bit x86_64 operating system developed primarily in C and assembly. Its scope spans the kernel, userspace, hardware support, networking, storage, and a custom graphical desktop.',
+    stage:'Active development',
+    focus:['SMP kernel and preemptive scheduling','ELF64 userspace and dynamic loading','Hardware discovery, interrupts and device drivers','TCP/IP, DNS, HTTP downloads and package tooling','Harp compositor and native desktop applications'],
+    milestones:[{label:'Bootable x86_64 kernel and core runtime',state:'done'},{label:'Userspace, drivers and networking foundations',state:'done'},{label:'Memory isolation and broader hardware validation',state:'active'},{label:'Desktop stability and application coverage',state:'active'}],
+    limitations:'Process isolation, memory mapping, page-table management, and some graphics and device edge cases remain active areas of development and testing.'
+  },
+  flux: {
+    kicker:'AI / DEVELOPER TOOLING',
+    headline:'A local-first agent for real work.',
+    overview:'Flux Agent is a developer-focused automation CLI with chat, planning, and approval-gated build modes. It combines provider routing, workspace tools, memory, multi-agent task delegation, workflows, and remote execution.',
+    stage:'Phase 1 and 2 complete · Phase 3 in progress',
+    focus:['Groq, Gemini, Cerebras and OpenRouter provider routing','Approval-gated workspace edits and shell execution','SQLite notes and optional local semantic memory','Specialist agents, browser automation and workflows','Remote device pairing, task streaming and integrations'],
+    milestones:[{label:'Core planning, build tools and workflow automation',state:'done'},{label:'Semantic memory, integrations and remote access',state:'done'},{label:'Signed plugins, deployment tooling and release automation',state:'done'},{label:'Workflow-specific GitHub Actions rollback',state:'next'}],
+    limitations:'Provider deployments and real-account integration tests are not run in CI. GitHub Actions rollback remains workflow-specific; Flux does not provide an OS sandbox.'
+  },
+  cathedral: {
+    kicker:'INFRASTRUCTURE / EXPERIMENT LAB',
+    headline:'Make software behavior reproducible.',
+    overview:'Cathedral is an open computing laboratory for creating isolated experiments, observing runtime behavior, diagnosing failures, and reproducing environments across compatible machines.',
+    stage:'Phases 1–3 complete · Phase 4 in progress',
+    focus:['Rust CLI and SQLite-backed experiment registry','Linux workload isolation with Bubblewrap and cgroup controls','Snapshots, verification and comparison workflows','Tauri desktop shell and authenticated local API','Live run telemetry, PTY controls and filesystem inspection'],
+    milestones:[{label:'Phase 1 — foundation and core engine',state:'done'},{label:'Phase 2 — Linux runtime and observability',state:'done'},{label:'Phase 3 — snapshots and reproducibility',state:'done'},{label:'Phase 4 — desktop lab and advanced experiments',state:'active'}],
+    limitations:'Phase 4 validation continues around real sandbox and PTY execution, broader experiments, and installer upgrades. Windows and macOS workload isolation are not supported.'
+  },
+  gravity: {
+    kicker:'SYSTEMS / COMPUTATIONAL RUNTIME',
+    headline:'Evolving a running graph without losing its state.',
+    overview:'Gravity explores safe live topology transformation: adding, removing, splitting, replacing, and reconnecting computational cells while preserving accepted work and required state.',
+    stage:'Phase 1 complete · Phase 2 in progress',
+    focus:['Deterministic directed message graph and bounded queues','Transactional cell processing and in-memory snapshots','Topology mutation transactions and work partitioning','Morphological State Transfer and shadow validation','Atomic routing cutover, rollback and measured adaptation'],
+    milestones:[{label:'Phase 1 — local runtime foundation',state:'done'},{label:'Runtime topology mutation and partitioning contracts',state:'active'},{label:'Consistent snapshots and state transfer',state:'next'},{label:'Automated failure-injected cutover demonstration',state:'next'}],
+    limitations:'Phase 2 is not marked complete until the full demonstration is automated and repeatable, including injected failures during snapshot, migration, validation, and cutover.'
+  },
+  edith: {
+    kicker:'AI / ASSISTANT PLATFORM',
+    headline:'A multi-user assistant with voice and tools.',
+    overview:'EDITH X1 is a live AI assistant web application built with React, TypeScript, TanStack Start, Vite, and Supabase. It combines conversational AI, voice input, configurable behavior, and an execution layer.',
+    stage:'Live application',
+    focus:['Multi-user chat with anonymous sessions','Voice input and local speech playback','Configurable assistant behavior','EDITH NETWORK execution layer','Groq-backed chat with server-side credentials'],
+    milestones:[{label:'Core web application and chat experience',state:'done'},{label:'Voice input and speech playback',state:'done'},{label:'Execution layer and configuration',state:'done'},{label:'Ongoing provider and product improvements',state:'active'}],
+    limitations:'The public README describes the live application and its current setup. Deployment and provider configuration depend on the external Supabase and Groq services.'
+  }
+}
+function ProjectDetail({id}:{id:string}) {
+  const project=projects.find(item=>item.id===id)
+  const page=projectPages[id]
+  if(!project||!page) return <div className="site-shell detail-shell"><main className="detail-not-found"><p>404 / NOT FOUND</p><h1>This project page doesn't exist.</h1><a className="button button-primary" href="/">Back to portfolio <ArrowUpRight size={16}/></a></main></div>
+  const Icon=project.icon
+  return <div className="site-shell detail-shell">
+    <header className="topbar detail-topbar"><a className="brand" href="/"><img className="brand-avatar" src={profilePic} alt="Tyler's GitHub profile picture"/><span className="brand-name">TYLER<span className="brand-slash">/</span>DEV</span></a><nav className="nav-links"><a href="/#work">All projects</a><a href="/#about">About</a><a className="nav-contact" href={project.href} target="_blank" rel="noreferrer">Repository <ArrowUpRight size={14}/></a></nav><a className="detail-mobile-back" href="/#work">← Work</a></header>
+    <main className="detail-main section-wrap">
+      <a className="back-link" href="/#work"><ArrowDownRight size={15}/> BACK TO SELECTED WORK</a>
+      <section className="detail-hero">
+        <div className="detail-kicker"><span className="eyebrow-dot"/>{page.kicker}</div>
+        <div className="detail-title-row"><div><div className="project-number">/{project.number} — PROJECT FILE</div><h1>{project.name}<span className="heading-period">.</span></h1></div><div className={'detail-project-icon accent-'+project.accent}><Icon size={34} strokeWidth={1.35}/></div></div>
+        <p className="detail-headline">{page.headline}</p><p className="detail-overview">{page.overview}</p>
+        <div className="detail-actions"><a className="button button-primary" href={project.href} target="_blank" rel="noreferrer"><Github size={16}/> View source <ArrowUpRight size={15}/></a>{project.live&&<a className="button button-quiet" href={project.live} target="_blank" rel="noreferrer">Open live app <ExternalLink size={14}/></a>}<span className={'status status-'+project.tone}><i/>{page.stage}</span></div>
+      </section>
+      <div className="detail-grid">
+        <section className="detail-block"><div className="eyebrow"><span className="eyebrow-dot"/> CORE SYSTEMS</div><h2>What it's made of<span className="heading-period">.</span></h2><div className="detail-focus">{page.focus.map((item,i)=><div className="detail-focus-row" key={item}><span>0{i+1}</span><p>{item}</p><ArrowUpRight size={14}/></div>)}</div></section>
+        <section className="detail-block"><div className="eyebrow"><span className="eyebrow-dot"/> DEVELOPMENT LOG</div><h2>Project status<span className="heading-period">.</span></h2><div className="milestone-list">{page.milestones.map((item,i)=><div className="milestone" key={item.label}><span className={'milestone-dot milestone-'+item.state}/><div><small>0{i+1} / {item.state==='done'?'COMPLETE':item.state==='active'?'IN PROGRESS':'UP NEXT'}</small><p>{item.label}</p></div></div>)}</div></section>
+      </div>
+      <section className="detail-note"><span>ENGINEERING NOTE</span><p>{page.limitations}</p></section>
+      <footer className="detail-footer"><a href="/#work">← All projects</a><a href={github} target="_blank" rel="noreferrer">More work on GitHub <ArrowUpRight size={14}/></a></footer>
+    </main>
+  </div>
+}
 
 function App() {
   const [filter,setFilter] = useState('All')
@@ -39,7 +111,7 @@ function App() {
   return <div className="site-shell">
     <div className="ambient ambient-one"/><div className="ambient ambient-two"/>
     <header className="topbar">
-      <a className="brand" href="#home" aria-label="Tyler home"><span className="brand-mark">T<span>.</span></span><span className="brand-name">TYLER<span className="brand-slash">/</span>DEV</span></a>
+      <a className="brand" href="#home" aria-label="Tyler home"><img className="brand-avatar" src={profilePic} alt="Tyler GitHub avatar"/><span className="brand-name">TYLER<span className="brand-slash">/</span>DEV</span></a>
       <nav className={mobileOpen ? 'nav-links nav-open' : 'nav-links'}>
         <a href="#work" onClick={closeMenu}>Work</a><a href="#about" onClick={closeMenu}>About</a><a href="#stack" onClick={closeMenu}>Stack</a><a href="#contact" onClick={closeMenu}>Contact</a>
         <a className="nav-contact" href={github} target="_blank" rel="noreferrer" onClick={closeMenu}>GitHub <ArrowUpRight size={14}/></a>
@@ -79,7 +151,7 @@ function App() {
           <div className="project-title-row"><div><div className="project-type">{project.type}</div><h3>{project.name}</h3></div><a className="project-arrow" href={project.href} target="_blank" rel="noreferrer" aria-label={'Open ' + project.name + ' repository'}><ArrowUpRight size={19}/></a></div>
           <p className="project-description">{project.description}</p><div className="project-details">{project.details}</div>
           <div className="tag-row">{project.stack.map(tag => <span className="tech-tag" key={tag}>{tag}</span>)}</div>
-          <div className="project-card-footer"><a href={project.href} target="_blank" rel="noreferrer"><Github size={15}/> Source code <ExternalLink size={12}/></a>{project.live && <a href={project.live} target="_blank" rel="noreferrer">Live app <ArrowUpRight size={13}/></a>}</div>
+          <div className="project-card-footer"><a href={'/projects/' + project.id + '/'}><span>Project file</span><ArrowUpRight size={13}/></a><a href={project.href} target="_blank" rel="noreferrer"><Github size={15}/> Source <ExternalLink size={12}/></a>{project.live && <a href={project.live} target="_blank" rel="noreferrer">Live app <ArrowUpRight size={13}/></a>}</div>
         </article>})}</div>
         <div className="all-repos"><span>More code, experiments and iteration history</span><a href={github + '?tab=repositories'} target="_blank" rel="noreferrer">Browse all repositories <ArrowUpRight size={15}/></a></div>
       </section>
@@ -101,7 +173,7 @@ function App() {
           <a className="contact-github" href={github} target="_blank" rel="noreferrer"><Github size={15}/> Or explore the code on GitHub <ArrowUpRight size={14}/></a>
           <div className="contact-corner">TYLER / SECTORX83</div></div></section>
     </main>
-    <footer className="footer section-wrap"><a className="brand footer-brand" href="#home"><span className="brand-mark">T<span>.</span></span><span className="brand-name">TYLER<span className="brand-slash">/</span>DEV</span></a><span className="footer-note">Designed & built with intent.</span><div className="footer-socials"><a href="mailto:sectorx83@gmail.com" aria-label="Email Tyler"><Mail size={15}/></a><a href="https://www.instagram.com/manazz.io/" target="_blank" rel="noreferrer" aria-label="Instagram"><Instagram size={15}/></a><a href={github} target="_blank" rel="noreferrer" aria-label="GitHub"><Github size={15}/></a></div><span className="copyright">© {new Date().getFullYear()} TYLER</span></footer>
+    <footer className="footer section-wrap"><a className="brand footer-brand" href="#home"><img className="brand-avatar" src={profilePic} alt="Tyler GitHub avatar"/><span className="brand-name">TYLER<span className="brand-slash">/</span>DEV</span></a><span className="footer-note">Designed & built with intent.</span><div className="footer-socials"><a href="mailto:sectorx83@gmail.com" aria-label="Email Tyler"><Mail size={15}/></a><a href="https://www.instagram.com/manazz.io/" target="_blank" rel="noreferrer" aria-label="Instagram"><Instagram size={15}/></a><a href={github} target="_blank" rel="noreferrer" aria-label="GitHub"><Github size={15}/></a></div><span className="copyright">© {new Date().getFullYear()} TYLER</span></footer>
   </div>
 }
 export default App
