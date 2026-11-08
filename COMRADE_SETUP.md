@@ -19,14 +19,9 @@ Use the community project's URL and publishable key. Never expose a service-role
 
 ## Admin function
 
-Deploy supabase/functions/manage-member-role/index.ts as manage-member-role with JWT verification enabled. Set these function secrets:
+Deploy supabase/functions/manage-member-role/index.ts as manage-member-role with JWT verification enabled. Supabase supplies SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY to the Edge Function runtime. The function allows only the production Sectorx83 origin and the configured main-branch preview origin; update its explicit origin allowlist if the trusted domain changes.
 
-- SUPABASE_URL
-- SUPABASE_PUBLISHABLE_KEY
-- SUPABASE_SERVICE_ROLE_KEY
-- APP_ORIGIN=https://sectorx83.vercel.app (comma-separated if additional trusted preview origins are needed)
-
-Only a caller whose trusted Auth app_metadata role is admin can list accounts or change roles. The service-role key stays inside the Edge Function. Keep APP_ORIGIN restricted to exact trusted origins; do not use a wildcard.
+Only a caller whose trusted Auth app_metadata role is admin can list accounts or change roles. The service-role key stays inside the Edge Function.
 
 ## First administrator
 
