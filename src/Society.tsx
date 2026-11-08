@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react'
-import { Activity, ArrowUpRight, BookOpen, Building2, ChevronRight, Database, FileSearch, Globe2, LogOut, LockKeyhole, Network, Search, ShieldCheck, SlidersHorizontal } from 'lucide-react'
+import { Activity, ArrowUpRight, BookOpen, ChevronRight, Database, FileSearch, LogOut, LockKeyhole, Network, Search, ShieldCheck, SlidersHorizontal } from 'lucide-react'
 
 type Source = { name: string; publisher: string; url: string; kind: string; note: string }
 type CaseFile = { id: string; title: string; area: string; status: string; summary: string; scope: string[]; sources: string[]; confidence: string }
