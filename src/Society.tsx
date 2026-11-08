@@ -6,7 +6,8 @@ import './sectorx83.css'
 
 type Profile = { id: string; username: string; display_name: string; bio: string | null; created_at: string }
 type Post = { id: string; author_id: string; title: string; body: string; category: string; is_announcement: boolean; created_at: string; author?: { username: string; display_name: string } | null }
-type Comment = { id: string; body: string; created_at: string; author?: { username: string; display_name: string } | null }\ntype ChatMessage = { id: string; author_id: string; body: string; created_at: string; author?: { username: string; display_name: string } | null }
+type Comment = { id: string; body: string; created_at: string; author?: { username: string; display_name: string } | null }
+type ChatMessage = { id: string; author_id: string; body: string; created_at: string; author?: { username: string; display_name: string } | null }
 type Report = { id: string; reason: string; status: string; created_at: string; reporter?: { username: string } | null; post?: { title: string } | null }
 type Role = { id: string; email: string | null; role: string }
 type CipherEntry = { id: string; label: string; ciphertext: string; iv: string; salt: string; created_at: string }
