@@ -113,7 +113,17 @@ export default function Society() {
     if (!supabase) { setReady(true); return }
     let active = true
     supabase.auth.getSession()
-      .then(({ data }) => { if (active) { setSession(data.session); setReady(true) } })
+      .then(async ({ data }) => {
+        if (!active) return
+        let restoredSession = data.session
+        if (restoredSession) {
+          // Refresh JWT claims so recently assigned app_metadata roles appear without requiring manual sign-out.
+          const { data: refreshed, error: refreshError } = await supabase.auth.refreshSession()
+          if (refreshed.session) restoredSession = refreshed.session
+          else if (refreshError) console.warn('Session role refresh deferred:', refreshError.message)
+        }
+        if (active) { setSession(restoredSession); setReady(true) }
+      })
       .catch((e: any) => { if (active) { setError(e?.message || 'Unable to restore your session.'); setReady(true) } })
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, next) => { if (active) { setSession(next); setError(''); setNotice('') } })
     return () => { active = false; subscription.unsubscribe() }
