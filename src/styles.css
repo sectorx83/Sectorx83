@@ -245,3 +245,107 @@ body{background:var(--paper);color:var(--ink);font-family:var(--body)}
     transition: none !important;
   }
 }
+
+
+/* SECTORX83 / MOTION PASS 02 */
+:root { --sx-ease: cubic-bezier(.2,.75,.25,1); --sx-slow: cubic-bezier(.16,1,.3,1); }
+html { scroll-behavior: smooth; }
+body { overflow-x: clip; }
+
+/* A quiet reading-progress line, driven by native scroll timelines where supported. */
+body::before {
+  content: ""; position: fixed; z-index: 1000; inset: 0 auto auto 0; height: 2px; width: 100%;
+  background: #c66b4e; transform: scaleX(0); transform-origin: left;
+  animation: sx-reading-progress linear both; animation-timeline: scroll(root);
+  pointer-events: none;
+}
+@keyframes sx-reading-progress { to { transform: scaleX(1); } }
+
+/* Sections enter with a little depth instead of all using the same generic fade. */
+.section-top[data-reveal], .cap-head[data-reveal], .studio-left[data-reveal] {
+  transition: opacity .85s var(--sx-slow), transform .95s var(--sx-slow);
+}
+.studio-right[data-reveal] { transition: opacity .9s var(--sx-slow) .12s, transform .9s var(--sx-slow) .12s; }
+.project-row[data-reveal] { transition: opacity .75s var(--sx-slow), transform .85s var(--sx-slow), border-color .3s ease; }
+.cap-grid > div { opacity: 0; transform: translateY(18px); }
+.capabilities:has(.cap-head.in-view) .cap-grid > div {
+  animation: sx-cap-enter .75s var(--sx-slow) both;
+}
+.capabilities:has(.cap-head.in-view) .cap-grid > div:nth-child(2) { animation-delay: .08s; }
+.capabilities:has(.cap-head.in-view) .cap-grid > div:nth-child(3) { animation-delay: .16s; }
+.capabilities:has(.cap-head.in-view) .cap-grid > div:nth-child(4) { animation-delay: .24s; }
+@keyframes sx-cap-enter { to { opacity: 1; transform: translateY(0); } }
+
+/* Project art gets its own slow internal movement. */
+.visual { isolation: isolate; }
+.visual::after {
+  content: ""; position: absolute; inset: 0; z-index: 0; pointer-events: none;
+  background: linear-gradient(115deg, transparent 25%, #ffffff12 46%, transparent 65%);
+  transform: translateX(-120%); transition: transform .9s var(--sx-slow);
+}
+.project-row:hover .visual::after { transform: translateX(120%); }
+.visual-code, .visual-corner { transition: opacity .35s ease, letter-spacing .45s var(--sx-ease); }
+.project-row:hover .visual-code { letter-spacing: .17em; opacity: .9; }
+.visual-flux .flux-orbit { animation: sx-orbit-drift 26s linear infinite; }
+.visual-flux .flux-orbit.second { animation-direction: reverse; animation-duration: 34s; }
+.visual-gravity .gravity-visual i { transition: transform .65s var(--sx-slow); }
+.visual-edith .edith-visual i { animation: sx-edith-breathe 5s ease-in-out infinite alternate; }
+.visual-edith .edith-visual i:nth-child(2) { animation-delay: -2.5s; }
+@keyframes sx-edith-breathe { from { transform: scale(.94) rotate(-8deg); opacity: .55; } to { transform: scale(1.06) rotate(8deg); opacity: 1; } }
+
+/* Typography and links respond with restrained, directional motion. */
+.hero-heading h1 em { transition: color .55s ease, -webkit-text-stroke-color .55s ease; }
+.hero-new:hover .hero-heading h1 em { -webkit-text-stroke-color: #d4a58d; }
+.hero-scroll svg { transition: transform .4s var(--sx-ease); }
+.hero-scroll:hover svg { transform: translate(4px,4px); }
+.work-end a, .detail-footer a, .detail-source { transition: color .25s ease, letter-spacing .3s var(--sx-ease); }
+.work-end a:hover, .detail-footer a:hover, .detail-source:hover { letter-spacing: .16em; }
+.studio-principles > div { position: relative; overflow: hidden; }
+.studio-principles > div::after {
+  content: ""; position: absolute; left: 0; bottom: 0; width: 100%; height: 1px;
+  background: #c66b4e; transform: scaleX(0); transform-origin: left; transition: transform .45s var(--sx-ease);
+}
+.studio-principles > div:hover::after { transform: scaleX(1); }
+.statement h2 em { display: inline-block; transition: transform .6s var(--sx-slow); }
+.statement:hover h2 em { transform: translateX(8px); }
+.contact-new h2 em { display: inline-block; transition: transform .6s var(--sx-slow); }
+.contact-new h2:hover em { transform: translateX(10px); }
+
+/* Menu and detail-page elements feel intentional on touch screens too. */
+.nav-items.nav-visible { animation: sx-menu-open .32s var(--sx-slow) both; transform-origin: top; }
+@keyframes sx-menu-open { from { opacity: 0; transform: translateY(-8px); } to { opacity: 1; transform: translateY(0); } }
+.detail-intro > * { animation: sx-rise-in .7s var(--sx-slow) both; }
+.detail-intro > *:nth-child(2) { animation-delay: .08s; }
+.detail-intro > *:nth-child(3) { animation-delay: .16s; }
+.detail-intro > *:nth-child(4) { animation-delay: .22s; }
+.detail-meta > * { transition: color .25s ease, transform .3s var(--sx-ease); }
+.detail-meta a:hover { transform: translateY(-2px); }
+.scope-list > div { transition: padding .35s var(--sx-ease), background-color .3s ease; }
+.scope-list > div:hover { padding-left: 10px; background: #405b4b08; }
+
+/* Native scroll-linked reveal enhancement. IntersectionObserver remains the fallback. */
+@supports (animation-timeline: view()) {
+  .project-row, .cap-grid > div, .studio-principles > div {
+    animation-timeline: view();
+    animation-range: entry 0% entry 45%;
+  }
+  .project-row { animation-name: sx-view-rise; animation-duration: 1ms; animation-fill-mode: both; }
+  @keyframes sx-view-rise {
+    from { opacity: .35; transform: translateY(22px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+}
+
+@media (hover: none) {
+  .project-row:hover .project-visual-link .visual { transform: none; }
+  .project-row:hover .visual::after { transform: translateX(-120%); }
+}
+@media (prefers-reduced-motion: reduce) {
+  body::before { animation: none; transform: none; }
+  .visual-flux .flux-orbit, .visual-edith .edith-visual i { animation: none !important; }
+  .cap-grid > div { opacity: 1; transform: none; animation: none !important; }
+  .detail-intro > * { animation: none !important; }
+  .nav-items.nav-visible { animation: none !important; }
+  .project-row, .project-row *, .studio-principles > div::after,
+  .statement h2 em, .contact-new h2 em, .scope-list > div { transition: none !important; }
+}
