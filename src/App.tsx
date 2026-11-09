@@ -89,6 +89,55 @@ function IntroLoader() {
   </div>
 }
 
+
+function ScrollProgress() {
+  const [progress,setProgress] = useState(0)
+  useEffect(() => {
+    let frame = 0
+    const update = () => {
+      if (frame) return
+      frame = window.requestAnimationFrame(() => {
+        const range = document.documentElement.scrollHeight - window.innerHeight
+        setProgress(range > 0 ? (window.scrollY / range) * 100 : 0)
+        frame = 0
+      })
+    }
+    window.addEventListener('scroll',update,{passive:true})
+    update()
+    return () => { window.removeEventListener('scroll',update); if(frame) window.cancelAnimationFrame(frame) }
+  },[])
+  return <div className="scroll-progress" aria-hidden="true"><span style={{width:progress+'%'}}/></div>
+}
+function CustomCursor() {
+  const [position,setPosition] = useState({x:-100,y:-100})
+  const [active,setActive] = useState(false)
+  useEffect(() => {
+    if (!window.matchMedia('(hover: hover) and (pointer: fine)').matches) return
+    const move = (event:PointerEvent) => setPosition({x:event.clientX,y:event.clientY})
+    const over = (event:PointerEvent) => setActive(Boolean((event.target as HTMLElement).closest('a,button,[role="button"]')))
+    const out = () => setActive(false)
+    window.addEventListener('pointermove',move,{passive:true})
+    document.addEventListener('pointerover',over)
+    document.addEventListener('pointerout',out)
+    document.documentElement.classList.add('has-custom-cursor')
+    return () => {
+      window.removeEventListener('pointermove',move)
+      document.removeEventListener('pointerover',over)
+      document.removeEventListener('pointerout',out)
+      document.documentElement.classList.remove('has-custom-cursor')
+    }
+  },[])
+  return <div className={active?'custom-cursor is-active':'custom-cursor'} style={{transform:'translate3d('+position.x+'px,'+position.y+'px,0)'}} aria-hidden="true"/>
+}
+function StudioClock() {
+  const [now,setNow] = useState(() => new Date())
+  useEffect(() => {
+    const timer = window.setInterval(() => setNow(new Date()),30000)
+    return () => window.clearInterval(timer)
+  },[])
+  return <span className="studio-clock"><i/> LOCAL TIME / {new Intl.DateTimeFormat('en-IN',{timeZone:'Asia/Kolkata',hour:'2-digit',minute:'2-digit',hour12:false}).format(now)} IST</span>
+}
+
 function App() {
   const routeMatch = window.location.pathname.match(/^\/projects\/([^/]+)\/?$/)
   const [filter,setFilter] = useState('All')
@@ -105,7 +154,7 @@ function App() {
     return ()=>observer.disconnect()
   },[])
   if(routeMatch) return <><IntroLoader/><ProjectDetail id={routeMatch[1]}/></>
-  return <><IntroLoader/><div className="site-shell">
+  return <><IntroLoader/><ScrollProgress/><CustomCursor/><div className="site-shell">
     <header className="topbar">
       <Brand/>
       <nav className={mobileOpen?'nav-links nav-open':'nav-links'}>
@@ -157,13 +206,21 @@ function App() {
           <a className="building-item building-complete" href="/projects/gravity/"><span className="building-index">03</span><span className="building-copy"><strong>Gravity</strong><small>Phase 2 evolution engine / verified on main</small></span><span className="building-state"><i/> VERIFIED</span><ArrowUpRight size={17}/></a>
         </div>
       </section>
+      <section className="timeline-section section-wrap" id="timeline">
+        <div className="section-heading reveal"><div><div className="eyebrow">05 / THE RECORD</div><h2>Built in <em>public.</em></h2></div><p>A living record of experiments, releases, and the work still taking shape.</p></div>
+        <div className="timeline-track reveal">
+          <article className="timeline-entry"><span className="timeline-date">2024 / ORIGIN</span><i/><div><h3>The first systems experiments</h3><p>Started exploring software from the lower layers, with an emphasis on learning by building.</p></div></article>
+          <article className="timeline-entry"><span className="timeline-date">2025 / EXPANSION</span><i/><div><h3>Tools, runtimes, and interfaces</h3><p>Expanded into developer infrastructure, computational runtimes, and practical AI tooling.</p></div></article>
+          <article className="timeline-entry timeline-current"><span className="timeline-date">2026 / IN PROGRESS</span><i/><div><h3>Making the experiments real</h3><p>Hardening projects, documenting the engineering, and shipping usable software in the open.</p></div></article>
+        </div>
+      </section>
       <section className="stack-section section-wrap" id="stack">
         <div className="section-heading reveal"><div><div className="eyebrow">05 / CAPABILITIES</div><h2>Tools of the <em>trade.</em></h2></div><p>Technologies reflected across the public projects and experiments.</p></div>
         <div className="stack-grid reveal"><div className="stack-group"><Terminal size={19}/><span>01 / SYSTEMS</span><h3>Close to the metal</h3><p>Rust · C · x86_64 Assembly · Linux</p></div><div className="stack-group"><Code2 size={19}/><span>02 / APPLICATIONS</span><h3>Interfaces & tools</h3><p>TypeScript · React · Python · Vite</p></div><div className="stack-group"><Layers3 size={19}/><span>03 / INFRASTRUCTURE</span><h3>Reliable foundations</h3><p>Supabase · SQLite · Git · CI</p></div><div className="stack-group"><Bot size={19}/><span>04 / AI & AUTOMATION</span><h3>Useful intelligence</h3><p>Groq · OpenRouter · Agent tooling</p></div></div>
       </section>
       <section className="contact-section" id="contact"><div className="section-wrap contact-inner reveal"><div className="eyebrow">06 / START A CONVERSATION</div><h2>Have a good<br/><em>problem to solve?</em></h2><div className="contact-bottom"><p>For project conversations, collaboration, or a thoughtful technical discussion. I’m always interested in work with a clear purpose.</p><div className="contact-links"><a href="mailto:sectorx83@gmail.com"><span>EMAIL</span><strong>sectorx83@gmail.com</strong><ArrowUpRight size={17}/></a><a href="https://www.instagram.com/manazz.io/" target="_blank" rel="noreferrer"><span>INSTAGRAM</span><strong>@manazz.io</strong><ArrowUpRight size={17}/></a><a href={github} target="_blank" rel="noreferrer"><span>GITHUB</span><strong>github.com/sectorx83</strong><ArrowUpRight size={17}/></a></div></div></div></section>
     </main>
-    <footer className="footer section-wrap"><Brand small/><span className="footer-note">INDEPENDENT DIGITAL WORKS / INDIA</span><div className="footer-socials"><a href="mailto:sectorx83@gmail.com" aria-label="Email"><Mail size={16}/></a><a href="https://www.instagram.com/manazz.io/" target="_blank" rel="noreferrer" aria-label="Instagram"><Instagram size={16}/></a><a href={github} target="_blank" rel="noreferrer" aria-label="GitHub"><Github size={16}/></a></div><span className="copyright">© {new Date().getFullYear()} SECTORX83</span></footer>
+    <footer className="footer section-wrap"><Brand small/><span className="footer-note">INDEPENDENT DIGITAL WORKS / INDIA</span><StudioClock/><div className="footer-socials"><a href="mailto:sectorx83@gmail.com" aria-label="Email"><Mail size={16}/></a><a href="https://www.instagram.com/manazz.io/" target="_blank" rel="noreferrer" aria-label="Instagram"><Instagram size={16}/></a><a href={github} target="_blank" rel="noreferrer" aria-label="GitHub"><Github size={16}/></a></div><span className="copyright">© {new Date().getFullYear()} SECTORX83</span></footer>
   </div></>
 }
 export default App
