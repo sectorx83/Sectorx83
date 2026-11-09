@@ -119,7 +119,7 @@ function App() {
     <header className="topbar">
       <a className="brand" href="#home" aria-label="Tyler home"><img className="brand-avatar" src={profilePic} alt="Tyler GitHub avatar"/><span className="brand-name">TYLER<span className="brand-slash">/</span>DEV</span></a>
       <nav className={mobileOpen ? 'nav-links nav-open' : 'nav-links'}>
-        <a href="#work" onClick={closeMenu}>Work</a><a href="#about" onClick={closeMenu}>About</a><a href="#stack" onClick={closeMenu}>Stack</a><a href="#contact" onClick={closeMenu}>Contact</a>
+        <a href="#work" onClick={closeMenu}>Work</a><a href="#building" onClick={closeMenu}>Now</a><a href="#about" onClick={closeMenu}>About</a><a href="#stack" onClick={closeMenu}>Stack</a><a href="#contact" onClick={closeMenu}>Contact</a>
         <a className="nav-contact" href={github} target="_blank" rel="noreferrer" onClick={closeMenu}>GitHub <ArrowUpRight size={14}/></a>
       </nav>
       <button className="mobile-menu" onClick={() => setMobileOpen(!mobileOpen)} aria-label="Toggle navigation">{mobileOpen ? <X size={21}/> : <Menu size={21}/>}</button>
