@@ -349,3 +349,27 @@ body::before {
   .project-row, .project-row *, .studio-principles > div::after,
   .statement h2 em, .contact-new h2 em, .scope-list > div { transition: none !important; }
 }
+
+/* PROJECT CASE STUDIES */
+.detail-context,.detail-architecture,.detail-milestones,.detail-boundaries{display:grid;grid-template-columns:.7fr 1.3fr;gap:10%;padding:72px 0;border-bottom:1px solid var(--line)}
+.detail-context-heading h2,.detail-architecture h2,.detail-milestones h2,.detail-boundaries h2{font:clamp(36px,5vw,62px)/.98 var(--display);letter-spacing:-.075em;margin:24px 0 0}
+.detail-context-copy>p,.detail-architecture>div:first-child>p,.boundary-intro{max-width:650px;font-size:14px;line-height:1.9;color:#62685f;margin:0 0 28px}
+.detail-context-copy>.eyebrow{display:block;margin:30px 0 12px}
+.detail-architecture{border-bottom:0;padding-bottom:30px}
+.detail-architecture>div:first-child>p{font-size:11px;margin-top:20px}
+.architecture-list{border-top:1px solid var(--ink)}
+.architecture-list>div{display:grid;grid-template-columns:35px 1fr 20px;gap:12px;align-items:center;border-bottom:1px solid var(--line);padding:16px 0}
+.architecture-list span,.detail-milestones li>span{font:9px var(--mono);color:var(--blue)}
+.architecture-list p,.detail-milestones li p{font-size:12px;line-height:1.6;color:#62685f;margin:0}
+.detail-milestones{border-top:1px solid var(--ink)}
+.detail-milestones ol{list-style:none;margin:0;padding:0;border-top:1px solid var(--ink)}
+.detail-milestones li{display:grid;grid-template-columns:35px 1fr;gap:12px;padding:17px 0;border-bottom:1px solid var(--line);align-items:start}
+.detail-boundaries{border-top:1px solid var(--ink)}
+.detail-boundaries ul{list-style:none;padding:0;margin:0;border-top:1px solid var(--ink)}
+.detail-boundaries li{position:relative;padding:16px 8px 16px 22px;border-bottom:1px solid var(--line);font-size:12px;line-height:1.7;color:#62685f}
+.detail-boundaries li:before{content:"";position:absolute;left:2px;top:24px;width:6px;height:6px;background:var(--acid);border-radius:50%}
+.next-focus{margin-top:34px;padding:22px;background:#e8e6dd;border-left:2px solid var(--acid)}
+.next-focus .eyebrow{display:block;margin-bottom:12px}
+.next-focus p{font-size:12px;line-height:1.8;margin:0;color:var(--ink)}
+@media(max-width:900px){.detail-context,.detail-architecture,.detail-milestones,.detail-boundaries{gap:6%}}
+@media(max-width:620px){.detail-context,.detail-architecture,.detail-milestones,.detail-boundaries{grid-template-columns:1fr;gap:22px;padding:46px 0}.detail-context-heading h2,.detail-architecture h2,.detail-milestones h2,.detail-boundaries h2{font-size:42px;margin-top:18px}.detail-context-copy>p{font-size:12px}.architecture-list p,.detail-milestones li p,.detail-boundaries li{font-size:11px}.detail-architecture>div:first-child>p{font-size:10px}.next-focus{padding:17px}.next-focus p{font-size:11px}}
