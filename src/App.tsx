@@ -65,7 +65,7 @@ function IntroLoader() {
   useEffect(() => {
     if (!visible) return
     const messages = ['Preparing the workspace','Mapping the signal','Warming up the systems','Opening the studio','Almost ready']
-    const duration = 1500 + Math.random() * 3500
+    const duration = window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 350 : 800 + Math.random() * 3600
     const started = Date.now()
     setMessage(messages[Math.floor(Math.random() * messages.length)])
     const tick = window.setInterval(() => {
