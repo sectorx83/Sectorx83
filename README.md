@@ -30,7 +30,7 @@ Requires Node.js 20+.
 ## Links
 
 - GitHub: https://github.com/sectorx83
-- Email: https://mailto:sectorx83@gmail.com
+- Email: mailto:sectorx83@gmail.com
 - Instagram: https://www.instagram.com/manazz.io/
 - EDITH X1: https://www.edithx1.vercel.app
 
