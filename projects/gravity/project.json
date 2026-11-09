@@ -1,9 +1,10 @@
 {
   "name": "Gravity",
   "slug": "gravity",
-  "status": "Phase 2 in progress",
+  "status": "Phase 2 complete",
   "completed": [
-    "Phase 1"
+    "Phase 1",
+    "Phase 2"
   ],
   "repository": "https://github.com/sectorx83/Gravity",
   "category": "Systems"
