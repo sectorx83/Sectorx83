@@ -139,7 +139,7 @@ function StudioClock() {
 }
 
 function App() {
-  const routeMatch = window.location.pathname.match(/^\/projects\/([^/]+)\/?$/)
+  const routeMatch = window.location.pathname.match(/^\/(?:projects|project|work)\/([^/]+)\/?$/i)
   const [filter,setFilter] = useState('All')
   const [mobileOpen,setMobileOpen] = useState(false)
   const visibleProjects = useMemo(() => projects.filter(p => filter === 'All' || p.category === filter),[filter])
@@ -167,7 +167,7 @@ function App() {
       <section className="hero section-wrap">
         <div className="hero-topline"><span>INDEPENDENT DEVELOPER / INDIA</span><span>EST. 2024 — PRESENT</span></div>
         <div className="hero-copy reveal"><div className="eyebrow"><span className="eyebrow-dot"/> DESIGNING SYSTEMS. BUILDING SOFTWARE.</div>
-          <h1>Ideas into<br/><em>infrastructure.</em></h1>
+          <h1 className="kinetic-title" aria-label="Ideas into infrastructure."><span className="kinetic-line"><span>Ideas into</span></span><span className="kinetic-line kinetic-line-accent"><span>infrastructure<span className="kinetic-period">.</span></span></span></h1>
           <div className="hero-bottom"><p className="hero-intro">I’m Tyler. I build software at the intersection of systems engineering, developer tools, and applied AI. Curious by default. Serious about the details.</p><a className="round-link" href="#work" aria-label="Explore selected work"><ArrowDown size={22}/></a></div>
         </div>
         <div className="hero-stage reveal">
