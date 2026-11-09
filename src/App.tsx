@@ -56,6 +56,39 @@ function ProjectDetail({id}:{id:string}) {
     <footer className="footer section-wrap"><Brand small/><span>© {new Date().getFullYear()} SECTORX83</span><a href="/#contact">Get in touch <ArrowUpRight size={14}/></a></footer>
   </div>
 }
+function IntroLoader() {
+  const [visible,setVisible] = useState(() => {
+    try { return !sessionStorage.getItem('sx83-intro-seen') } catch { return true }
+  })
+  const [progress,setProgress] = useState(0)
+  const [message,setMessage] = useState('Preparing the workspace')
+  useEffect(() => {
+    if (!visible) return
+    const messages = ['Preparing the workspace','Mapping the signal','Warming up the systems','Opening the studio','Almost ready']
+    const duration = 1500 + Math.random() * 3500
+    const started = Date.now()
+    setMessage(messages[Math.floor(Math.random() * messages.length)])
+    const tick = window.setInterval(() => {
+      const elapsed = Date.now() - started
+      setProgress(Math.min(94, Math.round((elapsed / duration) * 94)))
+    }, 32)
+    const finish = window.setTimeout(() => {
+      setProgress(100)
+      try { sessionStorage.setItem('sx83-intro-seen','1') } catch {}
+      window.setTimeout(() => setVisible(false), 520)
+    }, duration)
+    return () => { window.clearInterval(tick); window.clearTimeout(finish) }
+  }, [visible])
+  if (!visible) return null
+  return <div className="intro-loader" role="status" aria-live="polite">
+    <div className="intro-loader-inner">
+      <div className="intro-loader-top"><span className="intro-brand">[sx⁸³]<sup>®</sup></span><span>INDEPENDENT DIGITAL WORKS</span></div>
+      <div className="intro-loader-center"><span className="intro-kicker">SECTORX83 / INITIALIZING</span><h1>Ideas into<br/><em>infrastructure.</em></h1><p>{message}<span className="loader-ellipsis">...</span></p></div>
+      <div className="intro-loader-bottom"><div className="loader-track"><span style={{width:progress+'%'}}/></div><div className="loader-meta"><span>LOADING EXPERIENCE</span><strong>{String(progress).padStart(2,'0')}%</strong></div><span className="loader-foot">BUILT WITH INTENT. / SX83 © 2026</span></div>
+    </div>
+  </div>
+}
+
 function App() {
   const routeMatch = window.location.pathname.match(/^\/projects\/([^/]+)\/?$/)
   const [filter,setFilter] = useState('All')
@@ -71,8 +104,8 @@ function App() {
     elements.forEach((el,index)=>{el.style.setProperty('--delay',`${Math.min(index%5,4)*65}ms`);observer.observe(el)})
     return ()=>observer.disconnect()
   },[])
-  if(routeMatch) return <ProjectDetail id={routeMatch[1]}/>
-  return <div className="site-shell">
+  if(routeMatch) return <><IntroLoader/><ProjectDetail id={routeMatch[1]}/></>
+  return <><IntroLoader/><div className="site-shell">
     <header className="topbar">
       <Brand/>
       <nav className={mobileOpen?'nav-links nav-open':'nav-links'}>
@@ -131,6 +164,6 @@ function App() {
       <section className="contact-section" id="contact"><div className="section-wrap contact-inner reveal"><div className="eyebrow">06 / START A CONVERSATION</div><h2>Have a good<br/><em>problem to solve?</em></h2><div className="contact-bottom"><p>For project conversations, collaboration, or a thoughtful technical discussion. I’m always interested in work with a clear purpose.</p><div className="contact-links"><a href="mailto:sectorx83@gmail.com"><span>EMAIL</span><strong>sectorx83@gmail.com</strong><ArrowUpRight size={17}/></a><a href="https://www.instagram.com/manazz.io/" target="_blank" rel="noreferrer"><span>INSTAGRAM</span><strong>@manazz.io</strong><ArrowUpRight size={17}/></a><a href={github} target="_blank" rel="noreferrer"><span>GITHUB</span><strong>github.com/sectorx83</strong><ArrowUpRight size={17}/></a></div></div></div></section>
     </main>
     <footer className="footer section-wrap"><Brand small/><span className="footer-note">INDEPENDENT DIGITAL WORKS / INDIA</span><div className="footer-socials"><a href="mailto:sectorx83@gmail.com" aria-label="Email"><Mail size={16}/></a><a href="https://www.instagram.com/manazz.io/" target="_blank" rel="noreferrer" aria-label="Instagram"><Instagram size={16}/></a><a href={github} target="_blank" rel="noreferrer" aria-label="GitHub"><Github size={16}/></a></div><span className="copyright">© {new Date().getFullYear()} SECTORX83</span></footer>
-  </div>
+  </div></>
 }
 export default App
