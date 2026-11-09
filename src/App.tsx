@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react'
-import { ArrowDown, ArrowDownRight, ArrowRight, ArrowUpRight, Atom, Bot, Code2, Cpu, ExternalLink, Github, Instagram, Layers3, Mail, Menu, Radio, Terminal, X } from 'lucide-react'
+import { ArrowDown, ArrowDownRight, ArrowUpRight, Atom, Bot, Code2, Cpu, ExternalLink, Github, Instagram, Layers3, Mail, Menu, Radio, Terminal, X } from 'lucide-react'
 
 const github = 'https://github.com/sectorx83'
 const projects = [
