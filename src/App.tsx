@@ -115,7 +115,7 @@ function CustomCursor() {
     if (!window.matchMedia('(hover: hover) and (pointer: fine)').matches) return
     const move = (event:PointerEvent) => setPosition({x:event.clientX,y:event.clientY})
     const over = (event:PointerEvent) => setActive(Boolean((event.target as HTMLElement).closest('a,button,[role="button"]')))
-    const out = () => setActive(false)
+    const out = (event:PointerEvent) => setActive(Boolean((event.relatedTarget as HTMLElement | null)?.closest('a,button,[role="button"]')))
     window.addEventListener('pointermove',move,{passive:true})
     document.addEventListener('pointerover',over)
     document.addEventListener('pointerout',out)
@@ -209,9 +209,9 @@ function App() {
       <section className="timeline-section section-wrap" id="timeline">
         <div className="section-heading reveal"><div><div className="eyebrow">05 / THE RECORD</div><h2>Built in <em>public.</em></h2></div><p>A living record of experiments, releases, and the work still taking shape.</p></div>
         <div className="timeline-track reveal">
-          <article className="timeline-entry"><span className="timeline-date">2024 / ORIGIN</span><i/><div><h3>The first systems experiments</h3><p>Started exploring software from the lower layers, with an emphasis on learning by building.</p></div></article>
-          <article className="timeline-entry"><span className="timeline-date">2025 / EXPANSION</span><i/><div><h3>Tools, runtimes, and interfaces</h3><p>Expanded into developer infrastructure, computational runtimes, and practical AI tooling.</p></div></article>
-          <article className="timeline-entry timeline-current"><span className="timeline-date">2026 / IN PROGRESS</span><i/><div><h3>Making the experiments real</h3><p>Hardening projects, documenting the engineering, and shipping usable software in the open.</p></div></article>
+          <article className="timeline-entry"><span className="timeline-date">01 / FOUNDATION</span><i/><div><h3>The first systems experiments</h3><p>Started exploring software from the lower layers, with an emphasis on learning by building.</p></div></article>
+          <article className="timeline-entry"><span className="timeline-date">02 / EXPANSION</span><i/><div><h3>Tools, runtimes, and interfaces</h3><p>Expanded into developer infrastructure, computational runtimes, and practical AI tooling.</p></div></article>
+          <article className="timeline-entry timeline-current"><span className="timeline-date">03 / CURRENT FOCUS</span><i/><div><h3>Making the experiments real</h3><p>Hardening projects, documenting the engineering, and shipping usable software in the open.</p></div></article>
         </div>
       </section>
       <section className="stack-section section-wrap" id="stack">
