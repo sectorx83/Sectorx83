@@ -3,10 +3,10 @@ import { ArrowDownRight, ArrowUpRight, Atom, Bot, Code2, Cpu, ExternalLink, Gith
 
 const github = 'https://github.com/sectorx83'
 const projects = [
-  { id:'d3x8', number:'01', name:'D3X8', type:'Operating system', category:'Systems', status:'Active development', tone:'live', description:'A 64-bit x86_64 operating system built from the ground up — custom kernel, userspace, drivers, networking, and a graphical desktop.', details:'Kernel engineering · SMP · ELF64 · Harp desktop', stack:['C','x86_64 ASM','Limine','Make'], icon:Cpu, featured:true, href:'https://github.com/sectorx83/D3X8', accent:'violet' },
-  { id:'flux', number:'02', name:'Flux Agent', type:'AI developer tooling', category:'AI', status:'Phase 3 · in progress', tone:'progress', description:'A local-first AI agent and automation CLI with planning, approval-gated build tools, provider fallbacks, memory, and remote task execution.', details:'Multi-provider · Multi-agent · Local-first', stack:['Python','Groq','OpenRouter','SQLite'], icon:Bot, featured:true, href:'https://github.com/sectorx83/Flux-agent', accent:'cyan' },
+  { id:'d3x8', number:'01', name:'D3X8', type:'Operating system', category:'Systems', status:'Experimental OS', tone:'progress', description:'A 64-bit x86_64 operating system built from the ground up — custom kernel, userspace, drivers, networking, and a graphical desktop.', details:'Kernel engineering · SMP · ELF64 · Harp desktop', stack:['C','x86_64 ASM','Limine','Make'], icon:Cpu, featured:true, href:'https://github.com/sectorx83/D3X8', accent:'violet' },
+  { id:'flux', number:'02', name:'Flux Agent', type:'AI developer tooling', category:'AI', status:'Complete', tone:'complete', description:'A local-first AI agent and automation CLI with planning, approval-gated build tools, provider fallbacks, memory, and remote task execution.', details:'Multi-provider · Multi-agent · Local-first', stack:['Python','Groq','OpenRouter','SQLite'], icon:Bot, featured:true, href:'https://github.com/sectorx83/Flux-agent', accent:'cyan' },
   { id:'cathedral', number:'03', name:'Cathedral', type:'Developer infrastructure', category:'Infrastructure', status:'Phase 4 · in progress', tone:'progress', description:'An open computing laboratory for running isolated software experiments, inspecting runtime behavior, and reproducing environments.', details:'Rust core · Linux isolation · Desktop studio', stack:['Rust','Tauri','React','SQLite'], icon:Layers3, featured:true, href:'https://github.com/sectorx83/Cathedral', accent:'amber' },
-  { id:'gravity', number:'04', name:'Gravity', type:'Computational runtime', category:'Systems', status:'Phase 2 · in progress', tone:'progress', description:'An adaptive computational runtime exploring safe live topology changes while preserving required state and correctness.', details:'Mutable graphs · State transfer · Runtime evolution', stack:['Rust','Graph runtime','CLI'], icon:Atom, featured:false, href:'https://github.com/sectorx83/Gravity', accent:'rose' },
+  { id:'gravity', number:'04', name:'Gravity', type:'Computational runtime', category:'Systems', status:'Phase 2 complete', tone:'complete', description:'An adaptive computational runtime exploring safe live topology changes while preserving required state and correctness.', details:'Mutable graphs · State transfer · Runtime evolution', stack:['Rust','Graph runtime','CLI'], icon:Atom, featured:false, href:'https://github.com/sectorx83/Gravity', accent:'rose' },
   { id:'edith', number:'05', name:'EDITH X1', type:'AI assistant platform', category:'AI', status:'Live', tone:'complete', description:'A multi-user AI assistant with chat, voice input, configurable behavior, and an execution layer for connected workflows.', details:'AI chat · Voice interface · Supabase', stack:['React','TypeScript','TanStack','Supabase'], icon:Radio, featured:false, href:'https://github.com/sectorx83/edithx1', live:'https://www.edithx1.vercel.app', accent:'green' },
 ]
 const filters = ['All','Systems','AI','Infrastructure']
@@ -16,7 +16,7 @@ const projectPages: Record<string, { kicker:string; headline:string; overview:st
     kicker:'SYSTEMS / OPERATING SYSTEM',
     headline:'An operating system, built from the ground up.',
     overview:'D3X8 is a 64-bit x86_64 operating system developed primarily in C and assembly. Its scope spans the kernel, userspace, hardware support, networking, storage, and a custom graphical desktop.',
-    stage:'Active development',
+    stage:'Experimental operating system',
     focus:['SMP kernel and preemptive scheduling','ELF64 userspace and dynamic loading','Hardware discovery, interrupts and device drivers','TCP/IP, DNS, HTTP downloads and package tooling','Harp compositor and native desktop applications'],
     milestones:[{label:'Bootable x86_64 kernel and core runtime',state:'done'},{label:'Userspace, drivers and networking foundations',state:'done'},{label:'Memory isolation and broader hardware validation',state:'active'},{label:'Desktop stability and application coverage',state:'active'}],
     limitations:'Process isolation, memory mapping, page-table management, and some graphics and device edge cases remain active areas of development and testing.'
@@ -25,10 +25,10 @@ const projectPages: Record<string, { kicker:string; headline:string; overview:st
     kicker:'AI / DEVELOPER TOOLING',
     headline:'A local-first agent for real work.',
     overview:'Flux Agent is a developer-focused automation CLI with chat, planning, and approval-gated build modes. It combines provider routing, workspace tools, memory, multi-agent task delegation, workflows, and remote execution.',
-    stage:'Phase 1 and 2 complete · Phase 3 in progress',
+    stage:'Core platform complete',
     focus:['Groq, Gemini, Cerebras and OpenRouter provider routing','Approval-gated workspace edits and shell execution','SQLite notes and optional local semantic memory','Specialist agents, browser automation and workflows','Remote device pairing, task streaming and integrations'],
-    milestones:[{label:'Core planning, build tools and workflow automation',state:'done'},{label:'Semantic memory, integrations and remote access',state:'done'},{label:'Signed plugins, deployment tooling and release automation',state:'done'},{label:'Workflow-specific GitHub Actions rollback',state:'next'}],
-    limitations:'Provider deployments and real-account integration tests are not run in CI. GitHub Actions rollback remains workflow-specific; Flux does not provide an OS sandbox.'
+    milestones:[{label:'Core planning, build tools and workflow automation',state:'done'},{label:'Semantic memory, integrations and remote access',state:'done'},{label:'Signed plugins, deployment tooling and release automation',state:'done'},{label:'Provider-specific GitHub Actions rollback remains out of scope',state:'next'}],
+    limitations:'Provider deployments and real-account integration tests depend on external credentials and are not run in CI. Generic GitHub Actions rollback is intentionally not claimed because rollback behavior is workflow-specific. Flux is not an operating-system sandbox.'
   },
   cathedral: {
     kicker:'INFRASTRUCTURE / EXPERIMENT LAB',
@@ -43,10 +43,10 @@ const projectPages: Record<string, { kicker:string; headline:string; overview:st
     kicker:'SYSTEMS / COMPUTATIONAL RUNTIME',
     headline:'Evolving a running graph without losing its state.',
     overview:'Gravity explores safe live topology transformation: adding, removing, splitting, replacing, and reconnecting computational cells while preserving accepted work and required state.',
-    stage:'Phase 1 complete · Phase 2 in progress',
+    stage:'Phase 2 complete · CI verified on main',
     focus:['Deterministic directed message graph and bounded queues','Transactional cell processing and in-memory snapshots','Topology mutation transactions and work partitioning','Morphological State Transfer and shadow validation','Atomic routing cutover, rollback and measured adaptation'],
-    milestones:[{label:'Phase 1 — local runtime foundation',state:'done'},{label:'Runtime topology mutation and partitioning contracts',state:'active'},{label:'Consistent snapshots and state transfer',state:'next'},{label:'Automated failure-injected cutover demonstration',state:'next'}],
-    limitations:'Phase 2 is not marked complete until the full demonstration is automated and repeatable, including injected failures during snapshot, migration, validation, and cutover.'
+    milestones:[{label:'Phase 1 — local runtime foundation',state:'done'},{label:'Runtime topology mutation and work partitioning',state:'done'},{label:'State transfer, shadow validation and rollback paths',state:'done'},{label:'Live evolution demonstration and full CI verification',state:'done'}],
+    limitations:'Phase 2 is verified on main with formatting, Clippy, workspace tests, documentation, and both CLI demonstrations passing. The runtime remains single-threaded and in-memory; it does not claim distributed consensus or durable cross-process transactions.'
   },
   edith: {
     kicker:'AI / ASSISTANT PLATFORM',
@@ -158,9 +158,17 @@ function App() {
         </article>})}</div>
         <div className="all-repos"><span>More code, experiments and iteration history</span><a href={github + '?tab=repositories'} target="_blank" rel="noreferrer">Browse all repositories <ArrowUpRight size={15}/></a></div>
       </section>
+      <section className="building-section section-wrap" id="building">
+        <div className="section-heading reveal"><div><div className="eyebrow"><span className="eyebrow-dot"/> CURRENT FOCUS</div><h2>Currently building<span className="heading-period">.</span></h2></div><p className="section-intro">A quick look at the work still moving forward, with completed milestones kept separate from active development.</p></div>
+        <div className="building-list reveal">
+          <a className="building-item" href="/projects/cathedral/"><span className="building-index">01</span><span className="building-copy"><strong>Cathedral</strong><small>Phase 4 · desktop studio and experiment tooling</small></span><span className="building-state"><i/> IN PROGRESS</span><ArrowUpRight size={16}/></a>
+          <a className="building-item" href="/projects/d3x8/"><span className="building-index">02</span><span className="building-copy"><strong>D3X8</strong><small>Experimental OS · kernel, memory and desktop stability</small></span><span className="building-state"><i/> EXPERIMENTAL</span><ArrowUpRight size={16}/></a>
+          <a className="building-item building-complete" href="/projects/gravity/"><span className="building-index">03</span><span className="building-copy"><strong>Gravity</strong><small>Phase 2 evolution engine · verified on main</small></span><span className="building-state"><i/> VERIFIED</span><ArrowUpRight size={16}/></a>
+        </div>
+      </section>
       <section className="about-section section-wrap" id="about">
         <div className="about-label reveal"><div className="eyebrow"><span className="eyebrow-dot"/> A LITTLE CONTEXT</div><h2>Curiosity,<br/><span className="gradient-text">made tangible.</span></h2></div>
-        <div className="about-content reveal"><p className="about-statement">I like understanding how things work beneath the surface — then turning that understanding into something people can use.</p><p className="about-body">My work moves between low-level engineering and higher-level product building. That means exploring kernels and runtimes, designing developer tools, and experimenting with AI-powered interfaces. I value clear architecture, useful software, and honest engineering over flashy claims.</p>
+        <div className="about-content reveal"><p className="about-statement">I’m Tyler, an independent developer from India. I learn by building systems, testing ideas, and figuring out what happens beneath the surface.</p><p className="about-body">My projects move between operating-system development, computational runtimes, developer infrastructure, and AI tooling. I enjoy working close to the fundamentals, but I care just as much about making the result understandable and useful. I prefer steady engineering, clear documentation, and honest progress over inflated claims.</p>
           <div className="principles"><div><span>01</span><strong>Build from fundamentals</strong><p>Understand the system before adding abstraction.</p></div><div><span>02</span><strong>Make it useful</strong><p>Turn experiments into tools with a clear purpose.</p></div><div><span>03</span><strong>Show the real state</strong><p>Document limitations as carefully as capabilities.</p></div></div>
         </div>
       </section>
