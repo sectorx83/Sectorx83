@@ -98,13 +98,13 @@ function App() {
       <section className="work-section section-wrap" id="work">
         <div className="section-heading reveal"><div><div className="eyebrow">01 / SELECTED WORK</div><h2>Built to <em>matter.</em></h2></div><p>Five ongoing experiments in making software more capable, understandable, and useful.</p></div>
         <div className="work-toolbar"><div className="project-count">INDEX <strong>05</strong> / PROJECTS</div><div className="filter-row" aria-label="Filter projects">{filters.map(item=><button key={item} className={filter===item?'filter-button active':'filter-button'} onClick={()=>setFilter(item)}>{item}</button>)}</div></div>
-        <div className="project-grid">{visibleProjects.map(project=>{const Icon=project.icon;return <article className={'project-card reveal accent-'+project.accent} key={project.id}>
+        <div className="project-grid">{visibleProjects.map(project=><article className={'project-card reveal accent-'+project.accent} key={project.id}>
           <a className="project-art-link" href={'/projects/'+project.id+'/'} aria-label={'Open '+project.name+' project file'}><Artwork visual={project.visual}/><span className="art-open"><ArrowUpRight size={18}/></span></a>
           <div className="project-info"><div className="project-meta"><span>{project.number} / {project.type}</span><span className={'status status-'+project.tone}><i/>{project.status}</span></div>
             <div className="project-title-row"><div><h3>{project.name}<span>.</span></h3><p>{project.description}</p></div><a className="project-arrow" href={project.href} target="_blank" rel="noreferrer" aria-label={'Open '+project.name+' source'}><ArrowUpRight size={20}/></a></div>
             <div className="project-footer"><div className="tag-row">{project.stack.map(tag=><span className="tech-tag" key={tag}>{tag}</span>)}</div><a href={'/projects/'+project.id+'/'}>EXPLORE PROJECT <ArrowUpRight size={13}/></a></div>
           </div>
-        </article>})}</div>
+        </article>)}</div>
         <div className="all-repos"><span>MORE EXPERIMENTS LIVE ON GITHUB</span><a href={github+'?tab=repositories'} target="_blank" rel="noreferrer">Browse all repositories <ArrowUpRight size={15}/></a></div>
       </section>
       <section className="manifesto-section">
