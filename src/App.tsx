@@ -83,7 +83,7 @@ function IntroLoader() {
   return <div className="intro-loader" role="status" aria-live="polite">
     <div className="intro-loader-inner">
       <div className="intro-loader-top"><span className="intro-brand">[sx⁸³]<sup>®</sup></span><span>INDEPENDENT DIGITAL WORKS</span></div>
-      <div className="intro-loader-center"><span className="intro-kicker">SECTORX83 / INITIALIZING</span><h1>Ideas into<br/><em>infrastructure.</em></h1><p>{message}<span className="loader-ellipsis">...</span></p></div>
+      <div className="intro-loader-center"><span className="intro-kicker">SECTORX83 / INITIALIZING</span><h1 className="kinetic-title" aria-label="Ideas into infrastructure."><span className="kinetic-line"><span>Ideas into</span></span><span className="kinetic-line kinetic-line-accent"><span>infrastructure<span className="kinetic-period">.</span></span></span></h1><p>{message}<span className="loader-ellipsis">...</span></p></div>
       <div className="intro-loader-bottom"><div className="loader-track"><span style={{width:progress+'%'}}/></div><div className="loader-meta"><span>LOADING EXPERIENCE</span><strong>{String(progress).padStart(2,'0')}%</strong></div><span className="loader-foot">BUILT WITH INTENT. / SX83 © 2026</span></div>
     </div>
   </div>
@@ -168,11 +168,11 @@ function App() {
         <div className="hero-topline"><span>INDEPENDENT DEVELOPER / INDIA</span><span>EST. 2024 — PRESENT</span></div>
         <div className="hero-copy reveal"><div className="eyebrow"><span className="eyebrow-dot"/> DESIGNING SYSTEMS. BUILDING SOFTWARE.</div>
           <h1>Ideas into<br/><em>infrastructure.</em></h1>
-          <div className="hero-bottom"><p>I’m Tyler. I build software at the intersection of systems engineering, developer tools, and applied AI. Curious by default. Serious about the details.</p><a className="round-link" href="#work" aria-label="Explore selected work"><ArrowDown size={22}/></a></div>
+          <div className="hero-bottom"><p className="hero-intro">I’m Tyler. I build software at the intersection of systems engineering, developer tools, and applied AI. Curious by default. Serious about the details.</p><a className="round-link" href="#work" aria-label="Explore selected work"><ArrowDown size={22}/></a></div>
         </div>
         <div className="hero-stage reveal">
           <div className="hero-stage-top"><span>SECTORX83 / DIGITAL WORKS</span><span>FIG. 001 — SELECTED SIGNALS</span></div>
-          <div className="hero-stage-art"><div className="stage-grid"/><div className="stage-typemark">sx<span>⁸³</span></div><div className="stage-orbit stage-orbit-a"/><div className="stage-orbit stage-orbit-b"/><div className="stage-cross">+</div><div className="stage-coordinate">10°31' N<br/>76°13' E</div><div className="stage-stamp">BUILT<br/>NOT BOUGHT</div></div>
+          <div className="hero-stage-art"><span className="stage-side-label">FIELD NOTES / VOL. 01</span><div className="stage-grid"/><div className="stage-typemark">sx<span>⁸³</span></div><div className="stage-orbit stage-orbit-a"/><div className="stage-orbit stage-orbit-b"/><div className="stage-cross">+</div><div className="stage-coordinate">10°31' N<br/>76°13' E</div><div className="stage-stamp">BUILT<br/>NOT BOUGHT</div></div>
           <div className="hero-stage-bottom"><span>ENGINEERING / EXPERIMENT / EXECUTION</span><span>SCROLL TO EXPLORE ↓</span></div>
         </div>
         <div className="hero-index-row"><span>01 — 05 / SELECTED WORK</span><span>OPEN SOURCE, ALWAYS IN PROGRESS.</span></div>
